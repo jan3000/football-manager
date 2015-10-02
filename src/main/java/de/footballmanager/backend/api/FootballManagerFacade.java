@@ -1,6 +1,6 @@
 package de.footballmanager.backend.api;
 
-@Service
+
 public class FootballManagerFacade {
 
     public void initGame() {
