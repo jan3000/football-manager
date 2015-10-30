@@ -1,4 +1,4 @@
-package de.footballmanager.backend.engine;
+package de.footballmanager.backend.service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.google.common.base.Preconditions;
@@ -18,9 +19,10 @@ import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.domain.TimeTable;
 import de.footballmanager.backend.exception.TimeTableCreationStuckException;
 
-public class TrialAndErrorTimeTableEngine {
+@Service
+public class TrialAndErrorTimeTableService {
 
-    public static TimeTable createTimeTable(final List<Team> teams) {
+    public TimeTable createTimeTable(final List<Team> teams) {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(teams),
                 "if you like to create a timeTable, please pass some teams");
 
@@ -35,7 +37,7 @@ public class TrialAndErrorTimeTableEngine {
         return timeTable;
     }
 
-    protected static List<MatchDay> getSecondRoundMatches(final List<MatchDay> firstRoundMatches) {
+    protected List<MatchDay> getSecondRoundMatches(final List<MatchDay> firstRoundMatches) {
         Preconditions.checkNotNull("firtRoundmatches must be set to add secondRoundMatches", firstRoundMatches);
 
         List<MatchDay> secondRoundMatchDays = Lists.newArrayList();
@@ -53,7 +55,7 @@ public class TrialAndErrorTimeTableEngine {
         return secondRoundMatchDays;
     }
 
-    protected static List<MatchDay> buildAllPossibleMatchDayPermutationsRetry(final List<Team> teams,
+    protected List<MatchDay> buildAllPossibleMatchDayPermutationsRetry(final List<Team> teams,
             final List<Match> allFirstRoundMatches) {
 
         List<MatchDay> result = null;
@@ -69,7 +71,7 @@ public class TrialAndErrorTimeTableEngine {
         return result;
     }
 
-    protected static List<MatchDay> buildAllPossibleMatchDayPermutations(final List<Team> teams,
+    protected  List<MatchDay> buildAllPossibleMatchDayPermutations(final List<Team> teams,
             final List<Match> allFirstRoundMatches) throws TimeTableCreationStuckException {
         int numberOfMatchDays = getNumberOfMatchDaysOfOneRound(teams);
         MatchDay[] newMatchDays = new MatchDay[numberOfMatchDays];
@@ -90,7 +92,7 @@ public class TrialAndErrorTimeTableEngine {
         return Arrays.asList(newMatchDays);
     }
 
-    protected static MatchDay addNextMatchDayBasedOnScoring(final MatchDay[] formerMatchDays,
+    protected MatchDay addNextMatchDayBasedOnScoring(final MatchDay[] formerMatchDays,
             final List<Match> stillAvailableMatches, final int numberOfMatchesPerMatchDay)
             throws TimeTableCreationStuckException {
 
@@ -142,14 +144,14 @@ public class TrialAndErrorTimeTableEngine {
         return newMatchDay;
     }
 
-    protected static void addMatchesWithMinimalScore(final MatchDay newMatchDay,
+    protected void addMatchesWithMinimalScore(final MatchDay newMatchDay,
             final Map<Match, Integer> matchToScore, final int minimalValue) {
         // get all matches with minimal value
         List<Match> matchesWithMinimalScore = getMatchesWithSameScore(matchToScore, minimalValue);
         addMatchesToMatchDayIfNotContainedAlready(newMatchDay, matchesWithMinimalScore);
     }
 
-    protected static List<Match> getMatchesWithSameScore(final Map<Match, Integer> matchToScore, final int score) {
+    protected List<Match> getMatchesWithSameScore(final Map<Match, Integer> matchToScore, final int score) {
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
         List<Entry<Match, Integer>> matchToScoreList = Lists.newArrayList(matchToScore.entrySet());
         Random random = new Random();
@@ -168,7 +170,7 @@ public class TrialAndErrorTimeTableEngine {
         return matchesWithMinimalScore;
     }
 
-    protected static void addMatchesToMatchDayIfNotContainedAlready(final MatchDay matchDay,
+    protected void addMatchesToMatchDayIfNotContainedAlready(final MatchDay matchDay,
             final List<Match> possibleMatchesToAdd) {
         Preconditions.checkNotNull("matchDay must be set", matchDay);
         Preconditions.checkArgument(!CollectionUtils.isEmpty(possibleMatchesToAdd));
@@ -180,12 +182,12 @@ public class TrialAndErrorTimeTableEngine {
         }
     }
 
-    protected static boolean isTeamNotInMatchDay(final MatchDay matchDay, final Team team) {
+    protected boolean isTeamNotInMatchDay(final MatchDay matchDay, final Team team) {
         Preconditions.checkNotNull("matchDay should not be null in isTeamNotInMatchDay", matchDay);
         return !matchDay.containsTeam(team);
     }
 
-    protected static Map<Match, Integer> calculateScoreMapping(final List<Match> allPossibleMatches,
+    protected Map<Match, Integer> calculateScoreMapping(final List<Match> allPossibleMatches,
             final MatchDay formerMatchDay) {
         Map<Match, Integer> matchToScore = Maps.newHashMap();
         for (Match match : allPossibleMatches) {
@@ -205,7 +207,7 @@ public class TrialAndErrorTimeTableEngine {
         return matchToScore;
     }
 
-    protected static boolean isHomeTeam(final MatchDay matchDay, final Team team) {
+    protected boolean isHomeTeam(final MatchDay matchDay, final Team team) {
         for (Match match : matchDay.getMatches()) {
             if (match.getHomeTeam().equals(team)) {
                 return true;
@@ -214,7 +216,7 @@ public class TrialAndErrorTimeTableEngine {
         return false;
     }
 
-    protected static boolean isGuestTeam(final MatchDay matchDay, final Team team) {
+    protected boolean isGuestTeam(final MatchDay matchDay, final Team team) {
         for (Match match : matchDay.getMatches()) {
             if (match.getGuestTeam().equals(team)) {
                 return true;
@@ -223,21 +225,21 @@ public class TrialAndErrorTimeTableEngine {
         return false;
     }
 
-    protected static void removeMatchesOfMatchDayFromList(final List<Match> matches, final MatchDay matchDayToRemove) {
+    protected void removeMatchesOfMatchDayFromList(final List<Match> matches, final MatchDay matchDayToRemove) {
         for (Match match : matchDayToRemove.getMatches()) {
             matches.remove(match);
             matches.remove(switchTeamsOfMatch(match));
         }
     }
 
-    protected static Match switchTeamsOfMatch(final Match match) {
+    protected Match switchTeamsOfMatch(final Match match) {
         Match switchedMatch = new Match();
         switchedMatch.setHomeTeam(match.getGuestTeam());
         switchedMatch.setGuestTeam(match.getHomeTeam());
         return switchedMatch;
     }
 
-    protected static List<Match> buildAllMatchesOfFirstRound(final List<Team> teams) {
+    protected List<Match> buildAllMatchesOfFirstRound(final List<Team> teams) {
         List<Match> firstRoundMatches = Lists.newArrayList();
         for (int i = 0; i < teams.size() - 1; i++) {
             for (int h = 1; h < teams.size(); h++) {
@@ -252,11 +254,11 @@ public class TrialAndErrorTimeTableEngine {
         return firstRoundMatches;
     }
 
-    protected static int getTotalNumberOfMatchDays(final List<Team> teams) {
+    protected int getTotalNumberOfMatchDays(final List<Team> teams) {
         return getNumberOfMatchDaysOfOneRound(teams) * 2;
     }
 
-    protected static int getNumberOfMatchDaysOfOneRound(final List<Team> teams) {
+    protected int getNumberOfMatchDaysOfOneRound(final List<Team> teams) {
         return teams.size() - 1;
     }
 }

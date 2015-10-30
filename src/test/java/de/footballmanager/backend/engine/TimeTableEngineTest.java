@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,19 +45,19 @@ public class TimeTableEngineTest {
 
     @Test
     public void getNumberOfMatchDaysOfOneRound() throws Exception {
-        int numberOfMatchDaysOfOneRound = TrialAndErrorTimeTableEngine.getNumberOfMatchDaysOfOneRound(teams);
+        int numberOfMatchDaysOfOneRound = TrialAndErrorTimeTableService.getNumberOfMatchDaysOfOneRound(teams);
         assertEquals(NUMBER_OF_MATCH_DAYS_ONE_ROUND, numberOfMatchDaysOfOneRound);
     }
 
     @Test
     public void getTotalNumberOfMatchDays() throws Exception {
-        int totalNumberOfMatchDays = TrialAndErrorTimeTableEngine.getTotalNumberOfMatchDays(teams);
+        int totalNumberOfMatchDays = TrialAndErrorTimeTableService.getTotalNumberOfMatchDays(teams);
         assertEquals(NUMBER_OF_MATCH_DAYS, totalNumberOfMatchDays);
     }
 
     @Test
     public void buildAllMatchesOfFirstRound() {
-        List<Match> matchesOfFirstRound = TrialAndErrorTimeTableEngine.buildAllMatchesOfFirstRound(teams);
+        List<Match> matchesOfFirstRound = TrialAndErrorTimeTableService.buildAllMatchesOfFirstRound(teams);
 
         assertNotNull(matchesOfFirstRound);
         assertEquals(NUMBER_OF_MATCHES_IN_FIRST_ROUND, matchesOfFirstRound.size());
@@ -69,13 +70,13 @@ public class TimeTableEngineTest {
 
     @Test(expected = NullPointerException.class)
     public void isTeamNotInMatchDayMatchDayNull() throws Exception {
-        TrialAndErrorTimeTableEngine.isTeamNotInMatchDay(null, new Team(TEAM1));
+        TrialAndErrorTimeTableService.isTeamNotInMatchDay(null, new Team(TEAM1));
     }
 
     @Test
     public void isTeamNotInMatchDayMatchNull() throws Exception {
         MatchDay matchDay = new MatchDay();
-        assertTrue(TrialAndErrorTimeTableEngine.isTeamNotInMatchDay(matchDay, new Team(TEAM1)));
+        assertTrue(TrialAndErrorTimeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM1)));
     }
 
     @Test
@@ -83,7 +84,7 @@ public class TimeTableEngineTest {
         MatchDay matchDay = new MatchDay();
         Match match = new Match(new Team(TEAM1), new Team(TEAM2));
         matchDay.addMatch(match);
-        assertTrue(TrialAndErrorTimeTableEngine.isTeamNotInMatchDay(matchDay, new Team(TEAM3)));
+        assertTrue(TrialAndErrorTimeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM3)));
     }
 
     @Test
@@ -91,7 +92,7 @@ public class TimeTableEngineTest {
         MatchDay matchDay = new MatchDay();
         Match match = new Match(new Team(TEAM1), new Team(TEAM2));
         matchDay.addMatch(match);
-        assertFalse(TrialAndErrorTimeTableEngine.isTeamNotInMatchDay(matchDay, new Team(TEAM1)));
+        assertFalse(TrialAndErrorTimeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM1)));
     }
 
     @Test
@@ -99,7 +100,7 @@ public class TimeTableEngineTest {
         MatchDay matchDay = new MatchDay();
         Match match = new Match(new Team(TEAM1), new Team(TEAM2));
         matchDay.addMatch(match);
-        assertFalse(TrialAndErrorTimeTableEngine.isTeamNotInMatchDay(matchDay, new Team(TEAM2)));
+        assertFalse(TrialAndErrorTimeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM2)));
     }
 
     // -------------------------------------------------------------
@@ -110,20 +111,20 @@ public class TimeTableEngineTest {
     public void addMatchIfNotContainedAlreadyMatchDayIsNull() throws Exception {
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
         matchesWithMinimalScore.add(new Match(new Team(TEAM1), new Team(TEAM2)));
-        TrialAndErrorTimeTableEngine.addMatchesToMatchDayIfNotContainedAlready(null, matchesWithMinimalScore);
+        TrialAndErrorTimeTableService.addMatchesToMatchDayIfNotContainedAlready(null, matchesWithMinimalScore);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void addMatchIfNotContainedAlreadyNoMatchesToAdd() throws Exception {
         MatchDay matchDay = new MatchDay();
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        TrialAndErrorTimeTableEngine.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
+        TrialAndErrorTimeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void addMatchIfNotContainedAlreadyMatchesToAddIsNull() throws Exception {
         MatchDay matchDay = new MatchDay();
-        TrialAndErrorTimeTableEngine.addMatchesToMatchDayIfNotContainedAlready(matchDay, null);
+        TrialAndErrorTimeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, null);
     }
 
     @Test
@@ -131,7 +132,7 @@ public class TimeTableEngineTest {
         MatchDay matchDay = new MatchDay();
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
         matchesWithMinimalScore.add(new Match(new Team(TEAM1), new Team(TEAM2)));
-        TrialAndErrorTimeTableEngine.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
+        TrialAndErrorTimeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(1, matchDay.getNumberOfMatches());
     }
 
@@ -141,7 +142,7 @@ public class TimeTableEngineTest {
         matchDay.addMatch(new Match(new Team(TEAM3), new Team(TEAM4)));
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
         matchesWithMinimalScore.add(new Match(new Team(TEAM1), new Team(TEAM2)));
-        TrialAndErrorTimeTableEngine.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
+        TrialAndErrorTimeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(2, matchDay.getNumberOfMatches());
     }
 
@@ -151,7 +152,7 @@ public class TimeTableEngineTest {
         matchDay.addMatch(new Match(new Team(TEAM1), new Team(TEAM2)));
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
         matchesWithMinimalScore.add(new Match(new Team(TEAM1), new Team(TEAM2)));
-        TrialAndErrorTimeTableEngine.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
+        TrialAndErrorTimeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(1, matchDay.getNumberOfMatches());
     }
 
@@ -161,7 +162,7 @@ public class TimeTableEngineTest {
         matchDay.addMatch(new Match(new Team(TEAM2), new Team(TEAM1)));
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
         matchesWithMinimalScore.add(new Match(new Team(TEAM1), new Team(TEAM2)));
-        TrialAndErrorTimeTableEngine.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
+        TrialAndErrorTimeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(1, matchDay.getNumberOfMatches());
     }
 
@@ -185,7 +186,7 @@ public class TimeTableEngineTest {
         matchToScore.put(match2Against4, 2);
         Match match3Against4 = new Match(new Team(TEAM3), new Team(TEAM4));
         matchToScore.put(match3Against4, 3);
-        List<Match> matchesWithScore0 = TrialAndErrorTimeTableEngine.getMatchesWithSameScore(matchToScore, 0);
+        List<Match> matchesWithScore0 = TrialAndErrorTimeTableService.getMatchesWithSameScore(matchToScore, 0);
         assertEquals(2, matchesWithScore0.size());
         boolean containsMatch1Against2 = false;
         boolean containsMatch3Against2 = false;
@@ -199,7 +200,7 @@ public class TimeTableEngineTest {
         assertTrue(containsMatch1Against2);
         assertTrue(containsMatch3Against2);
 
-        List<Match> matchesWithScore1 = TrialAndErrorTimeTableEngine.getMatchesWithSameScore(matchToScore, 1);
+        List<Match> matchesWithScore1 = TrialAndErrorTimeTableService.getMatchesWithSameScore(matchToScore, 1);
         assertEquals(4, matchesWithScore1.size());
         boolean containsMatch1Against3 = false;
         boolean containsMatch2Against3 = false;
@@ -213,10 +214,10 @@ public class TimeTableEngineTest {
         assertTrue(containsMatch1Against3);
         assertTrue(containsMatch2Against3);
 
-        List<Match> matchesWithScore2 = TrialAndErrorTimeTableEngine.getMatchesWithSameScore(matchToScore, 2);
+        List<Match> matchesWithScore2 = TrialAndErrorTimeTableService.getMatchesWithSameScore(matchToScore, 2);
         assertEquals(5, matchesWithScore2.size());
         assertTrue(matchesWithScore2.contains(match2Against4));
-        List<Match> matchesWithScore3 = TrialAndErrorTimeTableEngine.getMatchesWithSameScore(matchToScore, 3);
+        List<Match> matchesWithScore3 = TrialAndErrorTimeTableService.getMatchesWithSameScore(matchToScore, 3);
         assertEquals(6, matchesWithScore3.size());
         assertTrue(matchesWithScore3.contains(match3Against4));
     }
@@ -228,8 +229,8 @@ public class TimeTableEngineTest {
     @Test
     public void buildAllPossibleMatchDayPermutationsRetry() throws Exception {
         for (int i = 0; i < 1; i++) {
-            List<Match> matchesOfFirstRound = TrialAndErrorTimeTableEngine.buildAllMatchesOfFirstRound(teams);
-            List<MatchDay> firstRoundMatchDays = TrialAndErrorTimeTableEngine
+            List<Match> matchesOfFirstRound = TrialAndErrorTimeTableService.buildAllMatchesOfFirstRound(teams);
+            List<MatchDay> firstRoundMatchDays = TrialAndErrorTimeTableService
                     .buildAllPossibleMatchDayPermutationsRetry(teams, matchesOfFirstRound);
             assertAppearanceOfTeamsInMatchDays(firstRoundMatchDays);
             assertAllTeamsHaveSameSumOfMatches2(firstRoundMatchDays, NUMBER_OF_MATCH_DAYS_ONE_ROUND);
@@ -287,11 +288,11 @@ public class TimeTableEngineTest {
 
     @Test
     public void addSecondRoundMatches() throws Exception {
-        List<Match> firstRoundMatches = TrialAndErrorTimeTableEngine.buildAllMatchesOfFirstRound(teams);
-        List<MatchDay> matchDays = TrialAndErrorTimeTableEngine.buildAllPossibleMatchDayPermutationsRetry(teams,
+        List<Match> firstRoundMatches = TrialAndErrorTimeTableService.buildAllMatchesOfFirstRound(teams);
+        List<MatchDay> matchDays = TrialAndErrorTimeTableService.buildAllPossibleMatchDayPermutationsRetry(teams,
                 firstRoundMatches);
 
-        List<MatchDay> secondRoundMatches = TrialAndErrorTimeTableEngine.getSecondRoundMatches(matchDays);
+        List<MatchDay> secondRoundMatches = TrialAndErrorTimeTableService.getSecondRoundMatches(matchDays);
 
         assertNotNull(matchDays);
         assertEquals(NUMBER_OF_MATCH_DAYS_ONE_ROUND, secondRoundMatches.size());
@@ -300,18 +301,18 @@ public class TimeTableEngineTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createTimeTableTeamsIsNull() {
-        TrialAndErrorTimeTableEngine.createTimeTable(null);
+        TrialAndErrorTimeTableService.createTimeTable(null);
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void createTimeTableTeamsIsEmpty() {
-        TrialAndErrorTimeTableEngine.createTimeTable(Collections.EMPTY_LIST);
+        TrialAndErrorTimeTableService.createTimeTable(Collections.EMPTY_LIST);
     }
 
     @Test
     public void createTimeTable() {
-        TimeTable timeTable = TrialAndErrorTimeTableEngine.createTimeTable(teams);
+        TimeTable timeTable = TrialAndErrorTimeTableService.createTimeTable(teams);
 
         assertNotNull(timeTable);
         List<MatchDay> matchDays = timeTable.getAllMatchDays();

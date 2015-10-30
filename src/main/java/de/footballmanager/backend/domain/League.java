@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import de.footballmanager.backend.comparator.TeamValueComparator;
-import de.footballmanager.backend.engine.TrialAndErrorTimeTableEngine;
+import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -31,7 +31,7 @@ public class League {
         super();
         Preconditions.checkNotNull("teams must be set to create a league", teams);
         this.teams = teams;
-        timeTable = TrialAndErrorTimeTableEngine.createTimeTable(teams);
+        timeTable = TrialAndErrorTimeTableService.createTimeTable(teams);
 
     }
 

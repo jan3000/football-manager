@@ -14,7 +14,6 @@ import com.google.common.collect.Maps;
 
 import de.footballmanager.backend.comparator.ResultComparator;
 import de.footballmanager.backend.engine.ResultEngine;
-import de.footballmanager.backend.engine.TrialAndErrorTimeTableEngine;
 
 public class ResultEngineTest {
 
@@ -31,7 +30,7 @@ public class ResultEngineTest {
 
         Map<Result, Integer> resultToCountMap = Maps.newHashMap();
         for (int i = 0; i < 10; i++) {
-//            TimeTable timeTable = TrialAndErrorTimeTableEngine.createTimeTable(teams);
+//            TimeTable timeTable = TrialAndErrorTimeTableService.createTimeTable(teams);
             League league = new League(teams);
             TimeTable timeTable = league.getTimeTable();
             for (MatchDay matchDay : timeTable.getAllMatchDays()) {
