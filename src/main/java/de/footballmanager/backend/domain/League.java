@@ -31,7 +31,7 @@ public class League {
         super();
         Preconditions.checkNotNull("teams must be set to create a league", teams);
         this.teams = teams;
-        timeTable = TrialAndErrorTimeTableService.createTimeTable(teams);
+//        timeTable = TrialAndErrorTimeTableService.createTimeTable(teams);
 
     }
 

@@ -7,18 +7,22 @@ import de.footballmanager.backend.domain.TimeTable;
 import de.footballmanager.backend.parser.LeagueParser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.util.Collections;
+import java.io.InputStreamReader;
 import java.util.List;
 
 @Service
 public class LeagueService {
 
-    @Autowired
-    public LeagueParser leagueParser;
+//    @Autowired
+//    private LeagueParser leagueParser;
     @Autowired
     private TrialAndErrorTimeTableService timeTableService;
 
@@ -27,14 +31,19 @@ public class LeagueService {
     public void initLeague() {
         try {
             if (league == null) {
-                league = leagueParser.parse();
+                JAXBContext jaxbContext = JAXBContext.newInstance(League.class);
+                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                league = (League) unmarshaller.unmarshal(new BufferedReader(new InputStreamReader(
+                        Thread.currentThread().getContextClassLoader().getResourceAsStream("team.xml"))));
             }
-        } catch (JAXBException | FileNotFoundException  e){
+        } catch (JAXBException e) {
             e.printStackTrace();
         }
     }
-    
+
     public List<Team> getTeams() {
+
+        initLeague();
         return league.getTeams();
     }
 

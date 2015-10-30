@@ -20,11 +20,13 @@ import java.util.List;
 @RequestScoped
 public class HomeController {
 
+    @Autowired
     private LeagueService leagueService;
 
     private LeagueService getLeagueService() {
         if (leagueService == null) {
             leagueService = new LeagueService();
+            leagueService.initLeague();
         }
 
         return leagueService;
@@ -34,7 +36,6 @@ public class HomeController {
     @Path("teams")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Team> getTeams() throws JAXBException, FileNotFoundException {
-        getLeagueService().initLeague();
         return getLeagueService().getTeams();
     }
 

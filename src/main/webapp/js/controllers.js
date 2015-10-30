@@ -9,9 +9,10 @@ controllers.controller("HomeController", function ($scope, $http, $log) {
     $http.get('rest/home/teams').then(function (result) {
         $log.log('data: ' + JSON.stringify(result.data))
         $scope.teams = result.data;
+        $http.get('rest/home/timeTable').then(function (result) {
+            $log.log('data: ' + JSON.stringify(result.data))
+            $scope.timeTable = result.data;
     });
-    $http.get('rest/home/timeTable').then(function (result) {
-        $log.log('data: ' + JSON.stringify(result.data))
-        $scope.timeTable = result.data;
+
     });
 });
