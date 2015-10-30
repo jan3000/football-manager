@@ -11,6 +11,13 @@ import com.google.common.collect.Maps;
 import de.footballmanager.backend.comparator.TeamValueComparator;
 import de.footballmanager.backend.engine.TrialAndErrorTimeTableEngine;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlRootElement(name = "league")
+@XmlType(propOrder = {"teams", "timeTable"})
 public class League {
 
     private List<Team> teams;
@@ -98,6 +105,8 @@ public class League {
         this.timeTable = timeTable;
     }
 
+    @XmlElementWrapper(name = "teams")
+    @XmlElement(name = "team")
     public List<Team> getTeams() {
         return teams;
     }

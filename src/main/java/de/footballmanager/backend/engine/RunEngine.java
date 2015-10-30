@@ -27,32 +27,14 @@ public class RunEngine {
         System.out.println("Football-Manager 2013");
         System.out.println(StringUtils.repeat("-", 100));
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(Team.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(League.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        Team team = (Team) unmarshaller.unmarshal(new BufferedReader(new InputStreamReader(
+        League league = (League) unmarshaller.unmarshal(new BufferedReader(new InputStreamReader(
                 Thread.currentThread().getContextClassLoader().getResourceAsStream("team.xml"))));
-        System.out.println("333333333333333 " + team.getName());
 
-        List<Team> teams = Lists.newArrayList();
-        teams.add(new Team("Hamburger SV      ", 99));
-        teams.add(new Team("Borussia Dortmund 09", 89));
-        teams.add(new Team("Bayern Muenchen    ", 94));
-        teams.add(new Team("Werder Bremen     ", 63));
-        teams.add(new Team("Eintracht Frankfurt", 70));
-        teams.add(new Team("1.FC Kueln        ", 45));
-        teams.add(new Team("1. FC K'lautern  ", 42));
-        teams.add(new Team("VfB Stuttgart    ", 57));
-        teams.add(new Team("Bor. M'gladbach  ", 57));
-        teams.add(new Team("SC Freiburg      ", 57));
-        teams.add(new Team("FC Schalke 04    ", 77));
-        teams.add(new Team("Bayer Leverkusen ", 77));
-        teams.add(new Team("1 FC Nuernberg    ", 37));
-        teams.add(new Team("Hertha BSC       ", 37));
-        teams.add(new Team("FC Augsburg      ", 17));
-        teams.add(new Team("For. Duesseldorf  ", 7));
-        teams.add(new Team("Hannover 96      ", 67));
-        teams.add(new Team("1899 Hoffeheim   ", 47));
-        League league = new League(teams);
+        for (Team team : league.getTeams()) {
+            System.out.println(team);
+        }
 
 //        for (MatchDay matchDay : league.getTimeTable().getAllMatchDays()) {
 //            for (Match match : matchDay.getMatches()) {

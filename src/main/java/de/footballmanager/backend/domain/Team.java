@@ -13,9 +13,7 @@ public class Team {
     private int strength;
 //    private List<Player> players;
 
-    public Team() {
-        System.out.println("444444444444444444");
-    }
+    public Team() {}
 
     public Team(final String name) {
         super();

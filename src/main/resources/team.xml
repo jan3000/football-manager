@@ -1,74 +1,76 @@
-<!--<league1>-->
-    <team>
-        <name>Hamburger SV</name>
-        <strength>78</strength>
-    </team>
-    <!--<team>-->
-        <!--<team>Borussia Dortmund 09</team>-->
-        <!--<strength>89</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>Bayern Muenchen</team>-->
-        <!--<strength>94</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>Werder Bremen</team>-->
-        <!--<strength>63</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>Eintracht Frankfurt</team>-->
-        <!--<strength>70</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>1.FC Kueln</team>-->
-        <!--<strength>45</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>1. FC K'lautern</team>-->
-        <!--<strength>42</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>VfB Stuttgart</team>-->
-        <!--<strength>57</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>Bor. M'gladbach</team>-->
-        <!--<strength>57</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>SC Freiburg</team>-->
-        <!--<strength>57</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>FC Schalke 04</team>-->
-        <!--<strength>77</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>Bayer Leverkusen</team>-->
-        <!--<strength>77</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>1 FC Nuernberg</team>-->
-        <!--<strength>37</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>Hertha BSC</team>-->
-        <!--<strength>37</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>FC Augsburg</team>-->
-        <!--<strength>17</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>For. Duesseldorf</team>-->
-        <!--<strength>7</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>Hannover 96</team>-->
-        <!--<strength>67</strength>-->
-    <!--</team>-->
-    <!--<team>-->
-        <!--<team>1899 Hoffeheim</team>-->
-        <!--<strength>47</strength>-->
-    <!--</team>-->
-<!--</league1>-->
+<league>
+    <teams>
+        <team>
+            <name>Hamburger SV</name>
+            <strength>78</strength>
+        </team>
+        <team>
+            <name>Borussia Dortmund 09</name>
+            <strength>89</strength>
+        </team>
+        <team>
+            <name>Bayern Muenchen</name>
+            <strength>94</strength>
+        </team>
+        <team>
+            <name>Werder Bremen</name>
+            <strength>63</strength>
+        </team>
+        <team>
+            <name>Eintracht Frankfurt</name>
+            <strength>70</strength>
+        </team>
+        <team>
+            <name>1.FC Kueln</name>
+            <strength>45</strength>
+        </team>
+        <team>
+            <name>1. FC K'lautern</name>
+            <strength>42</strength>
+        </team>
+        <team>
+            <name>VfB Stuttgart</name>
+            <strength>57</strength>
+        </team>
+        <team>
+            <name>Bor. M'gladbach</name>
+            <strength>57</strength>
+        </team>
+        <team>
+            <name>SC Freiburg</name>
+            <strength>57</strength>
+        </team>
+        <team>
+            <name>FC Schalke 04</name>
+            <strength>77</strength>
+        </team>
+        <team>
+            <name>Bayer Leverkusen</name>
+            <strength>77</strength>
+        </team>
+        <team>
+            <name>1 FC Nuernberg</name>
+            <strength>37</strength>
+        </team>
+        <team>
+            <name>Hertha BSC</name>
+            <strength>37</strength>
+        </team>
+        <team>
+            <name>FC Augsburg</name>
+            <strength>17</strength>
+        </team>
+        <team>
+            <name>For. Duesseldorf</name>
+            <strength>7</strength>
+        </team>
+        <team>
+            <name>Hannover 96</name>
+            <strength>67</strength>
+        </team>
+        <team>
+            <name>1899 Hoffeheim</name>
+            <strength>47</strength>
+        </team>
+    </teams>
+</league>
