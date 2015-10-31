@@ -1,6 +1,6 @@
 'use strict';
 
-
+var controllers = angular.module("controllers", []);
 var app = angular.module('app', [
     'ngRoute',
     'controllers'
@@ -16,15 +16,15 @@ app.config(['$routeProvider',
             })
             .when('/team', {
                 templateUrl: 'partials/team.html',
-                controller: 'HomeController'
+                controller: 'TeamCtrl'
             })
             .when('/timeTable', {
                 templateUrl: 'partials/timeTable.html',
-                controller: 'HomeController'
+                controller: 'TimeTableCtrl'
             })
             .when('/statistics', {
                 templateUrl: 'partials/statistics.html',
-                controller: 'HomeController'
+                controller: 'StatisticsCtrl'
             })
             .otherwise({
                 redirectTo: '/'

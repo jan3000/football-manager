@@ -2,6 +2,7 @@ package de.footballmanager.backend.domain;
 
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.ImmutableList;
@@ -17,7 +18,9 @@ public class TimeTable {
     }
 
     public MatchDay getMatchDay(final int matchDayNumber) {
-        return matchDays.get(matchDayNumber);
+        Preconditions.checkArgument(matchDayNumber > 1, "matchDay must be greater 1");
+        Preconditions.checkArgument(matchDayNumber <= matchDayNumber - 1, "matchDay must be greater 1");
+        return matchDays.get(matchDayNumber - 1);
     }
 
     public int getCurrentMatchDay() {

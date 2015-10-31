@@ -1,1 +1,22 @@
-TimeTable
+<div class="container-fluid">
+
+    <div class="row">TimeTable</div>
+    <div class="row">
+        <div class="col-sm-offset-1 col-sm-2">
+            <div class="btn btn-success" ng-click="getNextMatchDay()">next matchDay</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">Match day: {{matchDayNumber}}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm-offset-1 col-sm-7">
+            <table class="table table-condensed table-bordered">
+                <tr ng-repeat="match in matches">
+                    <td>{{match.homeTeam.name}}</td>
+                    <td>{{match.guestTeam.name}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

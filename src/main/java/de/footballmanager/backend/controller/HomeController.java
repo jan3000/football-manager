@@ -26,15 +26,16 @@ public class HomeController {
     @Path("teams")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Team> getTeams() throws JAXBException, FileNotFoundException {
+        System.out.println("000 getTeams");
         return leagueService.getTeams();
     }
 
 
     @GET
     @Path("timeTable/{matchDay}")
-    @QueryParam(value = "matchDay")
     @Produces(MediaType.APPLICATION_JSON)
     public MatchDay getTimeTableForMatchDay(@PathParam("matchDay") int matchDay) {
+        System.out.println("000 getTimeTableForMatchDay: " + matchDay);
         return leagueService.getTimeTableForMatchDay(matchDay);
     }
 }

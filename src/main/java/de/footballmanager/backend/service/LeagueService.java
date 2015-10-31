@@ -1,22 +1,15 @@
 package de.footballmanager.backend.service;
 
-import com.google.common.base.Preconditions;
 import de.footballmanager.backend.domain.League;
 import de.footballmanager.backend.domain.MatchDay;
 import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.domain.TimeTable;
 import de.footballmanager.backend.parser.LeagueParser;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 @Service
@@ -32,7 +25,9 @@ public class LeagueService {
 
     public void initLeague() {
         try {
+            System.out.println("34343434343");
             if (league == null) {
+                System.out.println("444444444444");
                 league = leagueParser.parse();
                 timeTable = timeTableService.createTimeTable(league.getTeams());
             }
@@ -42,7 +37,6 @@ public class LeagueService {
     }
 
     public List<Team> getTeams() {
-
         initLeague();
         return league.getTeams();
     }
