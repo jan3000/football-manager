@@ -2,6 +2,7 @@ package de.footballmanager.backend.service;
 
 import com.google.common.base.Preconditions;
 import de.footballmanager.backend.domain.League;
+import de.footballmanager.backend.domain.MatchDay;
 import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.domain.TimeTable;
 import de.footballmanager.backend.parser.LeagueParser;
@@ -27,11 +28,13 @@ public class LeagueService {
     private TrialAndErrorTimeTableService timeTableService;
 
     private League league;
+    private TimeTable timeTable;
 
     public void initLeague() {
         try {
             if (league == null) {
                 league = leagueParser.parse();
+                timeTable = timeTableService.createTimeTable(league.getTeams());
             }
         } catch (JAXBException | FileNotFoundException e) {
             e.printStackTrace();
@@ -45,9 +48,11 @@ public class LeagueService {
     }
 
     public TimeTable getTimeTable() {
-        Preconditions.checkArgument(league != null, "league must be initialized before timeTable generation");
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(league.getTeams()), "teams must exist before timeTable generation");
-        return timeTableService.createTimeTable(league.getTeams());
+        return timeTable;
+    }
+
+    public MatchDay getTimeTableForMatchDay(int matchDay) {
+        return timeTable.getMatchDay(matchDay);
     }
 
     public void getCurrentTable() {

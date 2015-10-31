@@ -38,7 +38,7 @@ public class TrialAndErrorTimeTableService {
     }
 
     protected List<MatchDay> getSecondRoundMatches(final List<MatchDay> firstRoundMatches) {
-        Preconditions.checkNotNull("firtRoundmatches must be set to add secondRoundMatches", firstRoundMatches);
+        Preconditions.checkNotNull("firstRoundMatches must be set to add secondRoundMatches", firstRoundMatches);
 
         List<MatchDay> secondRoundMatchDays = Lists.newArrayList();
         int numberOfMatchDaysFirstRound = firstRoundMatches.size();

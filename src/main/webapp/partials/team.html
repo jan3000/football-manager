@@ -1,0 +1,34 @@
+<div class="container-fluid">
+    <!--<div class="row">-->
+        <!--<div class="btn-group-sm btn-success">-->
+            <!--<div class="btn">Teams</div>-->
+            <!--<div class="btn">Time table</div>-->
+            <!--<div class="btn">Statistics</div>-->
+            <!--<div class="btn">Go</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="row">
+        <div class="col-sm-2">
+            <table class="table-striped table-bordered table">
+                <thead>
+                    <tr style="font-weight: bold">
+                        <td>Team</td>
+                        <td>Strength</td>
+                    </tr>
+                </thead>
+                <tr ng-repeat="team in teams">
+                    <td>{{team.name}}</td>
+                    <td>{{team.strength}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-sm-8">
+            <table class="table-striped table-bordered">
+                <tr ng-repeat="matchDay in timeTable.allMatchDays">
+                    <td>{{matchDay.matchDayNumber}}</td>
+                </tr>
+                <tr ></tr>
+            </table>
+        </div>
+    </div>
+</div>

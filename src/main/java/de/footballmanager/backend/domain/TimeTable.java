@@ -9,23 +9,29 @@ import com.google.common.collect.Lists;
 
 public class TimeTable {
 
+    private int currentMatchDay = 0;
     private final List<MatchDay> matchDays = Lists.newArrayList();
-
-    public int getNumberOfMatchesOnOneMatchDay() {
-        throw new UnsupportedOperationException();
-    }
-
-    public int getNumberOfMatchDays() {
-        throw new UnsupportedOperationException();
-    }
 
     public ImmutableList<MatchDay> getAllMatchDays() {
         return ImmutableList.copyOf(matchDays);
     }
 
     public MatchDay getMatchDay(final int matchDayNumber) {
-        throw new UnsupportedOperationException();
+        return matchDays.get(matchDayNumber);
     }
+
+    public int getCurrentMatchDay() {
+        return currentMatchDay;
+    }
+
+    public void setCurrentMatchDay(int currentMatchDay) {
+        this.currentMatchDay = currentMatchDay;
+    }
+
+    public void incrementCurrentMatchDay() {
+        currentMatchDay++;
+    }
+
 
     public void addMatchDays(final List<MatchDay> matchDays) {
         this.matchDays.addAll(matchDays);

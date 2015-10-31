@@ -1,5 +1,6 @@
 package de.footballmanager.backend.controller;
 
+import de.footballmanager.backend.domain.MatchDay;
 import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.domain.TimeTable;
 import de.footballmanager.backend.parser.LeagueParser;
@@ -8,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.enterprise.context.RequestScoped;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
@@ -32,10 +31,11 @@ public class HomeController {
 
 
     @GET
-    @Path("timeTable")
+    @Path("timeTable/{matchDay}")
+    @QueryParam(value = "matchDay")
     @Produces(MediaType.APPLICATION_JSON)
-    public TimeTable getTimeTable() throws JAXBException, FileNotFoundException {
-        return leagueService.getTimeTable();
+    public MatchDay getTimeTableForMatchDay(@PathParam("matchDay") int matchDay) {
+        return leagueService.getTimeTableForMatchDay(matchDay);
     }
 }
 
