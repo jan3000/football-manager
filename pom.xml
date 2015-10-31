@@ -115,35 +115,50 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <!--Jersey core Servlet 3.x implementation-->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+        <!--Grizzly 2 Http Container: -->
+        <!--incl. javax.inject: i.e. DI-->
+        <!--incl. grizzly-http-server: provides HTTP server services using an API very similar to Servlets.-->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-grizzly2-http</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+        <!--Jersey extension module providing support for Spring 3 integration-->
+        <!--incl. hk2: A light-weight and dynamic dependency injection framework-->
+        <!--incl. spring-bridge: used to inject Spring services into HK2 services or inject HK2 services into Spring
+        services-->
         <dependency>
             <groupId>org.glassfish.jersey.ext</groupId>
             <artifactId>jersey-spring3</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-
-
-        <!-- uncomment this to get JSON support
+        <!--Functionality to handle JSON input/output for JAX-RS implementations (like Jersey and RESTeasy) using
+         standard Jackson data binding.-->
         <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-moxy</artifactId>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.6.3</version>
         </dependency>
-        -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
+        <!--Java(TM) EE 7 Specification APIs, e.g. @RequestScope-->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>7.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--Spring-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -159,21 +174,11 @@
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <!--Apache Commons Logging is a thin adapter allowing configurable bridging to other, well known logging systems.-->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>2.6.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.bundles</groupId>
-            <artifactId>jaxrs-ri</artifactId>
-            <version>2.13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -181,14 +186,14 @@
             <version>4.0</version>
         </dependency>
         <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>1.6.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -200,19 +205,11 @@
             <artifactId>junit</artifactId>
             <version>4.11</version>
         </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>7.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-            <version>2.2.10-b140310.1920</version>
-        </dependency>
-
-
+        <!--<dependency>-->
+            <!--<groupId>org.glassfish.jaxb</groupId>-->
+            <!--<artifactId>jaxb-runtime</artifactId>-->
+            <!--<version>2.2.10-b140310.1920</version>-->
+        <!--</dependency>-->
     </dependencies>
 
 </project>

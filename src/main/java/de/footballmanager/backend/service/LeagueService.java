@@ -21,8 +21,8 @@ import java.util.List;
 @Service
 public class LeagueService {
 
-//    @Autowired
-//    private LeagueParser leagueParser;
+    @Autowired
+    private LeagueParser leagueParser;
     @Autowired
     private TrialAndErrorTimeTableService timeTableService;
 
@@ -31,12 +31,9 @@ public class LeagueService {
     public void initLeague() {
         try {
             if (league == null) {
-                JAXBContext jaxbContext = JAXBContext.newInstance(League.class);
-                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-                league = (League) unmarshaller.unmarshal(new BufferedReader(new InputStreamReader(
-                        Thread.currentThread().getContextClassLoader().getResourceAsStream("team.xml"))));
+                league = leagueParser.parse();
             }
-        } catch (JAXBException e) {
+        } catch (JAXBException | FileNotFoundException e) {
             e.printStackTrace();
         }
     }
