@@ -46,6 +46,7 @@ public class LeagueService {
     }
 
     public MatchDay getTimeTableForMatchDay(int matchDay) {
+        initLeague();
         return timeTable.getMatchDay(matchDay);
     }
 

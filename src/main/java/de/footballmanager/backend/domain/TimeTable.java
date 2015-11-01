@@ -18,9 +18,11 @@ public class TimeTable {
     }
 
     public MatchDay getMatchDay(final int matchDayNumber) {
-        Preconditions.checkArgument(matchDayNumber > 1, "matchDay must be greater 1");
-        Preconditions.checkArgument(matchDayNumber <= matchDayNumber - 1, "matchDay must be greater 1");
-        return matchDays.get(matchDayNumber - 1);
+        Preconditions.checkArgument(matchDayNumber >= 1, "matchDay must be greater 0");
+        Preconditions.checkArgument(matchDayNumber <= matchDays.size() - 1, "matchDay must be greater 1");
+        MatchDay matchDay = matchDays.get(matchDayNumber - 1);
+        System.out.println("matchDay: " + matchDay);
+        return matchDay;
     }
 
     public int getCurrentMatchDay() {
