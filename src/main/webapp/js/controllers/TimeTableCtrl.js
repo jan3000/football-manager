@@ -22,11 +22,18 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log) {
     $scope.getMatchDay = function (matchDay) {
         $log.log('getMatchDay: ' + matchDay);
         $http.get('rest/home/timeTable/' + matchDay).then(function (result) {
-            $log.log('xxx: ' + JSON.stringify(result))
+            $log.log('getMatchDay: ' + JSON.stringify(result))
             $scope.matchDayNumber = result.data.matchDayNumber;
             $log.log('$scope.matchDayNumber: ' + $scope.matchDayNumber);
             $scope.matches = result.data.matches;
         });
     };
     $scope.getMatchDay(1);
+
+    $scope.runNextMatchDay = function () {
+        $http.get('rest/home/runNextMatchDay/').then(function (result) {
+            $log.log('runNextMatchDay: ' + JSON.stringify(result))
+
+        })
+    }
 });

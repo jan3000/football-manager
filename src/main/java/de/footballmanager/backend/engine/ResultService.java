@@ -5,14 +5,17 @@ import java.util.Random;
 import de.footballmanager.backend.domain.Goal;
 import de.footballmanager.backend.domain.Match;
 import de.footballmanager.backend.domain.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class ResultEngine {
+@Service
+public class ResultService {
 
     private static final double PROBABILITY_OF_GOAL_PER_MINUTE = 0.97;
     private static final int HOME_ADVANTAGE = 15;
     private static final int WIN_PROBABILITY_BALANCE_CONSTANT = 30;
 
-    public static void calculateResult(final Match match) {
+    public void calculateResult(final Match match) {
         int additionalTime = new Random().nextInt(5);
         for (int minute = 1; minute <= 90 + additionalTime; minute++) {
 
@@ -31,7 +34,7 @@ public class ResultEngine {
         match.setHasEnded(true);
     }
 
-    private static boolean isGoalInThisMinute(final int strength, final boolean isHomeTeam) {
+    private boolean isGoalInThisMinute(final int strength, final boolean isHomeTeam) {
         int probabilityToWin = WIN_PROBABILITY_BALANCE_CONSTANT + strength;
         if (isHomeTeam) {
             probabilityToWin += HOME_ADVANTAGE;

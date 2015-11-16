@@ -8,14 +8,15 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
 
 import de.footballmanager.backend.comparator.ResultComparator;
-import de.footballmanager.backend.engine.ResultEngine;
+import de.footballmanager.backend.engine.ResultService;
 
-public class ResultEngineTest {
+public class ResultServiceTest {
 
     private final int homeWin = 0;
     private final int draw = 0;
@@ -26,16 +27,19 @@ public class ResultEngineTest {
 
     @Test
     public void calculateResult() throws Exception {
+        TrialAndErrorTimeTableService timeTableService = new TrialAndErrorTimeTableService();
+        ResultService resultService = new ResultService();
         List<Team> teams = LeagueTestUtil.getLeagueTeams();
 
         Map<Result, Integer> resultToCountMap = Maps.newHashMap();
         for (int i = 0; i < 10; i++) {
-//            TimeTable timeTable = TrialAndErrorTimeTableService.createTimeTable(teams);
+            TimeTable timeTable = timeTableService.createTimeTable(teams);
             League league = new League(teams);
-            TimeTable timeTable = league.getTimeTable();
+//            TimeTable timeTable = league.getTimeTable();
+            league.setTimeTable(timeTable);
             for (MatchDay matchDay : timeTable.getAllMatchDays()) {
                 for (Match match : matchDay.getMatches()) {
-                    ResultEngine.calculateResult(match);
+                    resultService.calculateResult(match);
                 }
             }
             System.out.println(timeTable.print());

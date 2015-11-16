@@ -7,6 +7,7 @@
             </div>
             <div class="btn btn-success" ng-click="getPreviousMatchDay()">previous</div>
             <div class="btn btn-success" ng-click="getNextMatchDay()">next</div>
+            <div class="btn btn-success" ng-click="runNextMatchDay()">run</div>
         </div>
     </div>
 
@@ -17,6 +18,8 @@
                 <tr ng-repeat="match in matches">
                     <td class="col-sm-3">{{match.homeTeam.name}}</td>
                     <td class="col-sm-3">{{match.guestTeam.name}}</td>
+                    <td class="col-sm-1">{{match.result.homeGoals}} : {{match.result.guestGoals}}</td>
+                    <td class="col-sm-1">({{match.halfTime.homeGoals}} : {{match.halfTime.guestGoals}})</td>
                 </tr>
             </table>
         </div>

@@ -14,8 +14,10 @@ import javax.xml.bind.JAXBException;
 @Service
 public class RunEngine {
 
+    @Autowired
+    private ResultService resultService;
 
-    public static void main(final String[] args) throws JAXBException, FileNotFoundException {
+    public void main(final String[] args) throws JAXBException, FileNotFoundException {
         System.out.println(StringUtils.repeat("-", 100));
         System.out.println("Football-Manager 2013");
         System.out.println(StringUtils.repeat("-", 100));
@@ -34,7 +36,7 @@ public class RunEngine {
 
         for (MatchDay matchDay : league.getTimeTable().getAllMatchDays()) {
             for (Match match : matchDay.getMatches()) {
-                ResultEngine.calculateResult(match);
+                resultService.calculateResult(match);
             }
 
         }

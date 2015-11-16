@@ -38,6 +38,13 @@ public class HomeController {
         System.out.println("000 getTimeTableForMatchDay: " + matchDay);
         return leagueService.getTimeTableForMatchDay(matchDay);
     }
+
+    @GET
+    @Path("runNextMatchDay")
+    @Produces(MediaType.APPLICATION_JSON)
+    public MatchDay runNextMatchDay() {
+        return leagueService.runNextMatchDay();
+    }
 }
 
 

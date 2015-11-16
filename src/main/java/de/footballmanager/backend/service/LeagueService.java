@@ -1,9 +1,7 @@
 package de.footballmanager.backend.service;
 
-import de.footballmanager.backend.domain.League;
-import de.footballmanager.backend.domain.MatchDay;
-import de.footballmanager.backend.domain.Team;
-import de.footballmanager.backend.domain.TimeTable;
+import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.engine.ResultService;
 import de.footballmanager.backend.parser.LeagueParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +16,11 @@ public class LeagueService {
     @Autowired
     private LeagueParser leagueParser;
     @Autowired
+    private ResultService resultService;
+    @Autowired
     private TrialAndErrorTimeTableService timeTableService;
 
+    private int currentMatchDay;
     private League league;
     private TimeTable timeTable;
 
@@ -28,6 +29,7 @@ public class LeagueService {
             System.out.println("34343434343");
             if (league == null) {
                 System.out.println("444444444444");
+                currentMatchDay = 1;
                 league = leagueParser.parse();
                 timeTable = timeTableService.createTimeTable(league.getTeams());
             }
@@ -39,6 +41,19 @@ public class LeagueService {
     public List<Team> getTeams() {
         initLeague();
         return league.getTeams();
+    }
+
+    /**
+     *
+     * @return finished matchDay
+     */
+    public MatchDay runNextMatchDay() {
+        MatchDay matchDay = timeTable.getMatchDay(currentMatchDay);
+        for (Match match : matchDay.getMatches()) {
+            resultService.calculateResult(match);
+        }
+        currentMatchDay++;
+        return timeTable.getMatchDay(currentMatchDay);
     }
 
     public TimeTable getTimeTable() {
