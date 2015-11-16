@@ -14,7 +14,7 @@ import org.junit.Test;
 import com.google.common.collect.Maps;
 
 import de.footballmanager.backend.comparator.ResultComparator;
-import de.footballmanager.backend.engine.ResultService;
+import de.footballmanager.backend.service.ResultService;
 
 public class ResultServiceTest {
 

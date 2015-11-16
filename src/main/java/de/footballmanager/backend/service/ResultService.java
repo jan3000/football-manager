@@ -1,5 +1,6 @@
-package de.footballmanager.backend.engine;
+package de.footballmanager.backend.service;
 
+import java.util.List;
 import java.util.Random;
 
 import de.footballmanager.backend.domain.Goal;
@@ -17,21 +18,38 @@ public class ResultService {
 
     public void calculateResult(final Match match) {
         int additionalTime = new Random().nextInt(5);
+        match.setAdditionalTime(additionalTime);
         for (int minute = 1; minute <= 90 + additionalTime; minute++) {
 
-            if (isGoalInThisMinute(match.getHomeTeam().getStrength(), true)) {
-                Goal goal = new Goal(minute, match.getHomeTeam(), null, null, new Result(match.getGoalsHomeTeam() + 1,
-                        match.getGoalsGuestTeam()));
-                match.increaseGoalsHomeTeam(goal);
-            }
-
-            if (isGoalInThisMinute(match.getGuestTeam().getStrength(), false)) {
-                Goal goal = new Goal(minute, match.getGuestTeam(), null, null, new Result(match.getGoalsHomeTeam(),
-                        match.getGoalsGuestTeam() + 1));
-                match.increaseGoalsGuestTeam(goal);
-            }
+            simulateMatchMinute(match, minute);
         }
         match.setHasEnded(true);
+    }
+
+    private void simulateMatchMinute(Match match, int minute) {
+        if (isGoalInThisMinute(match.getHomeTeam().getStrength(), true)) {
+            Goal goal = new Goal(minute, match.getHomeTeam(), null, null, new Result(match.getGoalsHomeTeam() + 1,
+                    match.getGoalsGuestTeam()));
+            match.increaseGoalsHomeTeam(goal);
+        }
+
+        if (isGoalInThisMinute(match.getGuestTeam().getStrength(), false)) {
+            Goal goal = new Goal(minute, match.getGuestTeam(), null, null, new Result(match.getGoalsHomeTeam(),
+                    match.getGoalsGuestTeam() + 1));
+            match.increaseGoalsGuestTeam(goal);
+        }
+        match.increaseMinute();
+
+        // TODO calculate additionalTime
+        // TODO cards, injuries, changes
+    }
+
+    public void calculateNextMinute(List<Match> matches) {
+        for (Match match : matches) {
+            if (!match.hasEnded()) {
+                simulateMatchMinute(match, match.getMinute());
+            }
+        }
     }
 
     private boolean isGoalInThisMinute(final int strength, final boolean isHomeTeam) {

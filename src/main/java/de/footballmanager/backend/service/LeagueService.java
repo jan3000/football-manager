@@ -1,7 +1,6 @@
 package de.footballmanager.backend.service;
 
 import de.footballmanager.backend.domain.*;
-import de.footballmanager.backend.engine.ResultService;
 import de.footballmanager.backend.parser.LeagueParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,7 @@ public class LeagueService {
             resultService.calculateResult(match);
         }
         currentMatchDay++;
-        return timeTable.getMatchDay(currentMatchDay);
+        return timeTable.getMatchDay(currentMatchDay - 1);
     }
 
     public TimeTable getTimeTable() {

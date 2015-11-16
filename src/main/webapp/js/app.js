@@ -26,6 +26,10 @@ app.config(['$routeProvider',
                 templateUrl: 'partials/statistics.html',
                 controller: 'StatisticsCtrl'
             })
+            .when('/go', {
+                templateUrl: 'partials/runMatchDay.html',
+                controller: 'RunMatchDayCtrl'
+            })
             .otherwise({
                 redirectTo: '/'
             });

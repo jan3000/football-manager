@@ -6,10 +6,18 @@ import com.google.common.collect.Lists;
 
 import de.footballmanager.backend.enumeration.ResultType;
 
+import javax.resource.NotSupportedException;
+
 public class Match {
 
     private Team homeTeam;
     private Team guestTeam;
+    private int minute = 0;
+    private int additionalTime = 0;
+    private List<Player> yellowCards;
+    private List<Player> redCards;
+    private List<PlayerChange> playerChanges;
+
     private final Result halfTime = new Result(0, 0);
     private Result result = new Result(0, 0);
     private boolean hasEnded = false;
@@ -51,7 +59,11 @@ public class Match {
     }
 
     public boolean hasEnded() {
-        return hasEnded;
+        return hasEnded || minute >= 90 + additionalTime;
+    }
+
+    public void getAdditionalTime() throws NotSupportedException {
+        throw new NotSupportedException();
     }
 
     public void setHasEnded(final boolean hasEnded) {
@@ -80,6 +92,18 @@ public class Match {
 
     public void setGuestTeam(final Team guestTeam) {
         this.guestTeam = guestTeam;
+    }
+
+    public void setAdditionalTime(int additionalTime) {
+        this.additionalTime = additionalTime;
+    }
+
+    public void increaseMinute() {
+        minute++;
+    }
+
+    public int getMinute() {
+        return minute;
     }
 
     public boolean containsTeam(final Team team) {
@@ -176,6 +200,35 @@ public class Match {
         builder.append(goals);
         builder.append("]");
         return builder.toString();
+    }
+    private class PlayerChange {
+        private int minute;
+        private Player in;
+        private Player out;
+
+        public int getMinute() {
+            return minute;
+        }
+
+        public void setMinute(int minute) {
+            this.minute = minute;
+        }
+
+        public Player getIn() {
+            return in;
+        }
+
+        public void setIn(Player in) {
+            this.in = in;
+        }
+
+        public Player getOut() {
+            return out;
+        }
+
+        public void setOut(Player out) {
+            this.out = out;
+        }
     }
 
 }

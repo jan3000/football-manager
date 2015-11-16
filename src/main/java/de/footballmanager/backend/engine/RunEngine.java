@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.parser.LeagueParser;
+import de.footballmanager.backend.service.ResultService;
 import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
