@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 
 public class TimeTable {
 
-    private int currentMatchDay = 0;
+    private int currentMatchDay = 1;
     private final List<MatchDay> matchDays = Lists.newArrayList();
 
     public ImmutableList<MatchDay> getAllMatchDays() {
@@ -19,7 +19,8 @@ public class TimeTable {
 
     public MatchDay getMatchDay(final int matchDayNumber) {
         Preconditions.checkArgument(matchDayNumber >= 1, "matchDay must be greater 0");
-        Preconditions.checkArgument(matchDayNumber <= matchDays.size() - 1, "matchDay must be greater 1");
+        Preconditions.checkArgument(matchDayNumber <= matchDays.size(), "matchDay number must not exceed " +
+                matchDays.size());
         MatchDay matchDay = matchDays.get(matchDayNumber - 1);
 //        System.out.println("matchDay: " + matchDay);
         return matchDay;

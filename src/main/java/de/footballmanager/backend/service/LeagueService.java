@@ -31,7 +31,6 @@ public class LeagueService {
     @Autowired
     private TrialAndErrorTimeTableService timeTableService;
 
-    private int currentMatchDay;
     private League league;
     private TimeTable timeTable;
 
@@ -40,7 +39,6 @@ public class LeagueService {
             System.out.println("34343434343");
             if (league == null) {
                 System.out.println("444444444444");
-                currentMatchDay = 1;
                 league = leagueParser.parse();
                 timeTable = timeTableService.createTimeTable(league.getTeams());
             }
@@ -55,12 +53,12 @@ public class LeagueService {
     }
 
     public MatchDay runNextMinute() {
-        MatchDay matchDay = timeTable.getMatchDay(currentMatchDay);
+        MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
         List<Match> matches = matchDay.getMatches();
         resultService.calculateNextMinute(matches);
 
         if (haveAllMatchesEnded(matches)) {
-            currentMatchDay++;
+            timeTable.incrementCurrentMatchDay();
         };
 
         return matchDay;
@@ -75,16 +73,20 @@ public class LeagueService {
      * @return finished matchDay
      */
     public MatchDay runNextMatchDay() {
-        MatchDay matchDay = timeTable.getMatchDay(currentMatchDay);
+        MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
         for (Match match : matchDay.getMatches()) {
             resultService.calculateResult(match);
         }
-        currentMatchDay++;
-        return timeTable.getMatchDay(currentMatchDay - 1);
+        timeTable.incrementCurrentMatchDay();;
+        return timeTable.getMatchDay(timeTable.getCurrentMatchDay() - 1);
     }
 
     public TimeTable getTimeTable() {
         return timeTable;
+    }
+
+    public int getCurrentMatchDay() {
+        return timeTable.getCurrentMatchDay();
     }
 
     public MatchDay getTimeTableForMatchDay(int matchDay) {
