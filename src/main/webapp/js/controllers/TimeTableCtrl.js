@@ -35,5 +35,13 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log) {
             $log.log('runNextMatchDay: ' + JSON.stringify(result))
 
         })
+    };
+
+    $scope.getCurrentTable = function () {
+        $http.get('rest/home/currentTable/').then(function (result) {
+            $log.log('getCurrentTable: ' + JSON.stringify(result))
+            $scope.table = result.data;
+        })
     }
+    $scope.getCurrentTable();
 });

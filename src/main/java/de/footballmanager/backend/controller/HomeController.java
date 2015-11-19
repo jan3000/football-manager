@@ -1,6 +1,7 @@
 package de.footballmanager.backend.controller;
 
 import de.footballmanager.backend.domain.MatchDay;
+import de.footballmanager.backend.domain.Table;
 import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.domain.TimeTable;
 import de.footballmanager.backend.parser.LeagueParser;
@@ -52,6 +53,13 @@ public class HomeController {
     @Produces(MediaType.APPLICATION_JSON)
     public MatchDay runNextMatchDayMinute() {
         return leagueService.runNextMinute();
+    }
+
+    @GET
+    @Path("currentTable")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Table getCurrentTable() {
+        return leagueService.getCurrentTable();
     }
 }
 

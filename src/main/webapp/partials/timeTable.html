@@ -24,4 +24,33 @@
             </table>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-offset-1 col-sm-7">
+            <table class="table table-condensed table-bordered">
+                <thead style="background-color: darkgray; font-weight: bold">
+                    <td>Place</td>
+                    <td>Team</td>
+                    <td>won</td>
+                    <td>draw</td>
+                    <td>lost</td>
+                    <td>goals</td>
+                    <td>goals</td>
+                    <td>points</td>
+                </thead>
+                <tr ng-repeat="entry in table.entries">
+                    <td>{{entry.place}}</td>
+                    <td>{{entry.team.name}}</td>
+                    <td>{{entry.totalGamesWon}}</td>
+                    <td>{{entry.totalGamesDraw}}</td>
+                    <td>{{entry.totalGamesLost}}</td>
+                    <td>{{entry.totalGoals}}</td>
+                    <td>{{entry.totalReceivedGoals}}</td>
+                    <td>{{entry.points}}</td>
+                </tr>
+            </table>
+        </div>
+
+        table: {{table}}
+    </div>
+
 </div>

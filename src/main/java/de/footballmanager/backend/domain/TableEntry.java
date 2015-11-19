@@ -2,6 +2,8 @@ package de.footballmanager.backend.domain;
 
 public class TableEntry {
 
+    private int place;
+    private Team team;
     private int homeGoals;
     private int awayGoals;
     private int receivedHomeGoals;
@@ -13,6 +15,26 @@ public class TableEntry {
     private int awayGamesWon;
     private int awayGamesDraw;
     private int awayGamesLost;
+
+    public TableEntry(Team team) {
+        this.team = team;
+    }
+
+    public int getPlace() {
+        return place;
+    }
+
+    public void setPlace(int place) {
+        this.place = place;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
 
     public int getPoints() {
         return getTotalGamesWon() * 3 + getTotalGamesDraw();
