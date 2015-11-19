@@ -45,6 +45,14 @@ public class HomeController {
     public MatchDay runNextMatchDay() {
         return leagueService.runNextMatchDay();
     }
+
+
+    @GET
+    @Path("runNextMatchDayMinute")
+    @Produces(MediaType.APPLICATION_JSON)
+    public MatchDay runNextMatchDayMinute() {
+        return leagueService.runNextMinute();
+    }
 }
 
 

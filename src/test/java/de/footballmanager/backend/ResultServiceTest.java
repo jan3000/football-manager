@@ -88,7 +88,7 @@ public class ResultServiceTest {
     private void assertAllMatchesHaveEnded(final TimeTable timeTable) {
         for (MatchDay matchDay : timeTable.getAllMatchDays()) {
             for (Match match : matchDay.getMatches()) {
-                assertTrue(match.hasEnded());
+                assertTrue(match.isFinished());
             }
         }
     }

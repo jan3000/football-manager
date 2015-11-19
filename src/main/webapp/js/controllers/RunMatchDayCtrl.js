@@ -1,12 +1,25 @@
 var module = angular.module('controllers');
 
-module.controller('RunMatchDayCtrl', function ($scope, $http, $log) {
+module.controller('RunMatchDayCtrl', function ($scope, $http, $log, $timeout) {
 
+    function isMatchDayFinished(matchDays) {
+        var runningMatches = _.find(matchDays, function (matchDay) {
+            return !matchDay.finished;
+        });
+        $log.log('runningMatches: ' + JSON.stringify(runningMatches));
+        return _.isEmpty(runningMatches);
+    }
 
     $scope.runNextMatchDay = function () {
-        $http.get('rest/home/runNextMatchDay/').then(function (result) {
-            $log.log('runNextMatchDay: ' + JSON.stringify(result))
+        $http.get('rest/home/runNextMatchDayMinute/').then(function (result) {
+            $log.log('runNextMatchDayMinute: ' + JSON.stringify(result));
             $scope.matches = result.data.matches;
+            if (!isMatchDayFinished($scope.matches)) {
+                $log.log('timeout!');
+                $timeout($scope.runNextMatchDay, 100);
+            } else {
+                $log.log('match day finished')
+            }
         })
     };
     $scope.runNextMatchDay();

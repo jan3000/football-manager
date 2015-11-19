@@ -6,13 +6,11 @@ import com.google.common.collect.Lists;
 
 import de.footballmanager.backend.enumeration.ResultType;
 
-import javax.resource.NotSupportedException;
-
 public class Match {
 
     private Team homeTeam;
     private Team guestTeam;
-    private int minute = 0;
+    private int minute = 1;
     private int additionalTime = 0;
     private List<Player> yellowCards;
     private List<Player> redCards;
@@ -20,11 +18,10 @@ public class Match {
 
     private final Result halfTime = new Result(0, 0);
     private Result result = new Result(0, 0);
-    private boolean hasEnded = false;
+    private boolean finished = false;
     private final List<Goal> goals = Lists.newArrayList();
 
-    public Match() {
-    }
+    public Match() {}
 
     public Match(final Team homeTeam, final Team guestTeam) {
         super();
@@ -58,16 +55,12 @@ public class Match {
         addGoal(goal);
     }
 
-    public boolean hasEnded() {
-        return hasEnded || minute >= 90 + additionalTime;
-    }
+//    public void getAdditionalTime() throws NotSupportedException {
+//        throw new NotSupportedException();
+//    }
 
-    public void getAdditionalTime() throws NotSupportedException {
-        throw new NotSupportedException();
-    }
-
-    public void setHasEnded(final boolean hasEnded) {
-        this.hasEnded = hasEnded;
+    public void setFinished(final boolean finished) {
+        this.finished = finished;
     }
 
     public int getGoalsHomeTeam() {
@@ -146,6 +139,10 @@ public class Match {
 
     public Result getHalfTime() {
         return halfTime;
+    }
+
+    public boolean isFinished() {
+        return finished;
     }
 
     @Override

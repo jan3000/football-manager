@@ -1,5 +1,7 @@
 package de.footballmanager.backend.service;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.parser.LeagueParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,12 @@ import java.util.List;
 @Service
 public class LeagueService {
 
+    public static final Predicate<Match> IS_ENDED_PREDICATE = new Predicate<Match>() {
+        @Override
+        public boolean apply(Match input) {
+            return input.isFinished();
+        }
+    };
     @Autowired
     private LeagueParser leagueParser;
     @Autowired
@@ -40,6 +48,22 @@ public class LeagueService {
     public List<Team> getTeams() {
         initLeague();
         return league.getTeams();
+    }
+
+    public MatchDay runNextMinute() {
+        MatchDay matchDay = timeTable.getMatchDay(currentMatchDay);
+        List<Match> matches = matchDay.getMatches();
+        resultService.calculateNextMinute(matches);
+
+        if (haveAllMatchesEnded(matches)) {
+            currentMatchDay++;
+        };
+
+        return matchDay;
+    }
+
+    private boolean haveAllMatchesEnded(List<Match> matches) {
+        return Collections2.filter(matches, IS_ENDED_PREDICATE).size() == matches.size();
     }
 
     /**

@@ -4,6 +4,7 @@
         <div class="col-sm-offset-1 col-sm-7">
             <div class="col-sm-6">
                 <h4>Match day: {{matchDayNumber}}</h4>
+                <h4>Minute: {{matches[0].minute}}</h4>
             </div>
             <div class="btn btn-success" ng-click="runNextMatchDay()">run</div>
         </div>
@@ -13,7 +14,7 @@
     <div class="row">
         <div class="col-sm-offset-1 col-sm-8">
             <table class="table table-condensed table-bordered" ng-repeat="match in matches">
-                <tr>
+                <tr  ng-class="{bold: match.result.finished}">
                     <td class="col-sm-3">{{match.homeTeam.name}}</td>
                     <td class="col-sm-3">{{match.guestTeam.name}}</td>
                     <td class="col-sm-1">{{match.result.homeGoals}} : {{match.result.guestGoals}}</td>
@@ -24,6 +25,7 @@
                             ({{goal.minute}}.) {{goal.newResult.homeGoals}} : {{goal.newResult.guestGoals}}
                         </div>
                     </td>
+                    <td>{{match.finished}}</td>
                 </tr>
             </table>
         </div>

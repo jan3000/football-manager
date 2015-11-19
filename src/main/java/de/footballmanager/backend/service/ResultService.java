@@ -6,7 +6,6 @@ import java.util.Random;
 import de.footballmanager.backend.domain.Goal;
 import de.footballmanager.backend.domain.Match;
 import de.footballmanager.backend.domain.Result;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,7 +22,7 @@ public class ResultService {
 
             simulateMatchMinute(match, minute);
         }
-        match.setHasEnded(true);
+        match.setFinished(true);
     }
 
     private void simulateMatchMinute(Match match, int minute) {
@@ -40,13 +39,17 @@ public class ResultService {
         }
         match.increaseMinute();
 
+        if(match.getMinute() == 90) {
+            System.out.println("FINISHED");
+            match.setFinished(true);
+        }
         // TODO calculate additionalTime
         // TODO cards, injuries, changes
     }
 
     public void calculateNextMinute(List<Match> matches) {
         for (Match match : matches) {
-            if (!match.hasEnded()) {
+            if (!match.isFinished()) {
                 simulateMatchMinute(match, match.getMinute());
             }
         }
