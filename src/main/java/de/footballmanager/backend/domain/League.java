@@ -78,7 +78,7 @@ public class League {
                 }
             }
         }
-        TreeMap<Team, Integer> sortedTeamToPointsMap = Maps.newTreeMap(new TeamValueComparator(teamToPointsMap));
+        TreeMap<Team, Integer> sortedTeamToPointsMap = Maps.newTreeMap(new TeamValueComparator(teamToTableEntryMap));
         sortedTeamToPointsMap.putAll(teamToPointsMap);
 
         StringBuffer buffi = new StringBuffer();

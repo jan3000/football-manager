@@ -4,6 +4,7 @@ public class TableEntry {
 
     private int place;
     private Team team;
+    private int points;
     private int homeGoals;
     private int awayGoals;
     private int receivedHomeGoals;
@@ -18,6 +19,14 @@ public class TableEntry {
 
     public TableEntry(Team team) {
         this.team = team;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public int getPoints() {
+        return points;
     }
 
     public int getPlace() {
@@ -36,9 +45,9 @@ public class TableEntry {
         this.team = team;
     }
 
-    public int getPoints() {
-        return getTotalGamesWon() * 3 + getTotalGamesDraw();
-    }
+//    public int getPoints() {
+//        return getTotalGamesWon() * 3 + getTotalGamesDraw();
+//    }
 
     public int getHomeGoals() {
         return homeGoals;

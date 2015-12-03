@@ -119,17 +119,21 @@ public class LeagueService {
                     switch (match.getResultType()) {
                         case HOME_WON:
                             teamToPointsMap.put(match.getHomeTeam(), teamToPointsMap.get(match.getHomeTeam()) + 3);
+                            homeTableEntry.setPoints(homeTableEntry.getPoints() + 3);
                             homeTableEntry.setHomeGamesWon(homeTableEntry.getHomeGamesWon() + 1);
                             guestTableEntry.setAwayGamesLost(guestTableEntry.getAwayGamesLost() + 1);
                             break;
                         case DRAW:
                             teamToPointsMap.put(match.getHomeTeam(), teamToPointsMap.get(match.getHomeTeam()) + 1);
                             teamToPointsMap.put(match.getGuestTeam(), teamToPointsMap.get(match.getGuestTeam()) + 1);
+                            homeTableEntry.setPoints(homeTableEntry.getPoints() + 1);
+                            guestTableEntry.setPoints(guestTableEntry.getPoints() + 1);
                             homeTableEntry.setHomeGamesDraw(homeTableEntry.getHomeGamesDraw() + 1);
                             guestTableEntry.setAwayGamesDraw(guestTableEntry.getAwayGamesDraw() + 1);
                             break;
                         case GUEST_WON:
                             teamToPointsMap.put(match.getGuestTeam(), teamToPointsMap.get(match.getGuestTeam()) + 3);
+                            guestTableEntry.setPoints(guestTableEntry.getPoints() + 3);
                             homeTableEntry.setHomeGamesLost(homeTableEntry.getHomeGamesLost() + 1);
                             guestTableEntry.setAwayGamesWon(guestTableEntry.getAwayGamesWon() + 1);
                             break;
@@ -141,7 +145,7 @@ public class LeagueService {
             }
         }
 
-        TreeMap<Team, Integer> sortedTeamToPointsMap = Maps.newTreeMap(new TeamValueComparator(teamToPointsMap));
+        TreeMap<Team, Integer> sortedTeamToPointsMap = Maps.newTreeMap(new TeamValueComparator(teamToTableEntryMap));
         sortedTeamToPointsMap.putAll(teamToPointsMap);
         final Table table = new Table();
         int i = 1;
