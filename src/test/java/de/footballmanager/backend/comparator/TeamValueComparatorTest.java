@@ -93,11 +93,13 @@ public class TeamValueComparatorTest {
     }
 
     public Object[][] parametersForSamePointsButDifferentGoalDifference() {
-        return new Object[][]{{"team1 has better goalDifference", 3, 1, -1}, {"team2 has better goalDifference", 32, 45, 1}};
+        return new Object[][]{{"team1 has better goalDifference", 3, 1, -1},
+                {"team2 has better goalDifference", 32, 45, 1}};
     }
 
     public Object[][] parametersForSamePointsAndGoalDifferences() {
-        return new Object[][]{{"team1 has more goals", 3, 1, -1}, {"team2 has more goals", 32, 45, 1}, {"team2 has more goals", 32, 32, -1}};
+        return new Object[][]{{"team1 has more goals", 3, 1, -1},
+                {"team2 has more goals", 32, 45, 1}, {"team2 has more goals", 32, 32, -1}};
     }
 
 }

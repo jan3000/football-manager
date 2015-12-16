@@ -138,7 +138,7 @@ public class LeagueService {
                             guestTableEntry.setAwayGamesWon(guestTableEntry.getAwayGamesWon() + 1);
                             break;
                         default:
-                            System.out.println("ERRORRRR");
+                            System.out.println("unknown match result type: " + match.getResultType());
                             break;
                     }
                 }
