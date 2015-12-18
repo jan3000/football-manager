@@ -2,7 +2,9 @@ var module = angular.module('controllers');
 
 module.controller('RunMatchDayCtrl', function ($scope, $http, $log, $timeout, TimeTableService) {
 
-    function isMatchDayFinished(matchDays) {
+    $scope.matchDayNumber = TimeTableService.getCurrentMatchDay();
+
+        function isMatchDayFinished(matchDays) {
         var runningMatches = _.find(matchDays, function (matchDay) {
             return !matchDay.finished;
         });
@@ -15,6 +17,7 @@ module.controller('RunMatchDayCtrl', function ($scope, $http, $log, $timeout, Ti
             $log.log('runNextMatchDayMinute: ' + JSON.stringify(result));
             TimeTableService.setCurrentMatchDay(result.data.matchDayNumber);
             $scope.matches = result.data.matches;
+            $scope.matchDayNumber = result.data.matchDayNumber;
             if (!isMatchDayFinished($scope.matches)) {
                 $log.log('timeout!');
                 $timeout($scope.runNextMatchDay, 100);

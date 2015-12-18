@@ -1,33 +1,25 @@
 package de.footballmanager.backend.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import de.footballmanager.backend.LeagueTestUtil;
+import de.footballmanager.backend.domain.Match;
+import de.footballmanager.backend.domain.MatchDay;
+import de.footballmanager.backend.domain.Team;
+import de.footballmanager.backend.domain.TimeTable;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import de.footballmanager.backend.LeagueTestUtil;
-import de.footballmanager.backend.domain.Match;
-import de.footballmanager.backend.domain.MatchDay;
-import de.footballmanager.backend.domain.Team;
-import de.footballmanager.backend.domain.TimeTable;
+import static de.footballmanager.backend.util.TestUtil.*;
+import static org.junit.Assert.*;
 
 public class TimeTableServiceTest {
 
-    private static final String TEAM4 = "team4";
-    private static final String TEAM3 = "team3";
-    private static final String TEAM1 = "team1";
-    private static final String TEAM2 = "team2";
     private static final int NUMBER_OF_TEAMS = 18;
     private static final int NUMBER_OF_MATCH_DAYS_ONE_ROUND = NUMBER_OF_TEAMS - 1;
     private static final int NUMBER_OF_MATCH_DAYS = NUMBER_OF_MATCH_DAYS_ONE_ROUND * 2;

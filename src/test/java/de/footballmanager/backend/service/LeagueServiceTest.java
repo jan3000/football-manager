@@ -9,15 +9,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
+import static de.footballmanager.backend.util.TestUtil.*;
 import static org.easymock.EasyMock.*;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class LeagueServiceTest {
 
-    private static final Team TEAM_1 = new Team("Team1");
-    private static final Team TEAM_2 = new Team("Team2");
-    private static final Team TEAM_3 = new Team("Team3");
-    private static final Team TEAM_4 = new Team("Team4");
 
     private LeagueService leagueService;
 
@@ -145,19 +142,12 @@ public class LeagueServiceTest {
         assertThat(tableEntry.getReceivedAwayGoals()).isEqualTo(receivedAwayGoals);
     }
 
-    private void assertTable(TableEntry tableEntry, Team team, int place, int points) {
-        assertThat(tableEntry.getTeam()).isEqualTo(team);
+    private void assertTable(TableEntry tableEntry, String team, int place, int points) {
+        assertThat(tableEntry.getTeam().getName()).isEqualTo(team);
         assertThat(tableEntry.getPlace()).isEqualTo(place);
         assertThat(tableEntry.getPoints()).isEqualTo(points);
     }
 
-    private Match buildMatch(Team team1, Team team2, int homeGoals, int guestGoals) {
-        Match match = new Match();
-        match.setFinished(true);
-        match.setHomeTeam(team1);
-        match.setGuestTeam(team2);
-        match.setResult(new Result(homeGoals, guestGoals));
-        return match;
-    }
+
 
 }
