@@ -36,9 +36,7 @@ public class LeagueService {
 
     public void initLeague() {
         try {
-            System.out.println("34343434343");
             if (league == null) {
-                System.out.println("444444444444");
                 league = leagueParser.parse();
                 timeTable = timeTableService.createTimeTable(league.getTeams());
             }

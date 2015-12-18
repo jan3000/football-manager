@@ -8,3 +8,19 @@
     vertical-align: middle;
     float: none;
 }
+
+.green {
+    background-color: greenyellow;
+}
+
+.orange {
+    background-color: orange;
+}
+
+.red {
+    background-color: orangered;
+}
+
+.yellow {
+    background-color: yellow;
+}

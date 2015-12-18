@@ -8,7 +8,7 @@
                         <td>Strength</td>
                     </tr>
                 </thead>
-                <tr ng-repeat="team in teams">
+                <tr ng-repeat="team in teams | orderBy:'name'">
                     <td>{{team.name}}</td>
                     <td>{{team.strength}}</td>
                 </tr>

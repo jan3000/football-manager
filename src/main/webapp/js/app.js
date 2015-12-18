@@ -1,9 +1,11 @@
 'use strict';
 
 var controllers = angular.module("controllers", []);
+var services = angular.module("services", []);
 var app = angular.module('app', [
     'ngRoute',
-    'controllers'
+    'controllers',
+    'services'
 ]);
 
 

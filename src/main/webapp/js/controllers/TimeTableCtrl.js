@@ -1,47 +1,42 @@
 'use strict';
 var controllers = angular.module("controllers");
 
-controllers.controller("TimeTableCtrl", function ($scope, $http, $log) {
+controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTableService) {
 
-    $scope.matchDayNumber = 1;
+    $scope.shownMatchDay = TimeTableService.getCurrentMatchDay();
 
+    $scope.getCurrentMatchDay = function () {
+        return TimeTableService.getCurrentMatchDay();
+    };
+    
     $scope.getPreviousMatchDay = function () {
-        $scope.matchDayNumber--;
-        $scope.getMatchDay($scope.matchDayNumber);
-
+        if ($scope.shownMatchDay > 1) {
+            $scope.shownMatchDay--;
+        }
+        getMatchDay($scope.shownMatchDay);
     };
 
     $scope.getNextMatchDay = function () {
-        $log.log($scope.matchDayNumber);
-        $scope.matchDayNumber++;
-
-        $log.log($scope.matchDayNumber);
-        $scope.getMatchDay($scope.matchDayNumber);
+        $scope.shownMatchDay++;
+        getMatchDay($scope.shownMatchDay);
     };
 
-    $scope.getMatchDay = function (matchDay) {
+    var getMatchDay = function (matchDay) {
         $log.log('getMatchDay: ' + matchDay);
         $http.get('rest/home/timeTable/' + matchDay).then(function (result) {
-            $log.log('getMatchDay: ' + JSON.stringify(result))
-            $scope.matchDayNumber = result.data.matchDayNumber;
-            $log.log('$scope.matchDayNumber: ' + $scope.matchDayNumber);
+            $log.log('getMatchDay: ' + JSON.stringify(result));
+            $scope.shownMatchDay = result.data.matchDayNumber;
+            $log.log('$scope.shownMatchDay: ' + $scope.shownMatchDay);
             $scope.matches = result.data.matches;
         });
     };
-    $scope.getMatchDay(1);
-
-    $scope.runNextMatchDay = function () {
-        $http.get('rest/home/runNextMatchDay/').then(function (result) {
-            $log.log('runNextMatchDay: ' + JSON.stringify(result))
-
-        })
-    };
+    getMatchDay($scope.shownMatchDay);
 
     $scope.getCurrentTable = function () {
         $http.get('rest/home/currentTable/').then(function (result) {
-            $log.log('getCurrentTable: ' + JSON.stringify(result))
+            $log.log('getCurrentTable: ' + JSON.stringify(result));
             $scope.table = result.data;
         })
-    }
+    };
     $scope.getCurrentTable();
 });

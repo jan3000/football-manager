@@ -61,11 +61,6 @@ public class ResultService {
             probabilityToWin += HOME_ADVANTAGE;
         }
         double factor = Math.random() * probabilityToWin;
-        // System.out.println("   PROB: " + factor);
-        if (factor > 50) {
-            return Math.random() > (PROBABILITY_OF_GOAL_PER_MINUTE);
-        } else {
-            return false;
-        }
+        return factor > 50 && Math.random() > (PROBABILITY_OF_GOAL_PER_MINUTE);
     }
 }
