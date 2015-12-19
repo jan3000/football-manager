@@ -4,7 +4,7 @@
             <table class="table-striped table-bordered table table-hover">
                 <tbody>
                     <tr ng-repeat="team in teams | orderBy:'name'">
-                        <td>
+                        <td class="btn btn-default" ng-click="getStatistics(team.name)">
                             {{team.name}}
                         </td>
                     </tr>
@@ -12,7 +12,15 @@
             </table>
         </div>
         <div class="col-sm-offset-1 col-sm-9" style="background-color: #b2dba1">
-            goals per minute
+            <div>
+                goals per minute
+            </div>
+            <div>
+                {{data}}
+                <canvas id="bar" class="chart chart-bar"
+                        chart-data="data" chart-labels="labels"> chart-series="series"
+                </canvas>
+            </div>
         </div>
     </div>
 
