@@ -1,35 +1,43 @@
 package de.footballmanager.backend.service;
 
+import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
+@Service
 public class StatisticService {
 
-    public static final int MINUTES = 90;
+    Map<String, List<Integer>> teamToPlace = Maps.newHashMap();
 
-    public void getGoalDistribution(TimeTable timeTable, Team team) {
-        Integer[] homeGoals = new Integer[MINUTES];
-        Integer[] awayGoals = new Integer[MINUTES];
-        Integer[] totalGoals = new Integer[MINUTES];
+    public TeamStatistic getGoalDistribution(TimeTable timeTable, String teamName) {
+        TeamStatistic teamStatistic = new TeamStatistic(teamName);
+        Integer[] homeGoals = teamStatistic.getHomeGoals();
+        Integer[] awayGoals = teamStatistic.getAwayGoals();
+        Integer[] totalGoals = teamStatistic.getTotalGoals();
         for (MatchDay matchDay : timeTable.getAllMatchDays()) {
             for (Match match : matchDay.getMatches()) {
-                if (match.getHomeTeam().getName().equals(team.getName())) {
+                if (match.getHomeTeam().getName().equals(teamName)) {
                     for (Goal goal : match.getGoals()) {
-                        if (goal.getTeam().getName().equals(team.getName())) {
-                            homeGoals[goal.getMinute()] = homeGoals[goal.getMinute()]++;
-                            totalGoals[goal.getMinute()] = totalGoals[goal.getMinute()]++;
+                        if (goal.getTeam().getName().equals(teamName)) {
+                            homeGoals[goal.getMinute() - 1]++;
+                            totalGoals[goal.getMinute() -1]++;
                         }
                     }
                 }
-                if (match.getGuestTeam().getName().equals(team.getName())) {
+                if (match.getGuestTeam().getName().equals(teamName)) {
                     for (Goal goal : match.getGoals()) {
-                        if (goal.getTeam().getName().equals(team.getName())) {
-                            awayGoals[goal.getMinute()] = awayGoals[goal.getMinute()]++;
-                            totalGoals[goal.getMinute()] = totalGoals[goal.getMinute()]++;
+                        if (goal.getTeam().getName().equals(teamName)) {
+                            awayGoals[goal.getMinute() -1]++;
+                            totalGoals[goal.getMinute() -1]++;
                         }
                     }
                 }
             }
         }
+        return teamStatistic;
     }
 
 

@@ -1,1 +1,21 @@
-Statistics
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-2">
+            <table class="table-striped table-bordered table table-hover">
+                <tbody>
+                    <tr ng-repeat="team in teams | orderBy:'name'">
+                        <td>
+                            {{team.name}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-offset-1 col-sm-9" style="background-color: #b2dba1">
+            goals per minute
+        </div>
+    </div>
+
+</div>
+
+

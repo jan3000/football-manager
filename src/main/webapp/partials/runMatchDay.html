@@ -14,10 +14,12 @@
     <div class="row">
         <div class="col-sm-offset-1 col-sm-8">
             <table class="table table-condensed table-bordered" ng-repeat="match in matches">
-                <tr  ng-class="{bold: match.result.finished}">
+                <tr>
                     <td class="col-sm-3">{{match.homeTeam.name}}</td>
                     <td class="col-sm-3">{{match.guestTeam.name}}</td>
-                    <td class="col-sm-1">{{match.result.homeGoals}} : {{match.result.guestGoals}}</td>
+                    <td ng-class="{'bold-text': match.finished}" class="col-sm-1">
+                        {{match.result.homeGoals}} : {{match.result.guestGoals}}
+                    </td>
                     <td class="col-sm-1">({{match.halfTime.homeGoals}} : {{match.halfTime.guestGoals}})</td>
                     <!--<td>match.goals: {{match.goals}}</td>-->
                     <td>
@@ -25,7 +27,6 @@
                             ({{goal.minute}}.) {{goal.newResult.homeGoals}} : {{goal.newResult.guestGoals}}
                         </div>
                     </td>
-                    <td>{{match.finished}}</td>
                 </tr>
             </table>
         </div>

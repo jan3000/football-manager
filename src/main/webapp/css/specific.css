@@ -24,3 +24,7 @@
 .yellow {
     background-color: yellow;
 }
+
+.bold-text {
+    font-weight: bold;
+}

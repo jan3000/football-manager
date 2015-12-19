@@ -1,13 +1,9 @@
 package de.footballmanager.backend.controller;
 
-import de.footballmanager.backend.domain.MatchDay;
-import de.footballmanager.backend.domain.Table;
-import de.footballmanager.backend.domain.Team;
-import de.footballmanager.backend.domain.TimeTable;
-import de.footballmanager.backend.parser.LeagueParser;
+import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.service.LeagueService;
+import de.footballmanager.backend.service.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.*;
@@ -22,6 +18,8 @@ public class HomeController {
 
     @Autowired
     private LeagueService leagueService;
+    @Autowired
+    private StatisticService statisticService;
 
     @GET
     @Path("teams")
@@ -60,6 +58,13 @@ public class HomeController {
     @Produces(MediaType.APPLICATION_JSON)
     public Table getCurrentTable() {
         return leagueService.getCurrentTable();
+    }
+
+    @GET
+    @Path("statistic/{teamName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public TeamStatistic getTeamStatistic(@PathParam("teamName") String teamName) {
+        return statisticService.getGoalDistribution(leagueService.getTimeTable(), teamName);
     }
 }
 
