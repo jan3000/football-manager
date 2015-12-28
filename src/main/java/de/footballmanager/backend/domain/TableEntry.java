@@ -1,5 +1,7 @@
 package de.footballmanager.backend.domain;
 
+import java.util.List;
+
 public class TableEntry {
 
     private int place;
@@ -16,6 +18,7 @@ public class TableEntry {
     private int awayGamesWon;
     private int awayGamesDraw;
     private int awayGamesLost;
+
 
     public TableEntry(Team team) {
         this.team = team;
@@ -45,7 +48,8 @@ public class TableEntry {
         this.team = team;
     }
 
-//    public int getPoints() {
+
+    //    public int getPoints() {
 //        return getTotalGamesWon() * 3 + getTotalGamesDraw();
 //    }
 

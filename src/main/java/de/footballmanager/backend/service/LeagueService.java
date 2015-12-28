@@ -18,12 +18,6 @@ import java.util.TreeMap;
 @Service
 public class LeagueService {
 
-    public static final Predicate<Match> IS_ENDED_PREDICATE = new Predicate<Match>() {
-        @Override
-        public boolean apply(Match input) {
-            return input.isFinished();
-        }
-    };
     @Autowired
     private LeagueParser leagueParser;
     @Autowired
@@ -31,8 +25,16 @@ public class LeagueService {
     @Autowired
     private TrialAndErrorTimeTableService timeTableService;
 
+    private static final Predicate<Match> IS_ENDED_PREDICATE = new Predicate<Match>() {
+        @Override
+        public boolean apply(Match input) {
+            return input.isFinished();
+        }
+    };
     private League league;
     private TimeTable timeTable;
+    private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
+
 
     public void initLeague() {
         try {
@@ -66,10 +68,6 @@ public class LeagueService {
         return Collections2.filter(matches, IS_ENDED_PREDICATE).size() == matches.size();
     }
 
-    /**
-     *
-     * @return finished matchDay
-     */
     public MatchDay runNextMatchDay() {
         MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
         for (Match match : matchDay.getMatches()) {
@@ -93,10 +91,18 @@ public class LeagueService {
     }
 
     public Table getCurrentTable() {
+        return getTable(timeTable.getCurrentMatchDay());
+    }
+
+    public Table getTable(int day) {
+        if (matchDayToTable.containsKey(day)){
+            return matchDayToTable.get(day);
+        }
+
         Map<Team, Integer> teamToPointsMap = Maps.newHashMap();
         Map<Team, TableEntry> teamToTableEntryMap = Maps.newHashMap();
 
-        for (MatchDay matchDay : timeTable.getAllMatchDays()) {
+        for (MatchDay matchDay : timeTable.getAllMatchDays().asList().subList(0, day)) {
             for (Match match : matchDay.getMatches()) {
                 if (match.isFinished()) {
                     if (!teamToPointsMap.containsKey(match.getHomeTeam())) {
@@ -151,9 +157,10 @@ public class LeagueService {
             TableEntry tableEntry = teamToTableEntryMap.get(team);
             tableEntry.setPlace(i);
             i++;
-            table.getEntries().add(tableEntry);
+            table.addEntry(tableEntry);
         }
 
+        matchDayToTable.put(day, table);
         return table;
     }
 }

@@ -61,10 +61,17 @@ public class HomeController {
     }
 
     @GET
+    @Path("table/{day}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Table getTable(@PathParam("day") int day) {
+        return leagueService.getTable(day);
+    }
+
+    @GET
     @Path("statistic/{teamName}")
     @Produces(MediaType.APPLICATION_JSON)
     public TeamStatistic getTeamStatistic(@PathParam("teamName") String teamName) {
-        return statisticService.getGoalDistribution(leagueService.getTimeTable(), teamName);
+        return statisticService.getTeamStatistics(leagueService.getTimeTable(), teamName);
     }
 }
 

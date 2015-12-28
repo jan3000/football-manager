@@ -26,17 +26,14 @@ public class TrialAndErrorTimeTableService {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(teams),
                 "if you like to create a timeTable, please pass some teams");
 
-        System.out.println("111111111111111");
         List<Match> allFirstRoundMatches = buildAllMatchesOfFirstRound(teams);
         List<MatchDay> firstRoundMatchDays = buildAllPossibleMatchDayPermutationsRetry(teams, allFirstRoundMatches);
         List<MatchDay> secondRoundMatchDays = getSecondRoundMatches(firstRoundMatchDays);
 
-        System.out.println("222222222222222222");
         List<MatchDay> allMatchDays = Lists.newArrayList(firstRoundMatchDays);
         allMatchDays.addAll(secondRoundMatchDays);
         TimeTable timeTable = new TimeTable();
         timeTable.addMatchDays(allMatchDays);
-        System.out.println("33333333333333333");
         return timeTable;
     }
 

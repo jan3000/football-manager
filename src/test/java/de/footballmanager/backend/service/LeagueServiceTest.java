@@ -76,16 +76,7 @@ public class LeagueServiceTest {
     @Test
     public void getCurrentTable() {
         // prepare
-        TimeTable timeTable = new TimeTable();
-        MatchDay matchDay1 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_2, TEAM_3, 3, 2)));
-        MatchDay matchDay2 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_3, TEAM_1, 3, 2)));
-        MatchDay matchDay3 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_1, TEAM_2, 2, 2)));
-        MatchDay matchDay4 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_3, TEAM_2, 0, 2)));
-        MatchDay matchDay5 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_1, TEAM_3, 1, 2)));
-        MatchDay matchDay6 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_2, TEAM_1, 4, 1)));
-        timeTable.addMatchDays(Lists.newArrayList(matchDay1, matchDay2, matchDay3, matchDay4, matchDay5, matchDay6));
-
-        ReflectionTestUtils.setField(leagueService, "timeTable", timeTable);
+        setUpTimeTable();
 
         // run
         Table currentTable = leagueService.getCurrentTable();
@@ -114,6 +105,46 @@ public class LeagueServiceTest {
         assertHomeStatistics(tableEntry3, 1, 0, 1);
         assertAwayStatistics(tableEntry3, 1, 0, 1);
         assertTotalStatistics(tableEntry3, 2, 0, 2);
+    }
+
+    @Test
+    public void getTableOfFirstDay() {
+        // prepare
+        setUpTimeTable();
+
+        // run
+        Table currentTable = leagueService.getTable(1);
+
+        // assert
+        assertThat(currentTable).isNotNull();
+        assertThat(currentTable.getEntries()).hasSize(2);
+
+        TableEntry tableEntry1 = currentTable.getEntries().get(0);
+        assertTable(tableEntry1, TEAM_2, 1, 3);
+        assertGoals(tableEntry1, 3, 2, 0, 0);
+        assertHomeStatistics(tableEntry1, 1, 0, 0);
+        assertAwayStatistics(tableEntry1, 0, 0, 0);
+        assertTotalStatistics(tableEntry1, 1, 0, 0);
+
+        TableEntry tableEntry2 = currentTable.getEntries().get(1);
+        assertTable(tableEntry2, TEAM_3, 2, 0);
+        assertGoals(tableEntry2, 0, 0, 2, 3);
+        assertHomeStatistics(tableEntry2, 0, 0, 0);
+        assertAwayStatistics(tableEntry2, 0, 0, 1);
+        assertTotalStatistics(tableEntry2, 0, 0, 1);
+    }
+
+    private void setUpTimeTable() {
+        TimeTable timeTable = new TimeTable();
+        MatchDay matchDay1 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_2, TEAM_3, 3, 2)));
+        MatchDay matchDay2 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_3, TEAM_1, 3, 2)));
+        MatchDay matchDay3 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_1, TEAM_2, 2, 2)));
+        MatchDay matchDay4 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_3, TEAM_2, 0, 2)));
+        MatchDay matchDay5 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_1, TEAM_3, 1, 2)));
+        MatchDay matchDay6 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_2, TEAM_1, 4, 1)));
+        timeTable.addMatchDays(Lists.newArrayList(matchDay1, matchDay2, matchDay3, matchDay4, matchDay5, matchDay6));
+        timeTable.setCurrentMatchDay(6);
+        ReflectionTestUtils.setField(leagueService, "timeTable", timeTable);
     }
 
 

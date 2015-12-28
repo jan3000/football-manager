@@ -3,18 +3,16 @@ package de.footballmanager.backend.service;
 import com.google.common.collect.Lists;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.KindOfGoal;
-import de.footballmanager.backend.util.TestUtil;
-import org.fest.assertions.Assertions;
+import org.easymock.EasyMock;
+import org.easymock.internal.ReflectionUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static de.footballmanager.backend.util.TestUtil.TEAM_1;
 import static de.footballmanager.backend.util.TestUtil.TEAM_2;
-import static de.footballmanager.backend.util.TestUtil.TEAM_3;
-import static de.footballmanager.backend.util.TestUtil.TEAM_4;
 import static de.footballmanager.backend.util.TestUtil.buildMatch;
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -47,13 +45,34 @@ public class StatisticServiceTest {
     }
 
     @Test
-    public void getGoalDistribution() {
+    public void getTeamStatisticsGoalsPerMinute() {
         StatisticService statisticService = new StatisticService();
+        LeagueService leagueService = EasyMock.createMock(LeagueService.class);
+        Table table = new Table();
+        TableEntry tableEntry = new TableEntry(new Team(team1.getName()));
+        tableEntry.setPlace(3);
+        table.addEntry(tableEntry);
+        EasyMock.expect(leagueService.getCurrentTable()).andReturn(table);
+        EasyMock.expect(leagueService.getCurrentMatchDay()).andReturn(2);
+        EasyMock.expect(leagueService.getTable(1)).andReturn(table);
+        EasyMock.expect(leagueService.getTable(2)).andReturn(table);
+        EasyMock.replay(leagueService);
+        ReflectionTestUtils.setField(statisticService, "leagueService", leagueService);
 
         // run
-        TeamStatistic teamStatistic = statisticService.getGoalDistribution(timeTable, team1.getName());
+        TeamStatistic teamStatistic = statisticService.getTeamStatistics(timeTable, team1.getName());
 
         // assert
+        assertThat(teamStatistic.getCurrentTableEntry()).isNotNull();
+        assertThat(teamStatistic.getCurrentTableEntry().getTeam().getName()).isEqualTo(team1.getName());
+
+        assertThat(teamStatistic.getPlacementsInSeason().length).isEqualTo(34);
+        assertThat(teamStatistic.getPlacementsInSeason()[0]).isEqualTo(3);
+        assertThat(teamStatistic.getPlacementsInSeason()[1]).isEqualTo(3);
+        for (int i = 2; i < 34; i++) {
+            assertThat(teamStatistic.getPlacementsInSeason()[i]).isNull();
+        }
+
         assertThat(teamStatistic).isNotNull();
         Integer[] expectedHomeGoalsTeam1 = new Integer[90];
         Arrays.fill(expectedHomeGoalsTeam1, 0);
@@ -93,6 +112,8 @@ public class StatisticServiceTest {
         assertThat(teamStatistic.getReceivedTotalGoals()).isEqualTo(expectedReceivedTotalGoalsTeam1);
         assertThat(teamStatistic.getReceivedHomeGoals()).isEqualTo(expectedReceivedHomeGoalsTeam1);
         assertThat(teamStatistic.getReceivedAwayGoals()).isEqualTo(expectedReceivedAwayGoalsTeam1);
+
+        EasyMock.verify(leagueService);
     }
 
 }

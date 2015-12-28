@@ -39,4 +39,13 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
         })
     };
     $scope.getCurrentTable();
+
+
+    $scope.getTable = function (day) {
+        $http.get('rest/home/table/' + day).then(function (result) {
+            $log.log('getTable for day: ' + JSON.stringify(result));
+            $scope.table = result.data;
+        })
+    };
+    $scope.getTable($scope.shownMatchDay);
 });

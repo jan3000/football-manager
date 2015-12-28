@@ -24,8 +24,9 @@ controllers.controller('StatisticsCtrl', function ($scope, $http, $log, TeamServ
             $log.log('statistic/' + team + ': ' + JSON.stringify(result));
             $scope.labels = minuteLabel;
             $log.log('$scope.labels: ' + $scope.labels);
-            var data = reduceGoalsPerMinutes(result.data.totalGoals);
-            $scope.data = [data];
+            var goals = reduceGoalsPerMinutes(result.data.totalGoals);
+            var receivedGoals = reduceGoalsPerMinutes(result.data.receivedTotalGoals);
+            $scope.data = [goals, receivedGoals];
             $log.log('$scope.data: ' + $scope.data)
         })
     };

@@ -5,6 +5,8 @@ public class TeamStatistic {
     private static final int MINUTES = 90;
 
     private final String teamName;
+    private TableEntry currentTableEntry;
+
     private final Integer[] homeGoals = new Integer[MINUTES];
     private final Integer[] awayGoals = new Integer[MINUTES];
     private final Integer[] totalGoals = new Integer[MINUTES];
@@ -12,6 +14,10 @@ public class TeamStatistic {
     private final Integer[] receivedHomeGoals = new Integer[MINUTES];
     private final Integer[] receivedAwayGoals = new Integer[MINUTES];
     private final Integer[] receivedTotalGoals = new Integer[MINUTES];
+
+
+    private Integer[] placementsInSeason = new Integer[34];
+
 
 
     public TeamStatistic(String teamName) {
@@ -31,6 +37,17 @@ public class TeamStatistic {
         return teamName;
     }
 
+    public TableEntry getCurrentTableEntry() {
+        return currentTableEntry;
+    }
+
+    public void setCurrentTableEntry(TableEntry currentTableEntry) {
+        this.currentTableEntry = currentTableEntry;
+    }
+
+    public Integer[] getPlacementsInSeason() {
+        return placementsInSeason;
+    }
     public Integer[] getHomeGoals() {
         return homeGoals;
     }
