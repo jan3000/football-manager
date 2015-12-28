@@ -2,7 +2,7 @@ package de.footballmanager.backend.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.LeagueTestUtil;
+import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.domain.Match;
 import de.footballmanager.backend.domain.MatchDay;
 import de.footballmanager.backend.domain.Team;

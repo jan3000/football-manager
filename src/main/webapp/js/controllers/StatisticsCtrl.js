@@ -4,24 +4,30 @@ var controllers = angular.module("controllers");
 
 controllers.controller('StatisticsCtrl', function ($scope, $http, $log, TeamService) {
 
+    var minuteLabel = [15, 30, 45, 60, 75, 90];
+
     $scope.teams = TeamService.getTeams();
+
+    function reduceGoalsPerMinutes(goalsPerMinute) {
+        var data = [];
+        for (var i = 0; i < $scope.labels.length; i++) {
+            var minute = $scope.labels[i];
+            data.push(goalsPerMinute.slice(minute - 15, minute).reduce(function (previous, current) {
+                return previous + current;
+            }, 0));
+        }
+        return data;
+    }
 
     $scope.getStatistics = function (team) {
         $http.get('rest/home/statistic/' + team).then(function (result) {
             $log.log('statistic/' + team + ': ' + JSON.stringify(result));
-            $scope.labels = _.range(90);
+            $scope.labels = minuteLabel;
             $log.log('$scope.labels: ' + $scope.labels);
-            $scope.data = result.data.homeGoals;
+            var data = reduceGoalsPerMinutes(result.data.totalGoals);
+            $scope.data = [data];
+            $log.log('$scope.data: ' + $scope.data)
         })
     };
-
-    //$scope.labels = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
-    //$scope.labels = [2006, 2007, 2008, 2009, 2010, 2011, 2012];
-    //$scope.series = ['Series A', 'Series B'];
-    $scope.series = ['Series A'];
-    //$scope.data = [
-    //    [65, 59, 80, 81, 56, 55, 40],
-    //    [28, 48, 40, 19, 86, 27, 90]
-    //];
 
 });

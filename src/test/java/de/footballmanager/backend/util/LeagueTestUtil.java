@@ -1,4 +1,4 @@
-package de.footballmanager.backend;
+package de.footballmanager.backend.util;
 
 import java.util.List;
 

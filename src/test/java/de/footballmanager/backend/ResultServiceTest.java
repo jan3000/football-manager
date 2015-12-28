@@ -9,6 +9,8 @@ import java.util.TreeMap;
 
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
+import de.footballmanager.backend.util.LeagueTestUtil;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
@@ -26,6 +28,7 @@ public class ResultServiceTest {
     private final int goalLessGames = 0;
 
     @Test
+    @Ignore
     public void calculateResult() throws Exception {
         TrialAndErrorTimeTableService timeTableService = new TrialAndErrorTimeTableService();
         ResultService resultService = new ResultService();

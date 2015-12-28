@@ -51,7 +51,7 @@ public class StatisticServiceTest {
         StatisticService statisticService = new StatisticService();
 
         // run
-        TeamStatistic teamStatistic = statisticService.getGoalDistribution(timeTable, team1);
+        TeamStatistic teamStatistic = statisticService.getGoalDistribution(timeTable, team1.getName());
 
         // assert
         assertThat(teamStatistic).isNotNull();
@@ -67,9 +67,32 @@ public class StatisticServiceTest {
         expectedTotalGoalsTeam1[11] = 2;
         expectedTotalGoalsTeam1[89] = 1;
 
+        Integer[] expectedReceivedTotalGoalsTeam1 = new Integer[90];
+        Arrays.fill(expectedReceivedTotalGoalsTeam1, 0);
+        expectedReceivedTotalGoalsTeam1[7] = 1;
+        expectedReceivedTotalGoalsTeam1[22] = 1;
+        expectedReceivedTotalGoalsTeam1[32] = 1;
+        expectedReceivedTotalGoalsTeam1[43] = 1;
+        expectedReceivedTotalGoalsTeam1[53] = 1;
+        expectedReceivedTotalGoalsTeam1[57] = 1;
+        Integer[] expectedReceivedHomeGoalsTeam1 = new Integer[90];
+        Arrays.fill(expectedReceivedHomeGoalsTeam1, 0);
+        expectedReceivedHomeGoalsTeam1[22] = 1;
+        expectedReceivedHomeGoalsTeam1[43] = 1;
+        Integer[] expectedReceivedAwayGoalsTeam1 = new Integer[90];
+        Arrays.fill(expectedReceivedAwayGoalsTeam1, 0);
+        expectedReceivedAwayGoalsTeam1[7] = 1;
+        expectedReceivedAwayGoalsTeam1[32] = 1;
+        expectedReceivedAwayGoalsTeam1[53] = 1;
+        expectedReceivedAwayGoalsTeam1[57] = 1;
+
         assertThat(teamStatistic.getHomeGoals()).isEqualTo(expectedHomeGoalsTeam1);
         assertThat(teamStatistic.getAwayGoals()).isEqualTo(expectedAwayGoalsTeam1);
         assertThat(teamStatistic.getTotalGoals()).isEqualTo(expectedTotalGoalsTeam1);
+
+        assertThat(teamStatistic.getReceivedTotalGoals()).isEqualTo(expectedReceivedTotalGoalsTeam1);
+        assertThat(teamStatistic.getReceivedHomeGoals()).isEqualTo(expectedReceivedHomeGoalsTeam1);
+        assertThat(teamStatistic.getReceivedAwayGoals()).isEqualTo(expectedReceivedAwayGoalsTeam1);
     }
 
 }
