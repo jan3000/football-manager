@@ -1,5 +1,6 @@
 package de.footballmanager.backend.service;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
@@ -31,10 +32,10 @@ public class LeagueService {
             return input.isFinished();
         }
     };
+
     private League league;
     private TimeTable timeTable;
     private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
-
 
     public void initLeague() {
         try {
@@ -48,7 +49,6 @@ public class LeagueService {
     }
 
     public List<Team> getTeams() {
-        initLeague();
         return league.getTeams();
     }
 
@@ -58,23 +58,16 @@ public class LeagueService {
         resultService.calculateNextMinute(matches);
 
         if (haveAllMatchesEnded(matches)) {
+            generateChart(timeTable.getCurrentMatchDay());
             timeTable.incrementCurrentMatchDay();
-        };
+        }
+        ;
 
         return matchDay;
     }
 
     private boolean haveAllMatchesEnded(List<Match> matches) {
         return Collections2.filter(matches, IS_ENDED_PREDICATE).size() == matches.size();
-    }
-
-    public MatchDay runNextMatchDay() {
-        MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
-        for (Match match : matchDay.getMatches()) {
-            resultService.calculateResult(match);
-        }
-        timeTable.incrementCurrentMatchDay();;
-        return timeTable.getMatchDay(timeTable.getCurrentMatchDay() - 1);
     }
 
     public TimeTable getTimeTable() {
@@ -91,14 +84,24 @@ public class LeagueService {
     }
 
     public Table getCurrentTable() {
+        Preconditions.checkArgument(timeTable != null, "timeTable must not be null");
         return getTable(timeTable.getCurrentMatchDay());
     }
 
-    public Table getTable(int day) {
-        if (matchDayToTable.containsKey(day)){
-            return matchDayToTable.get(day);
-        }
+    public Map<Integer, Table> getMatchDayToTable() {
+        return matchDayToTable;
+    }
 
+    public Table getTable(int day) {
+        if (matchDayToTable.containsKey(day)) {
+            return matchDayToTable.get(day);
+        } else {
+            return matchDayToTable.get(timeTable.getCurrentMatchDay());
+        }
+    }
+
+    protected Table generateChart(int day) {
+        System.out.println("generateChart for day: " + day);
         Map<Team, Integer> teamToPointsMap = Maps.newHashMap();
         Map<Team, TableEntry> teamToTableEntryMap = Maps.newHashMap();
 
@@ -149,18 +152,21 @@ public class LeagueService {
             }
         }
 
-        TreeMap<Team, Integer> sortedTeamToPointsMap = Maps.newTreeMap(new TeamValueComparator(teamToTableEntryMap));
-        sortedTeamToPointsMap.putAll(teamToPointsMap);
         final Table table = new Table();
-        int i = 1;
-        for (Team team : sortedTeamToPointsMap.keySet()) {
-            TableEntry tableEntry = teamToTableEntryMap.get(team);
-            tableEntry.setPlace(i);
-            i++;
-            table.addEntry(tableEntry);
-        }
+        if (!teamToPointsMap.isEmpty()) {
+            TreeMap<Team, Integer> sortedTeamToPointsMap = Maps.newTreeMap(new TeamValueComparator(teamToTableEntryMap));
+            sortedTeamToPointsMap.putAll(teamToPointsMap);
+            int place = 1;
+            for (Team team : sortedTeamToPointsMap.keySet()) {
+                TableEntry tableEntry = teamToTableEntryMap.get(team);
+                tableEntry.setPlace(place);
+                place++;
+                table.addEntry(tableEntry);
+            }
 
-        matchDayToTable.put(day, table);
+            System.out.println("generateChart add: " + table);
+            matchDayToTable.put(day, table);
+        }
         return table;
     }
 }

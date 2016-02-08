@@ -11,13 +11,7 @@ import java.util.Map;
 @Service
 public class StatisticService {
 
-
-    @Autowired
-    private LeagueService leagueService;
-
-    Map<String, List<Integer>> teamToPlace = Maps.newHashMap();
-
-    public TeamStatistic getTeamStatistics(TimeTable timeTable, String teamName) {
+    public TeamStatistic getGoalDistribution(TimeTable timeTable, String teamName, Table currentTable) {
         TeamStatistic teamStatistic = new TeamStatistic(teamName);
         Integer[] homeGoals = teamStatistic.getHomeGoals();
         Integer[] awayGoals = teamStatistic.getAwayGoals();
@@ -36,15 +30,7 @@ public class StatisticService {
             }
         }
 
-        Table table = leagueService.getCurrentTable();
-        teamStatistic.setCurrentTableEntry(table.getEntryByTeamName(teamName));
-
-        int currentMatchDay = leagueService.getCurrentMatchDay();
-        for (int i = 0; i < currentMatchDay; i++) {
-            teamStatistic.getPlacementsInSeason()[i] = leagueService.getTable(i+1).getEntryByTeamName(teamName).getPlace();
-        }
-
-
+        teamStatistic.setCurrentTableEntry(currentTable.getEntryByTeamName(teamName));
         return teamStatistic;
     }
 
@@ -53,12 +39,20 @@ public class StatisticService {
         for (Goal goal : match.getGoals()) {
             if (goal.getTeam().getName().equals(teamName)) {
                 goals[goal.getMinute() - 1]++;
-                totalGoals[goal.getMinute() -1]++;
+                totalGoals[goal.getMinute() - 1]++;
             } else {
                 receivedGoals[goal.getMinute() - 1]++;
                 receivedTotalGoals[goal.getMinute() - 1]++;
             }
         }
+    }
+
+    public Integer[] getPlacementsInSeason(String teamName, int currentMatchDay, Map<Integer, Table> matchDayToTable) {
+        Integer[] placements = new Integer[34];
+        for (int i = 0; i < currentMatchDay - 1; i++) {
+            placements[i] = matchDayToTable.get(i + 1).getEntryByTeamName(teamName).getPlace();
+        }
+        return placements;
     }
 
 

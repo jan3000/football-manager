@@ -24,6 +24,7 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
     var getMatchDay = function (matchDay) {
         $log.log('getMatchDay: ' + matchDay);
         $http.get('rest/home/timeTable/' + matchDay).then(function (result) {
+            $scope.getTable(matchDay);
             $log.log('getMatchDay: ' + JSON.stringify(result));
             $scope.shownMatchDay = result.data.matchDayNumber;
             $log.log('$scope.shownMatchDay: ' + $scope.shownMatchDay);
@@ -32,13 +33,12 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
     };
     getMatchDay($scope.shownMatchDay);
 
-    $scope.getCurrentTable = function () {
-        $http.get('rest/home/currentTable/').then(function (result) {
-            $log.log('getCurrentTable: ' + JSON.stringify(result));
-            $scope.table = result.data;
-        })
-    };
-    $scope.getCurrentTable();
+    //$scope.getCurrentTable = function () {
+    //    $http.get('rest/home/currentTable/').then(function (result) {
+    //        $log.log('getCurrentTable: ' + JSON.stringify(result));
+    //        $scope.table = result.data;
+    //    })
+    //};
 
 
     $scope.getTable = function (day) {
@@ -47,5 +47,5 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
             $scope.table = result.data;
         })
     };
-    $scope.getTable($scope.shownMatchDay);
+    //$scope.getTable($scope.shownMatchDay);
 });

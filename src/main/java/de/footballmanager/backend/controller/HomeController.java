@@ -4,6 +4,7 @@ import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.service.LeagueService;
 import de.footballmanager.backend.service.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.*;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Path("/home")
 @RequestScoped //  bean lives as long as a single HTTP request-response cycle
+@Component
 public class HomeController {
 
     @Autowired
@@ -25,39 +27,23 @@ public class HomeController {
     @Path("teams")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Team> getTeams() throws JAXBException, FileNotFoundException {
-        System.out.println("000 getTeams");
+        System.out.println("HomeController getTeams");
         return leagueService.getTeams();
     }
-
 
     @GET
     @Path("timeTable/{matchDay}")
     @Produces(MediaType.APPLICATION_JSON)
     public MatchDay getTimeTableForMatchDay(@PathParam("matchDay") int matchDay) {
-        System.out.println("000 getTimeTableForMatchDay: " + matchDay);
+        System.out.println("HomeController getTimeTableForMatchDay: " + matchDay);
         return leagueService.getTimeTableForMatchDay(matchDay);
     }
-
-    @GET
-    @Path("runNextMatchDay")
-    @Produces(MediaType.APPLICATION_JSON)
-    public MatchDay runNextMatchDay() {
-        return leagueService.runNextMatchDay();
-    }
-
 
     @GET
     @Path("runNextMatchDayMinute")
     @Produces(MediaType.APPLICATION_JSON)
     public MatchDay runNextMatchDayMinute() {
         return leagueService.runNextMinute();
-    }
-
-    @GET
-    @Path("currentTable")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Table getCurrentTable() {
-        return leagueService.getCurrentTable();
     }
 
     @GET
@@ -71,7 +57,12 @@ public class HomeController {
     @Path("statistic/{teamName}")
     @Produces(MediaType.APPLICATION_JSON)
     public TeamStatistic getTeamStatistic(@PathParam("teamName") String teamName) {
-        return statisticService.getTeamStatistics(leagueService.getTimeTable(), teamName);
+        int currentMatchDay = leagueService.getCurrentMatchDay();
+        TeamStatistic teamStatistics = statisticService.getGoalDistribution(leagueService.getTimeTable(), teamName,
+                leagueService.getTable(currentMatchDay - 1));
+        teamStatistics.setPlacementsInSeason(statisticService.getPlacementsInSeason(teamName, currentMatchDay,
+                leagueService.getMatchDayToTable()));
+        return teamStatistics;
     }
 }
 

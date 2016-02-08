@@ -31,69 +31,6 @@ public class League {
         super();
         Preconditions.checkNotNull("teams must be set to create a league", teams);
         this.teams = teams;
-
-    }
-
-    public String printCurrentTable() {
-        Map<Team, Integer> teamToPointsMap = Maps.newHashMap();
-        Map<Team, TableEntry> teamToTableEntryMap = Maps.newHashMap();
-
-        for (MatchDay matchDay : timeTable.getAllMatchDays()) {
-            for (Match match : matchDay.getMatches()) {
-                if (!teamToPointsMap.containsKey(match.getHomeTeam())) {
-                    teamToPointsMap.put(match.getHomeTeam(), 0);
-                    teamToTableEntryMap.put(match.getHomeTeam(), new TableEntry(match.getHomeTeam()));
-                }
-                if (!teamToPointsMap.containsKey(match.getGuestTeam())) {
-                    teamToPointsMap.put(match.getGuestTeam(), 0);
-                    teamToTableEntryMap.put(match.getGuestTeam(), new TableEntry(match.getGuestTeam()));
-                }
-
-                TableEntry homeTableEntry = teamToTableEntryMap.get(match.getHomeTeam());
-                TableEntry guestTableEntry = teamToTableEntryMap.get(match.getGuestTeam());
-                homeTableEntry.setHomeGoals(homeTableEntry.getHomeGoals() + match.getGoalsHomeTeam());
-                homeTableEntry.setReceivedHomeGoals(homeTableEntry.getReceivedHomeGoals() + match.getGoalsGuestTeam());
-                guestTableEntry.setAwayGoals(guestTableEntry.getAwayGoals() + match.getGoalsGuestTeam());
-                guestTableEntry.setReceivedAwayGoals(guestTableEntry.getReceivedAwayGoals() + match.getGoalsHomeTeam());
-                switch (match.getResultType()) {
-                    case HOME_WON:
-                        teamToPointsMap.put(match.getHomeTeam(), teamToPointsMap.get(match.getHomeTeam()) + 3);
-                        homeTableEntry.setHomeGamesWon(homeTableEntry.getHomeGamesWon() + 1);
-                        guestTableEntry.setAwayGamesLost(guestTableEntry.getAwayGamesLost() + 1);
-                        break;
-                    case DRAW:
-                        teamToPointsMap.put(match.getHomeTeam(), teamToPointsMap.get(match.getHomeTeam()) + 1);
-                        teamToPointsMap.put(match.getGuestTeam(), teamToPointsMap.get(match.getGuestTeam()) + 1);
-                        homeTableEntry.setHomeGamesDraw(homeTableEntry.getHomeGamesDraw() + 1);
-                        guestTableEntry.setAwayGamesDraw(guestTableEntry.getAwayGamesDraw() + 1);
-                        break;
-                    case GUEST_WON:
-                        teamToPointsMap.put(match.getGuestTeam(), teamToPointsMap.get(match.getGuestTeam()) + 3);
-                        homeTableEntry.setHomeGamesLost(homeTableEntry.getHomeGamesLost() + 1);
-                        guestTableEntry.setAwayGamesWon(guestTableEntry.getAwayGamesWon() + 1);
-                        break;
-                    default:
-                        System.out.println("ERRORRRR");
-                        break;
-                }
-            }
-        }
-        TreeMap<Team, Integer> sortedTeamToPointsMap = Maps.newTreeMap(new TeamValueComparator(teamToTableEntryMap));
-        sortedTeamToPointsMap.putAll(teamToPointsMap);
-
-        StringBuffer buffi = new StringBuffer();
-        buffi.append("\n");
-        for (Entry<Team, Integer> teamToPoints : sortedTeamToPointsMap.entrySet()) {
-            buffi.append(teamToTableEntryMap.get(teamToPoints.getKey()).print());
-            buffi.append(teamToPoints + "\n");
-
-        }
-        return buffi.toString();
-    }
-
-
-    protected int getNumberOfMatchesOnOneDay() {
-        return getNumberOfTeams() / 2;
     }
 
     public TimeTable getTimeTable() {
@@ -118,8 +55,5 @@ public class League {
         return teams.size();
     }
 
-    public int getNumberOfMatchDays() {
-        return (getNumberOfTeams() - 1) * 2;
-    }
 
 }

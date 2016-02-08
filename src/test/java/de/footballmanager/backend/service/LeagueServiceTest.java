@@ -2,12 +2,14 @@ package de.footballmanager.backend.service;
 
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
+import java.util.Map;
 
 import static de.footballmanager.backend.util.TestUtil.*;
 import static org.easymock.EasyMock.*;
@@ -46,6 +48,8 @@ public class LeagueServiceTest {
         // prepare
         MatchDay matchDay = new MatchDay();
         Match match = new Match();
+        match.setHomeTeam(new Team(TEAM_1));
+        match.setGuestTeam(new Team(TEAM_2));
         match.setFinished(true);
         matchDay.getMatches().add(match);
         ResultService resultService = setUpResultService(matchDay);
@@ -145,6 +149,16 @@ public class LeagueServiceTest {
         timeTable.addMatchDays(Lists.newArrayList(matchDay1, matchDay2, matchDay3, matchDay4, matchDay5, matchDay6));
         timeTable.setCurrentMatchDay(6);
         ReflectionTestUtils.setField(leagueService, "timeTable", timeTable);
+
+        Map<Integer, Table> matchDayToTable = Maps.newHashMap();
+        ReflectionTestUtils.setField(leagueService, "matchDayToTable", matchDayToTable);
+
+        leagueService.generateChart(1);
+        leagueService.generateChart(2);
+        leagueService.generateChart(3);
+        leagueService.generateChart(4);
+        leagueService.generateChart(5);
+        leagueService.generateChart(6);
     }
 
 

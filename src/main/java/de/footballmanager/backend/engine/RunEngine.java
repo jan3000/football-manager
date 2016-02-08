@@ -42,6 +42,5 @@ public class RunEngine {
 
         }
         System.out.println(league.getTimeTable().print());
-        System.out.println(league.printCurrentTable());
     }
 }

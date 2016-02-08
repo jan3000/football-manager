@@ -50,7 +50,6 @@ public class ResultServiceTest {
 
             // testSorting of end table according to the teams strength
             // test distribution of match results
-            System.out.println(league.printCurrentTable());
             fillAndPrintMap(timeTable, resultToCountMap);
         }
         System.out.println("\n");

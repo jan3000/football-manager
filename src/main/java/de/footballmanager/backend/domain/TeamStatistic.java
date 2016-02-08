@@ -48,6 +48,11 @@ public class TeamStatistic {
     public Integer[] getPlacementsInSeason() {
         return placementsInSeason;
     }
+
+    public void setPlacementsInSeason(Integer[] placementsInSeason) {
+        this.placementsInSeason = placementsInSeason;
+    }
+
     public Integer[] getHomeGoals() {
         return homeGoals;
     }
