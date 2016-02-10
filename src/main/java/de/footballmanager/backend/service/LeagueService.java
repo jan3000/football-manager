@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import de.footballmanager.backend.comparator.TeamValueComparator;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.parser.LeagueParser;
+import de.footballmanager.backend.parser.PlayerParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,8 @@ public class LeagueService {
 
     @Autowired
     private LeagueParser leagueParser;
+    @Autowired
+    private PlayerParser playerParser;
     @Autowired
     private ResultService resultService;
     @Autowired
@@ -42,6 +45,7 @@ public class LeagueService {
             if (league == null) {
                 league = leagueParser.parse();
                 timeTable = timeTableService.createTimeTable(league.getTeams());
+                playerParser.parsePlayerForLeague(league);
             }
         } catch (JAXBException | FileNotFoundException e) {
             e.printStackTrace();

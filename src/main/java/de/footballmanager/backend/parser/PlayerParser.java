@@ -8,17 +8,18 @@ import de.footballmanager.backend.domain.Player;
 import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.enumeration.Position;
 import org.joda.time.DateTime;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Service
 public class PlayerParser {
 
     private static final Position[] ALL_POSITIONS = new Position[]{Position.DEFENSIVE_MIDFIELDER, Position.GOALY,
@@ -36,8 +37,8 @@ public class PlayerParser {
     public void parsePlayerForLeague(League league) {
         Preconditions.checkArgument(league != null);
         Preconditions.checkArgument(!league.getTeams().isEmpty());
-        List<String> names = normalizeNames(readInNames("vornamen.txt"));
-        List<String> surnames = normalizeNames(readInNames("nachnamen.txt"));
+        List<String> names = normalizeNames(readInNames("names.txt"));
+        List<String> surnames = normalizeNames(readInNames("surnames.txt"));
 
         for (Team team : league.getTeams()) {
             int numberOfPlayers = getNumberOfPlayers();
@@ -109,6 +110,7 @@ public class PlayerParser {
     }
 
     private List<String> normalizeNames(List<String> names) {
+        System.out.println("normalizeNames: " + names.size());
         return names.stream()
                 .filter(s -> s.length() > 1)
                 .map(s -> s = s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase())

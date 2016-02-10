@@ -8,9 +8,9 @@
     <name>Football Manager</name>
     <description>Manager simulation for football</description>
     <properties>
-        <spring.version>3.2.3.RELEASE</spring.version>
+        <spring.version>4.2.4.RELEASE</spring.version>
         <artifact.name>app</artifact.name>
-        <jersey.version>2.22.1</jersey.version>
+        <jersey.version>2.22</jersey.version>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -22,8 +22,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>
@@ -162,6 +162,11 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>

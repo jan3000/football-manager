@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 @XmlRootElement(name = "team")
-@XmlType(propOrder = {"name", "strength"})
+@XmlType(propOrder = {"name", "strength", "players"})
 public class Team {
 
     private String name;
