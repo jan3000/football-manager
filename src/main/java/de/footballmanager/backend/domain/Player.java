@@ -1,8 +1,13 @@
 package de.footballmanager.backend.domain;
 
+import com.neovisionaries.i18n.CountryCode;
 import org.joda.time.DateTime;
 
 import de.footballmanager.backend.enumeration.Position;
+import org.joda.time.Duration;
+import org.joda.time.MutableDateTime;
+import org.joda.time.Years;
+import org.joda.time.chrono.StrictChronology;
 
 public class Player {
 
@@ -10,6 +15,7 @@ public class Player {
     private String firstname;
     private Position position;
     private DateTime dateOfBirth;
+    private CountryCode homeCountry;
     private int strength;
     private Team team;
 
@@ -61,6 +67,18 @@ public class Player {
         this.team = team;
     }
 
+    public CountryCode getHomeCountry() {
+        return homeCountry;
+    }
+
+    public void setHomeCountry(CountryCode homeCountry) {
+        this.homeCountry = homeCountry;
+    }
+
+    public int getAge() {
+        return Years.yearsBetween(getDateOfBirth(), new DateTime()).getYears();
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -77,6 +95,18 @@ public class Player {
         builder.append(", team=");
         builder.append(team);
         builder.append("]");
+        return builder.toString();
+    }
+
+    public String print() {
+        StringBuilder builder= new StringBuilder();
+        builder.append(firstname).append(" ").append(lastname);
+        builder.append(", ");
+        builder.append(getAge());
+        builder.append(", ");
+        builder.append(getPosition());
+        builder.append(", ");
+        builder.append(getStrength());
         return builder.toString();
     }
 

@@ -18,6 +18,9 @@ import java.util.List;
 @Component
 public class HomeController {
 
+
+    // data: http://dbup2date.uni-bayreuth.de/bundesliga.html
+
     @Autowired
     private LeagueService leagueService;
     @Autowired

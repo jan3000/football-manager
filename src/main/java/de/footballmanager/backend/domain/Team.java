@@ -1,5 +1,7 @@
 package de.footballmanager.backend.domain;
 
+import com.google.common.collect.Lists;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -11,7 +13,7 @@ public class Team {
 
     private String name;
     private int strength;
-//    private List<Player> players;
+    private List<Player> players = Lists.newArrayList();
 
     public Team() {}
 
@@ -35,13 +37,13 @@ public class Team {
         this.name = name;
     }
 
-//    public List<Player> getPlayers() {
-//        return players;
-//    }
-//
-//    public void setPlayers(final List<Player> players) {
-//        this.players = players;
-//    }
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(final List<Player> players) {
+        this.players = players;
+    }
 
     @XmlElement(name = "strength")
     public int getStrength() {
@@ -90,7 +92,7 @@ public class Team {
         builder.append(", strength=");
         builder.append(strength);
         builder.append(", players=");
-//        builder.append(players);
+        builder.append(players);
         builder.append("]");
         return builder.toString();
     }
