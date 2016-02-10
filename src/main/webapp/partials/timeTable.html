@@ -41,7 +41,7 @@
                 <tr ng-class="{'green': $index===0, 'yellow': $index>0&&$index<6, 'orange': $index===15, 'red': $index>15}"
                     ng-repeat="entry in table.entries">
                     <td>{{entry.place}}</td>
-                    <td>{{entry.team.name}}</td>
+                    <td>{{entry.team}}</td>
                     <td>{{entry.totalGamesWon}}</td>
                     <td>{{entry.totalGamesDraw}}</td>
                     <td>{{entry.totalGamesLost}}</td>

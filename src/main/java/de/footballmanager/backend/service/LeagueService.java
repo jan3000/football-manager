@@ -11,6 +11,7 @@ import de.footballmanager.backend.parser.PlayerParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -40,12 +41,15 @@ public class LeagueService {
     private TimeTable timeTable;
     private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
 
+    @PostConstruct
     public void initLeague() {
         try {
             if (league == null) {
+                System.out.println("INIT STARTED");
                 league = leagueParser.parse();
                 timeTable = timeTableService.createTimeTable(league.getTeams());
                 playerParser.parsePlayerForLeague(league);
+                System.out.println("INIT FINISHED");
             }
         } catch (JAXBException | FileNotFoundException e) {
             e.printStackTrace();
@@ -84,6 +88,7 @@ public class LeagueService {
 
     public MatchDay getTimeTableForMatchDay(int matchDay) {
         initLeague();
+        System.out.println("return match day");
         return timeTable.getMatchDay(matchDay);
     }
 
@@ -114,11 +119,11 @@ public class LeagueService {
                 if (match.isFinished()) {
                     if (!teamToPointsMap.containsKey(match.getHomeTeam())) {
                         teamToPointsMap.put(match.getHomeTeam(), 0);
-                        teamToTableEntryMap.put(match.getHomeTeam(), new TableEntry(match.getHomeTeam()));
+                        teamToTableEntryMap.put(match.getHomeTeam(), new TableEntry(match.getHomeTeam().getName()));
                     }
                     if (!teamToPointsMap.containsKey(match.getGuestTeam())) {
                         teamToPointsMap.put(match.getGuestTeam(), 0);
-                        teamToTableEntryMap.put(match.getGuestTeam(), new TableEntry(match.getGuestTeam()));
+                        teamToTableEntryMap.put(match.getGuestTeam(), new TableEntry(match.getGuestTeam().getName()));
                     }
 
                     TableEntry homeTableEntry = teamToTableEntryMap.get(match.getHomeTeam());

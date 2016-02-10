@@ -1,11 +1,9 @@
 package de.footballmanager.backend.domain;
 
-import java.util.List;
-
 public class TableEntry {
 
     private int place;
-    private Team team;
+    private String team;
     private int points;
     private int homeGoals;
     private int awayGoals;
@@ -19,10 +17,10 @@ public class TableEntry {
     private int awayGamesDraw;
     private int awayGamesLost;
 
-
-    public TableEntry(Team team) {
-        this.team = team;
+    public TableEntry(String teamName) {
+        this.team = teamName;
     }
+
 
     public void setPoints(int points) {
         this.points = points;
@@ -40,18 +38,13 @@ public class TableEntry {
         this.place = place;
     }
 
-    public Team getTeam() {
+    public String getTeam() {
         return team;
     }
 
-    public void setTeam(Team team) {
+    public void setTeam(String team) {
         this.team = team;
     }
-
-
-    //    public int getPoints() {
-//        return getTotalGamesWon() * 3 + getTotalGamesDraw();
-//    }
 
     public int getHomeGoals() {
         return homeGoals;
@@ -121,6 +114,40 @@ public class TableEntry {
         return awayGamesDraw;
     }
 
+
+    public void setAwayGamesDraw(final int awayGamesDraw) {
+        this.awayGamesDraw = awayGamesDraw;
+    }
+
+    public int getAwayGamesLost() {
+        return awayGamesLost;
+    }
+
+    public void setAwayGamesLost(final int awayGamesLost) {
+        this.awayGamesLost = awayGamesLost;
+    }
+
+    public int getTotalGoals() {
+        return homeGoals + awayGoals;
+    }
+
+    public int getTotalReceivedGoals() {
+        return receivedHomeGoals + receivedAwayGoals;
+    }
+
+    public int getTotalGamesWon() {
+        return homeGamesWon + awayGamesWon;
+    }
+
+    public int getTotalGamesDraw() {
+        return homeGamesDraw + awayGamesDraw;
+    }
+
+    public int getTotalGamesLost() {
+        return homeGamesLost + awayGamesLost;
+    }
+
+
     public String print() {
         StringBuffer buffi = new StringBuffer();
         buffi.append(getTotalGamesWon() + " | ");
@@ -165,38 +192,6 @@ public class TableEntry {
         builder.append(awayGamesLost);
         builder.append("]");
         return builder.toString();
-    }
-
-    public void setAwayGamesDraw(final int awayGamesDraw) {
-        this.awayGamesDraw = awayGamesDraw;
-    }
-
-    public int getAwayGamesLost() {
-        return awayGamesLost;
-    }
-
-    public void setAwayGamesLost(final int awayGamesLost) {
-        this.awayGamesLost = awayGamesLost;
-    }
-
-    public int getTotalGoals() {
-        return homeGoals + awayGoals;
-    }
-
-    public int getTotalReceivedGoals() {
-        return receivedHomeGoals + receivedAwayGoals;
-    }
-
-    public int getTotalGamesWon() {
-        return homeGamesWon + awayGamesWon;
-    }
-
-    public int getTotalGamesDraw() {
-        return homeGamesDraw + awayGamesDraw;
-    }
-
-    public int getTotalGamesLost() {
-        return homeGamesLost + awayGamesLost;
     }
 
 }

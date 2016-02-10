@@ -56,7 +56,6 @@ public class PlayerParser {
                 player.setStrength(getStrength(team));
                 player.setDateOfBirth(getDate());
 
-                System.out.println(player.print());
                 team.getPlayers().add(player);
             }
         }
@@ -110,7 +109,6 @@ public class PlayerParser {
     }
 
     private List<String> normalizeNames(List<String> names) {
-        System.out.println("normalizeNames: " + names.size());
         return names.stream()
                 .filter(s -> s.length() > 1)
                 .map(s -> s = s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase())

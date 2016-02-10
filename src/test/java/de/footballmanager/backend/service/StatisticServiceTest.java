@@ -52,7 +52,7 @@ public class StatisticServiceTest {
 
     @Test
     public void getTeamStatisticsGoalsPerMinute() {
-        TableEntry tableEntry = new TableEntry(new Team(team1.getName()));
+        TableEntry tableEntry = new TableEntry(team1.getName());
         tableEntry.setPlace(3);
         table.addEntry(tableEntry);
 
@@ -61,7 +61,7 @@ public class StatisticServiceTest {
 
         // assert
         assertThat(teamStatistic.getCurrentTableEntry()).isNotNull();
-        assertThat(teamStatistic.getCurrentTableEntry().getTeam().getName()).isEqualTo(team1.getName());
+        assertThat(teamStatistic.getCurrentTableEntry().getTeam()).isEqualTo(team1.getName());
 
 
         assertThat(teamStatistic).isNotNull();
@@ -107,7 +107,7 @@ public class StatisticServiceTest {
 
     @Test
     public void getPlacements() {
-        TableEntry tableEntry = new TableEntry(new Team(team1.getName()));
+        TableEntry tableEntry = new TableEntry(team1.getName());
         tableEntry.setPlace(3);
         table.addEntry(tableEntry);
         Map<Integer, Table> matchDayToTable = Maps.newHashMap();

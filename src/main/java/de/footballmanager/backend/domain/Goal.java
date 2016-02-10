@@ -4,14 +4,16 @@ import de.footballmanager.backend.enumeration.KindOfGoal;
 
 public class Goal {
 
-    int minute;
-    Team team;
-    Player scorer;
-    Result newResult;
-    KindOfGoal kindOfGoal;
+    private int minute;
+    private Team team;
+    private Player scorer;
+    private Result newResult;
+    private KindOfGoal kindOfGoal;
+
+    public Goal() {}
 
     public Goal(final int minute, final Team team, final Player scorer, final KindOfGoal kindOfGoal,
-            final Result newResult) {
+                final Result newResult) {
         super();
         this.minute = minute;
         this.team = team;

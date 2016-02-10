@@ -17,7 +17,7 @@ public class Table {
 
     public void addEntry(TableEntry tableEntry) {
         entries.add(tableEntry);
-        teamNameToEntry.put(tableEntry.getTeam().getName(), tableEntry);
+        teamNameToEntry.put(tableEntry.getTeam(), tableEntry);
     }
 
     public List<TableEntry> getEntries() {
@@ -27,7 +27,7 @@ public class Table {
     public void setEntries(List<TableEntry> entries) {
         this.entries = entries;
         for (TableEntry entry : entries) {
-            teamNameToEntry.put(entry.getTeam().getName(), entry);
+            teamNameToEntry.put(entry.getTeam(), entry);
         }
     }
 
