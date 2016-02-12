@@ -110,7 +110,7 @@ public class LeagueService {
     }
 
     protected Table generateChart(int day) {
-        System.out.println("generateChart for day: " + day);
+        System.out.println("GENERATE CHART FOR DAY: " + day);
         Map<Team, Integer> teamToPointsMap = Maps.newHashMap();
         Map<Team, TableEntry> teamToTableEntryMap = Maps.newHashMap();
 
@@ -173,7 +173,7 @@ public class LeagueService {
                 table.addEntry(tableEntry);
             }
 
-            System.out.println("generateChart add: " + table);
+            System.out.println("GENERATE CHART END");
             matchDayToTable.put(day, table);
         }
         return table;
