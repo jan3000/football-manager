@@ -25,9 +25,9 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
         $log.log('getMatchDay: ' + matchDay);
         $http.get('rest/home/timeTable/' + matchDay).then(function (result) {
             $scope.getTable(matchDay);
-            $log.log('getMatchDay: ' + JSON.stringify(result));
+            //$log.log('getMatchDay: ' + JSON.stringify(result));
             $scope.shownMatchDay = result.data.matchDayNumber;
-            $log.log('$scope.shownMatchDay: ' + $scope.shownMatchDay);
+            //$log.log('$scope.shownMatchDay: ' + $scope.shownMatchDay);
             $scope.matches = result.data.matches;
         });
     };
@@ -43,9 +43,16 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
 
     $scope.getTable = function (day) {
         $http.get('rest/home/table/' + day).then(function (result) {
-            $log.log('getTable for day: ' + JSON.stringify(result));
+            //$log.log('getTable for day: ' + JSON.stringify(result));
             $scope.table = result.data;
         })
     };
     //$scope.getTable($scope.shownMatchDay);
+
+    $scope.getScorers = function () {
+        $http.get('rest/home/statistics/league').then(function (result) {
+            $log.log('scorers: ' + JSON.stringify(result));
+            $scope.scorers = result.data;
+        })
+    }()
 });

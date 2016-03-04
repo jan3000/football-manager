@@ -14,10 +14,15 @@ public class Player {
     private DateTime dateOfBirth;
     private CountryCode homeCountry;
     private int strength;
+    private PlayerStatistics playerStatistics;
 //    private Team team;
 
     public String getLastname() {
         return lastname;
+    }
+
+    public String getFullname() {
+        return getFirstname() + " " + getLastname();
     }
 
     public void setLastname(final String lastname) {

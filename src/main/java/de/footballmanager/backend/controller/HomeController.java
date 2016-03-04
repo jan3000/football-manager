@@ -64,6 +64,13 @@ public class HomeController {
                 leagueService.getMatchDayToTable()));
         return teamStatistics;
     }
+
+    @GET
+    @Path("statistics/league")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ScorerStatistic> getLeagueStatictics() {
+        return statisticService.getScorerTable(leagueService.getTeams(), leagueService.getTimeTable());
+    }
 }
 
 
