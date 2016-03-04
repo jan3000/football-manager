@@ -38,10 +38,7 @@ public class ResultServiceTest {
     }
 
     private Player createPlayer(String lastName, Position position, int strength) {
-        Player player = new Player();
-        player.setFirstname("Jan");
-        player.setLastname(lastName);
-        player.setPosition(position);
+        Player player = new Player.Builder("Jan", lastName).setPosition(position).build();
         player.setStrength(strength);
         return player;
     }

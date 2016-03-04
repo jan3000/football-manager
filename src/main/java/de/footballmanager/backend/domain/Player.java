@@ -5,17 +5,49 @@ import org.joda.time.DateTime;
 
 import de.footballmanager.backend.enumeration.Position;
 import org.joda.time.Years;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 public class Player {
 
-    private String lastname;
-    private String firstname;
-    private Position position;
+    private final String lastname;
+    private final String firstname;
+    private final Position position;
     private DateTime dateOfBirth;
     private CountryCode homeCountry;
     private int strength;
     private PlayerStatistics playerStatistics;
 //    private Team team;
+
+
+    private Player(Builder builder) {
+        this.firstname = builder.firstName;
+        this.lastname = builder.lastName;
+        this.position = builder.position;
+
+    }
+
+    public static class Builder {
+        private final String lastName;
+        private final String firstName;
+        private Position position;
+        private DateTime dateOfBirth;
+        private CountryCode homeCountry;
+        private int strength;
+
+        public Builder(String lastName, String firstName) {
+            this.lastName = lastName;
+            this.firstName = firstName;
+        }
+
+        public Builder setPosition(Position position) {
+            this.position = position;
+            return this;
+        }
+
+        public Player build() {
+            return new Player(this);
+        }
+    }
 
     public String getLastname() {
         return lastname;
@@ -25,24 +57,12 @@ public class Player {
         return getFirstname() + " " + getLastname();
     }
 
-    public void setLastname(final String lastname) {
-        this.lastname = lastname;
-    }
-
     public String getFirstname() {
         return firstname;
     }
 
-    public void setFirstname(final String firstname) {
-        this.firstname = firstname;
-    }
-
     public Position getPosition() {
         return position;
-    }
-
-    public void setPosition(final Position position) {
-        this.position = position;
     }
 
     public DateTime getDateOfBirth() {

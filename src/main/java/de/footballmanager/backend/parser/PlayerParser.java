@@ -45,13 +45,10 @@ public class PlayerParser {
             setPositionsOfPlayers(numberOfPlayers);
 
             for (int i = 0; i < numberOfPlayers; i++) {
-                Player player = new Player();
                 String firstName = names.get(RANDOM.nextInt(names.size()));
                 String surName = surnames.get(RANDOM.nextInt(surnames.size()));
 
-                player.setFirstname(firstName);
-                player.setLastname(surName);
-                player.setPosition(positions.get(i));
+                Player player = new Player.Builder(firstName, surName).setPosition(positions.get(i)).build();
                 player.setHomeCountry(CountryCode.DE);
                 player.setStrength(getStrength(team));
                 player.setDateOfBirth(getDate());
