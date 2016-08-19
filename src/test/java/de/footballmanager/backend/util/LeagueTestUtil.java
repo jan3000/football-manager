@@ -1,11 +1,10 @@
 package de.footballmanager.backend.util;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import de.footballmanager.backend.domain.Match;
 import de.footballmanager.backend.domain.Team;
+
+import java.util.List;
 
 public class LeagueTestUtil {
 

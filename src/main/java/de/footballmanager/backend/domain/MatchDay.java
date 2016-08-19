@@ -1,16 +1,20 @@
 package de.footballmanager.backend.domain;
 
-import java.util.List;
-
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.Lists;
+import de.footballmanager.backend.serializer.CustomDateSerializer;
 import org.joda.time.DateTime;
 
-import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 public class MatchDay {
 
+
     private DateTime date;
     private int matchDayNumber;
-    private List<Match> matches = Lists.newArrayList();;
+    private List<Match> matches = Lists.newArrayList();
 
     public MatchDay() {
         super();
@@ -21,6 +25,7 @@ public class MatchDay {
         this.matches = matches;
     }
 
+    @JsonSerialize(using = CustomDateSerializer.class)
     public DateTime getDate() {
         return date;
     }
@@ -93,8 +98,18 @@ public class MatchDay {
         matches.add(match);
     }
 
+    public boolean isFinished() {
+        return matches.stream().allMatch(Match::isFinished);
+    }
+
+    public Match getMatchOfTeam(String teamName) {
+        return matches.stream()
+                .filter(m -> m.getHomeTeam().getName().equals(teamName) || m.getGuestTeam().getName().equals(teamName))
+                .collect(Collectors.toList()).get(0);
+    }
+
     public String print() {
-        StringBuffer buffi = new StringBuffer();
+        StringBuilder buffi = new StringBuilder();
         buffi.append("MatchDay: ");
         buffi.append(matchDayNumber);
         buffi.append("\n");

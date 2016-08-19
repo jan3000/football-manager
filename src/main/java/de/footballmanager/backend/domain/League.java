@@ -1,20 +1,12 @@
 package de.footballmanager.backend.domain;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-
-import de.footballmanager.backend.comparator.TeamValueComparator;
-import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.List;
 
 @XmlRootElement(name = "league")
 @XmlType(propOrder = {"teams", "timeTable"})

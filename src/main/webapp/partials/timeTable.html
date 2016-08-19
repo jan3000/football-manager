@@ -1,13 +1,19 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-offset-1 col-sm-7">
-            <div class="col-sm-6">
+            <div class="col-sm-3">
                 <h4>Match day: {{shownMatchDay}}</h4>
             </div>
-            <div class="btn btn-success" ng-disabled="matchDayNumber === 1"
-                 ng-click="getPreviousMatchDay()">previous</div>
-            <div class="btn btn-success" ng-disabled="matchDayNumber === 34" ng-click="getNextMatchDay()">next</div>
-            <!--<div class="btn btn-success" ng-click="runNextMatchDay()">run</div>-->
+            <div class="col-sm-3">
+                <h4>{{matchDate}}</h4>
+            </div>
+            <div class="col-sm-6">
+                <div class="btn btn-success" ng-disabled="matchDayNumber === 1"
+                     ng-click="getPreviousMatchDay()">previous
+                </div>
+                <div class="btn btn-success" ng-disabled="matchDayNumber === 34" ng-click="getNextMatchDay()">next</div>
+                <!--<div class="btn btn-success" ng-click="runNextMatchDay()">run</div>-->
+            </div>
         </div>
     </div>
 
@@ -28,20 +34,20 @@
         <div class="col-sm-offset-1 col-sm-7">
             <table class="table table-condensed table-bordered">
                 <thead style="background-color: darkgray; font-weight: bold">
-                    <tr>
-                        <td>Place</td>
-                        <td>Team</td>
-                        <td>won</td>
-                        <td>draw</td>
-                        <td>lost</td>
-                        <td>goals</td>
-                        <td>points</td>
-                    </tr>
+                <tr>
+                    <td>Place</td>
+                    <td>Team</td>
+                    <td>won</td>
+                    <td>draw</td>
+                    <td>lost</td>
+                    <td>goals</td>
+                    <td>points</td>
+                </tr>
                 </thead>
                 <tr ng-class="{'green': $index===0, 'yellow': $index>0&&$index<6, 'orange': $index===15, 'red': $index>15}"
                     ng-repeat="entry in table.entries">
                     <td>{{entry.place}}</td>
-                    <td>{{entry.team.name}}</td>
+                    <td>{{entry.team}}</td>
                     <td>{{entry.totalGamesWon}}</td>
                     <td>{{entry.totalGamesDraw}}</td>
                     <td>{{entry.totalGamesLost}}</td>
@@ -49,6 +55,21 @@
                     <td>{{entry.points}}</td>
                 </tr>
             </table>
+        </div>
+        <div class="col-lg-offset-1 col-lg-3">
+            <table class="table table-condensed table-bordered">
+                <thead style="background-color: darkgray; font-weight: bold">
+                <td>Player</td>
+                <td>Team</td>
+                <td>Goals</td>
+                </thead>
+                <tr ng-repeat="scorer in scorers">
+                    <td>{{scorer.player}}</td>
+                    <td>{{scorer.team}}</td>
+                    <td>{{scorer.goals}}</td>
+                </tr>
+            </table>
+
         </div>
     </div>
 

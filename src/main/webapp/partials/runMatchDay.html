@@ -25,6 +25,7 @@
                     <td>
                         <div ng-repeat="goal in match.goals">
                             ({{goal.minute}}.) {{goal.newResult.homeGoals}} : {{goal.newResult.guestGoals}}
+                            {{goal.scorer.lastname}} ({{goal.scorer.position}})
                         </div>
                     </td>
                 </tr>

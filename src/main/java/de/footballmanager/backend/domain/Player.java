@@ -1,40 +1,66 @@
 package de.footballmanager.backend.domain;
 
-import org.joda.time.DateTime;
-
+import com.neovisionaries.i18n.CountryCode;
 import de.footballmanager.backend.enumeration.Position;
+import org.joda.time.DateTime;
+import org.joda.time.Years;
 
 public class Player {
 
-    private String lastname;
-    private String firstname;
-    private Position position;
+    private final String lastname;
+    private final String firstname;
+    private final Position position;
     private DateTime dateOfBirth;
+    private CountryCode homeCountry;
     private int strength;
-    private Team team;
+    private PlayerStatistics playerStatistics;
+//    private Team team;
+
+
+    private Player(Builder builder) {
+        this.firstname = builder.firstName;
+        this.lastname = builder.lastName;
+        this.position = builder.position;
+
+    }
+
+    public static class Builder {
+        private final String lastName;
+        private final String firstName;
+        private Position position;
+        private DateTime dateOfBirth;
+        private CountryCode homeCountry;
+        private int strength;
+
+        public Builder(String lastName, String firstName) {
+            this.lastName = lastName;
+            this.firstName = firstName;
+        }
+
+        public Builder setPosition(Position position) {
+            this.position = position;
+            return this;
+        }
+
+        public Player build() {
+            return new Player(this);
+        }
+    }
 
     public String getLastname() {
         return lastname;
     }
 
-    public void setLastname(final String lastname) {
-        this.lastname = lastname;
+    public String getFullname() {
+        return getFirstname() + " " + getLastname();
     }
 
     public String getFirstname() {
         return firstname;
     }
 
-    public void setFirstname(final String firstname) {
-        this.firstname = firstname;
-    }
-
     public Position getPosition() {
         return position;
-    }
-
-    public void setPosition(final Position position) {
-        this.position = position;
     }
 
     public DateTime getDateOfBirth() {
@@ -53,12 +79,25 @@ public class Player {
         this.strength = strength;
     }
 
-    public Team getTeam() {
-        return team;
+//    public String getTeam() {
+//        return team.getName();
+//    }
+//
+//    public void setTeam(final Team team) {
+//        this.team = team;
+//    }
+
+
+    public CountryCode getHomeCountry() {
+        return homeCountry;
     }
 
-    public void setTeam(final Team team) {
-        this.team = team;
+    public void setHomeCountry(CountryCode homeCountry) {
+        this.homeCountry = homeCountry;
+    }
+
+    public int getAge() {
+        return Years.yearsBetween(getDateOfBirth(), new DateTime()).getYears();
     }
 
     @Override
@@ -74,9 +113,21 @@ public class Player {
         builder.append(dateOfBirth);
         builder.append(", strength=");
         builder.append(strength);
-        builder.append(", team=");
-        builder.append(team);
+//        builder.append(", team=");
+//        builder.append(team);
         builder.append("]");
+        return builder.toString();
+    }
+
+    public String print() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(firstname).append(" ").append(lastname);
+        builder.append(", ");
+        builder.append(getAge());
+        builder.append(", ");
+        builder.append(getPosition());
+        builder.append(", ");
+        builder.append(getStrength());
         return builder.toString();
     }
 

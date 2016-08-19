@@ -3,11 +3,11 @@
         <div class="col-sm-2">
             <table class="table-striped table-bordered table table-hover">
                 <tbody>
-                    <tr ng-repeat="team in teams | orderBy:'name'">
-                        <td class="btn btn-default" ng-click="getStatistics(team.name)">
-                            {{team.name}}
-                        </td>
-                    </tr>
+                <tr ng-repeat="team in teams | orderBy:'name'">
+                    <td class="btn btn-default" ng-click="getStatistics(team.name)">
+                        {{team.name}}
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>

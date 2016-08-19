@@ -1,12 +1,11 @@
 package de.footballmanager.backend.engine;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import de.footballmanager.backend.domain.Match;
 import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.domain.TimeTable;
+
+import java.util.List;
 
 public class TimeTableEnginePHPAlgo {
 

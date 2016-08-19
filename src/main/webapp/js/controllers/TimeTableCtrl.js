@@ -8,7 +8,7 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
     $scope.getCurrentMatchDay = function () {
         return TimeTableService.getCurrentMatchDay();
     };
-    
+
     $scope.getPreviousMatchDay = function () {
         if ($scope.shownMatchDay > 1) {
             $scope.shownMatchDay--;
@@ -27,7 +27,8 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
             $scope.getTable(matchDay);
             $log.log('getMatchDay: ' + JSON.stringify(result));
             $scope.shownMatchDay = result.data.matchDayNumber;
-            $log.log('$scope.shownMatchDay: ' + $scope.shownMatchDay);
+            $scope.matchDate = result.data.date;
+            //$log.log('$scope.shownMatchDay: ' + $scope.shownMatchDay);
             $scope.matches = result.data.matches;
         });
     };
@@ -43,9 +44,16 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
 
     $scope.getTable = function (day) {
         $http.get('rest/home/table/' + day).then(function (result) {
-            $log.log('getTable for day: ' + JSON.stringify(result));
+            //$log.log('getTable for day: ' + JSON.stringify(result));
             $scope.table = result.data;
         })
     };
     //$scope.getTable($scope.shownMatchDay);
+
+    $scope.getScorers = function () {
+        $http.get('rest/home/statistics/league').then(function (result) {
+            $log.log('scorers: ' + JSON.stringify(result));
+            $scope.scorers = result.data;
+        })
+    }()
 });

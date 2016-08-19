@@ -1,5 +1,9 @@
 package de.footballmanager.backend.domain;
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
+
 public class TeamStatistic {
 
     private static final int MINUTES = 90;
@@ -15,9 +19,8 @@ public class TeamStatistic {
     private final Integer[] receivedAwayGoals = new Integer[MINUTES];
     private final Integer[] receivedTotalGoals = new Integer[MINUTES];
 
-
+    private final List<Player> scorers = Lists.newArrayList();
     private Integer[] placementsInSeason = new Integer[34];
-
 
 
     public TeamStatistic(String teamName) {
@@ -75,5 +78,9 @@ public class TeamStatistic {
 
     public Integer[] getReceivedTotalGoals() {
         return receivedTotalGoals;
+    }
+
+    public List<Player> getScorers() {
+        return scorers;
     }
 }

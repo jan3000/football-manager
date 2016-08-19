@@ -4,7 +4,7 @@ module.controller('RunMatchDayCtrl', function ($scope, $http, $log, $timeout, Ti
 
     $scope.matchDayNumber = TimeTableService.getCurrentMatchDay();
 
-        function isMatchDayFinished(matchDays) {
+    function isMatchDayFinished(matchDays) {
         var runningMatches = _.find(matchDays, function (matchDay) {
             return !matchDay.finished;
         });

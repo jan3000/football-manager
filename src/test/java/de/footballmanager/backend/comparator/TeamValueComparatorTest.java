@@ -17,6 +17,8 @@ import static org.fest.assertions.Assertions.assertThat;
 public class TeamValueComparatorTest {
 
 
+    public static final String TEAM_1 = "team1";
+    public static final String TEAM_2 = "team2";
     private Map<Team, TableEntry> teamTableEntryMap;
     private Team team1;
     private Team team2;
@@ -27,10 +29,10 @@ public class TeamValueComparatorTest {
     @Before
     public void setUp() {
         teamTableEntryMap = Maps.newHashMap();
-        team1 = new Team("team1");
-        team2 = new Team("team2");
-        tableEntry1 = new TableEntry(team1);
-        tableEntry2 = new TableEntry(team2);
+        team1 = new Team(TEAM_1);
+        team2 = new Team(TEAM_2);
+        tableEntry1 = new TableEntry(TEAM_1);
+        tableEntry2 = new TableEntry(TEAM_2);
     }
 
 

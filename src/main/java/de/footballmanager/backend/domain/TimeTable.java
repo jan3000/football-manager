@@ -1,15 +1,16 @@
 package de.footballmanager.backend.domain;
 
-import java.util.List;
-
 import com.google.common.base.Preconditions;
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+
+import java.util.List;
 
 public class TimeTable {
 
+    private DateTime startDateOfSeason;
     private int currentMatchDay = 1;
     private final List<MatchDay> matchDays = Lists.newArrayList();
 

@@ -188,11 +188,10 @@ public class LeagueServiceTest {
     }
 
     private void assertTable(TableEntry tableEntry, String team, int place, int points) {
-        assertThat(tableEntry.getTeam().getName()).isEqualTo(team);
+        assertThat(tableEntry.getTeam()).isEqualTo(team);
         assertThat(tableEntry.getPlace()).isEqualTo(place);
         assertThat(tableEntry.getPoints()).isEqualTo(points);
     }
-
 
 
 }

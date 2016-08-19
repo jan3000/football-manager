@@ -4,17 +4,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.KindOfGoal;
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-import static de.footballmanager.backend.util.TestUtil.TEAM_1;
-import static de.footballmanager.backend.util.TestUtil.TEAM_2;
-import static de.footballmanager.backend.util.TestUtil.buildMatch;
+import static de.footballmanager.backend.util.TestUtil.*;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class StatisticServiceTest {
@@ -25,6 +22,13 @@ public class StatisticServiceTest {
     private Team team2;
     private StatisticService statisticService;
     private Table table;
+    private Player scorer1;
+    private Player scorer2;
+    private Player scorer3;
+
+    private Player buildPlayer(String firstName, String lastName) {
+        return new Player.Builder(firstName, lastName).build();
+    }
 
     @Before
     public void setUp() {
@@ -35,24 +39,27 @@ public class StatisticServiceTest {
         team2 = new Team(TEAM_2);
         timeTable = new TimeTable();
         Match match1 = buildMatch(TEAM_1, TEAM_2, 2, 2);
-        match1.addGoal(new Goal(12, team1, new Player(), KindOfGoal.HEAD, new Result(1, 0)));
-        match1.addGoal(new Goal(23, team2, new Player(), KindOfGoal.HEAD, new Result(1, 1)));
-        match1.addGoal(new Goal(44, team2, new Player(), KindOfGoal.HEAD, new Result(1, 2)));
-        match1.addGoal(new Goal(90, team1, new Player(), KindOfGoal.HEAD, new Result(2, 2)));
+        scorer1 = buildPlayer("John", "Dumbo");
+        scorer2 = buildPlayer("Jeff", "Patterns");
+        scorer3 = buildPlayer("Jordy", "Madrid");
+        match1.addGoal(new Goal(12, team1, scorer1, KindOfGoal.HEAD, new Result(1, 0)));
+        match1.addGoal(new Goal(23, team2, scorer2, KindOfGoal.HEAD, new Result(1, 1)));
+        match1.addGoal(new Goal(44, team2, scorer2, KindOfGoal.HEAD, new Result(1, 2)));
+        match1.addGoal(new Goal(90, team1, scorer1, KindOfGoal.HEAD, new Result(2, 2)));
         MatchDay matchDay1 = new MatchDay(Lists.newArrayList(match1));
         Match match2 = buildMatch(TEAM_2, TEAM_1, 4, 1);
-        match2.addGoal(new Goal(8, team2, new Player(), KindOfGoal.HEAD, new Result(1, 0)));
-        match2.addGoal(new Goal(12, team1, new Player(), KindOfGoal.HEAD, new Result(1, 1)));
-        match2.addGoal(new Goal(33, team2, new Player(), KindOfGoal.HEAD, new Result(2, 1)));
-        match2.addGoal(new Goal(54, team2, new Player(), KindOfGoal.HEAD, new Result(3, 1)));
-        match2.addGoal(new Goal(58, team2, new Player(), KindOfGoal.HEAD, new Result(4, 1)));
+        match2.addGoal(new Goal(8, team2, scorer2, KindOfGoal.HEAD, new Result(1, 0)));
+        match2.addGoal(new Goal(12, team1, scorer1, KindOfGoal.HEAD, new Result(1, 1)));
+        match2.addGoal(new Goal(33, team2, scorer3, KindOfGoal.HEAD, new Result(2, 1)));
+        match2.addGoal(new Goal(54, team2, scorer2, KindOfGoal.HEAD, new Result(3, 1)));
+        match2.addGoal(new Goal(58, team2, scorer2, KindOfGoal.HEAD, new Result(4, 1)));
         MatchDay matchDay2 = new MatchDay(Lists.newArrayList(match2));
         timeTable.addMatchDays(Lists.newArrayList(matchDay1, matchDay2));
     }
 
     @Test
     public void getTeamStatisticsGoalsPerMinute() {
-        TableEntry tableEntry = new TableEntry(new Team(team1.getName()));
+        TableEntry tableEntry = new TableEntry(team1.getName());
         tableEntry.setPlace(3);
         table.addEntry(tableEntry);
 
@@ -61,7 +68,7 @@ public class StatisticServiceTest {
 
         // assert
         assertThat(teamStatistic.getCurrentTableEntry()).isNotNull();
-        assertThat(teamStatistic.getCurrentTableEntry().getTeam().getName()).isEqualTo(team1.getName());
+        assertThat(teamStatistic.getCurrentTableEntry().getTeam()).isEqualTo(team1.getName());
 
 
         assertThat(teamStatistic).isNotNull();
@@ -107,7 +114,7 @@ public class StatisticServiceTest {
 
     @Test
     public void getPlacements() {
-        TableEntry tableEntry = new TableEntry(new Team(team1.getName()));
+        TableEntry tableEntry = new TableEntry(team1.getName());
         tableEntry.setPlace(3);
         table.addEntry(tableEntry);
         Map<Integer, Table> matchDayToTable = Maps.newHashMap();
@@ -122,6 +129,23 @@ public class StatisticServiceTest {
         for (int i = 2; i < 34; i++) {
             assertThat(placementsInSeason[i]).isNull();
         }
+    }
+
+    @Test
+    public void getScorers() {
+        List<ScorerStatistic> scorerTable = statisticService.getScorerTable(Lists.newArrayList(team1, team2), timeTable);
+        assertThat(scorerTable.size()).isEqualTo(3);
+        assertThat(scorerTable.get(0).getPlayer()).isEqualTo(scorer2.getFullname());
+        assertThat(scorerTable.get(0).getGoals()).isEqualTo(5);
+        assertThat(scorerTable.get(0).getTeam()).isEqualTo(team2.getName());
+
+        assertThat(scorerTable.get(1).getPlayer()).isEqualTo(scorer1.getFullname());
+        assertThat(scorerTable.get(1).getGoals()).isEqualTo(3);
+        assertThat(scorerTable.get(1).getTeam()).isEqualTo(team1.getName());
+
+        assertThat(scorerTable.get(2).getPlayer()).isEqualTo(scorer3.getFullname());
+        assertThat(scorerTable.get(2).getGoals()).isEqualTo(1);
+        assertThat(scorerTable.get(2).getTeam()).isEqualTo(team2.getName());
     }
 
 }

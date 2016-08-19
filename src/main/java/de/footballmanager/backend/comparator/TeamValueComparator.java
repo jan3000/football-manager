@@ -1,10 +1,10 @@
 package de.footballmanager.backend.comparator;
 
-import java.util.Comparator;
-import java.util.Map;
-
 import de.footballmanager.backend.domain.TableEntry;
 import de.footballmanager.backend.domain.Team;
+
+import java.util.Comparator;
+import java.util.Map;
 
 public class TeamValueComparator implements Comparator<Team> {
 
@@ -21,7 +21,7 @@ public class TeamValueComparator implements Comparator<Team> {
         if (tableEntry1.getPoints() < tableEntry2.getPoints()) {
             return 1;
 
-        } else if (tableEntry1.getPoints() > tableEntry2.getPoints()){
+        } else if (tableEntry1.getPoints() > tableEntry2.getPoints()) {
             return -1;
         } else {
             int goalDifferenceTeam1 = tableEntry1.getTotalGoals() - tableEntry1.getTotalReceivedGoals();

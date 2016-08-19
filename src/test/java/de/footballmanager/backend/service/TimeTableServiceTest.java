@@ -2,11 +2,11 @@ package de.footballmanager.backend.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.domain.Match;
 import de.footballmanager.backend.domain.MatchDay;
 import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.domain.TimeTable;
+import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.TestUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -232,7 +232,7 @@ public class TimeTableServiceTest {
     }
 
     private void assertAllTeamsHaveSameSumOfMatches2(final List<MatchDay> firstRoundMatchDays,
-            final int numberOfExpectedMatchDays) {
+                                                     final int numberOfExpectedMatchDays) {
         Map<Team, Integer> teamToNumberOfMatchDay = Maps.newHashMap();
         Map<Team, Integer> teamToNumberOfHomeMatchDay = Maps.newHashMap();
         Map<Team, Integer> teamToNumberOfGuestMatchDay = Maps.newHashMap();
@@ -259,7 +259,7 @@ public class TimeTableServiceTest {
     }
 
     private void assertNumberOfTotalMatchDays(final Map<Team, Integer> teamToNumberOfMatchDay,
-            final int numberOfExpectedMatchDays) {
+                                              final int numberOfExpectedMatchDays) {
         Integer numberOfMatchDays = null;
         assertEquals(NUMBER_OF_TEAMS, teamToNumberOfMatchDay.size());
         for (Entry<Team, Integer> teamToNumberOfMatchDays : teamToNumberOfMatchDay.entrySet()) {
@@ -312,6 +312,7 @@ public class TimeTableServiceTest {
         List<MatchDay> matchDays = timeTable.getAllMatchDays();
         assertNotNull(matchDays);
         assertEquals(NUMBER_OF_MATCH_DAYS, matchDays.size());
+        assertNotNull(matchDays.get(0).getDate());
 
         assertAppearanceOfTeamsInMatchDays(matchDays);
         assertAllTeamsHaveSameSumOfMatches2(matchDays, NUMBER_OF_MATCH_DAYS);
