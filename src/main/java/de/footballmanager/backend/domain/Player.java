@@ -24,6 +24,7 @@ public class Player {
 
     }
 
+    // TODO fix builder pattern if its not correct
     public static class Builder {
         private final String lastName;
         private final String firstName;

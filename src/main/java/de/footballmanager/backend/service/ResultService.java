@@ -28,14 +28,11 @@ public class ResultService {
 
     private void simulateMatchMinute(Match match, int minute) {
         if (isGoalInThisMinute(match.getHomeTeam().getStrength(), true)) {
-            addGoal(match, minute);
+            addHomeGoal(match, minute);
         }
 
         if (isGoalInThisMinute(match.getGuestTeam().getStrength(), false)) {
-            Player goalMaker = getScorer(match.getGuestTeam());
-            Goal goal = new Goal(minute, match.getGuestTeam(), goalMaker, null, new Result(match.getGoalsHomeTeam(),
-                    match.getGoalsGuestTeam() + 1));
-            match.increaseGoalsGuestTeam(goal);
+            addGuestGoal(match, minute);
         }
         match.increaseMinute();
 
@@ -46,7 +43,14 @@ public class ResultService {
         // TODO cards, injuries, changes
     }
 
-    private void addGoal(Match match, int minute) {
+    void addGuestGoal(Match match, int minute) {
+        Player goalMaker = getScorer(match.getGuestTeam());
+        Goal goal = new Goal(minute, match.getGuestTeam(), goalMaker, null, new Result(match.getGoalsHomeTeam(),
+                match.getGoalsGuestTeam() + 1));
+        match.increaseGoalsGuestTeam(goal);
+    }
+
+    void addHomeGoal(Match match, int minute) {
         Player goalMaker = getScorer(match.getHomeTeam());
         Goal goal = new Goal(minute, match.getHomeTeam(), goalMaker, null, new Result(match.getGoalsHomeTeam() + 1,
                 match.getGoalsGuestTeam()));

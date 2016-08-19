@@ -140,12 +140,12 @@ public class LeagueServiceTest {
 
     private void setUpTimeTable() {
         TimeTable timeTable = new TimeTable();
-        MatchDay matchDay1 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_2, TEAM_3, 3, 2)));
-        MatchDay matchDay2 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_3, TEAM_1, 3, 2)));
-        MatchDay matchDay3 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_1, TEAM_2, 2, 2)));
-        MatchDay matchDay4 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_3, TEAM_2, 0, 2)));
-        MatchDay matchDay5 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_1, TEAM_3, 1, 2)));
-        MatchDay matchDay6 = new MatchDay(Lists.newArrayList(buildMatch(TEAM_2, TEAM_1, 4, 1)));
+        MatchDay matchDay1 = new MatchDay(Lists.newArrayList(createMatch(TEAM_2, TEAM_3, 3, 2)));
+        MatchDay matchDay2 = new MatchDay(Lists.newArrayList(createMatch(TEAM_3, TEAM_1, 3, 2)));
+        MatchDay matchDay3 = new MatchDay(Lists.newArrayList(createMatch(TEAM_1, TEAM_2, 2, 2)));
+        MatchDay matchDay4 = new MatchDay(Lists.newArrayList(createMatch(TEAM_3, TEAM_2, 0, 2)));
+        MatchDay matchDay5 = new MatchDay(Lists.newArrayList(createMatch(TEAM_1, TEAM_3, 1, 2)));
+        MatchDay matchDay6 = new MatchDay(Lists.newArrayList(createMatch(TEAM_2, TEAM_1, 4, 1)));
         timeTable.addMatchDays(Lists.newArrayList(matchDay1, matchDay2, matchDay3, matchDay4, matchDay5, matchDay6));
         timeTable.setCurrentMatchDay(6);
         ReflectionTestUtils.setField(leagueService, "timeTable", timeTable);

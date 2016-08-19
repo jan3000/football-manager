@@ -7,6 +7,7 @@ import de.footballmanager.backend.comparator.ResultComparator;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.LeagueTestUtil;
+import de.footballmanager.backend.util.TestUtil;
 import jersey.repackaged.com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -23,8 +24,6 @@ import static org.junit.Assert.*;
 
 public class ResultServiceTest {
 
-    private static final String TEAM_1 = "Team1";
-    private static final String TEAM_2 = "Team2";
     private ResultService resultService;
 
     @Before
@@ -32,7 +31,44 @@ public class ResultServiceTest {
         resultService = new ResultService();
     }
 
+    @Test
+    public void addHomeGoal() {
+        // given
+        Match match = createMatch();
+        assertEquals(0, match.getGoals().size());
 
+        // when
+        int minute = 12;
+        resultService.addHomeGoal(match, minute);
+
+        // then
+        assertGoalIsMade(match, minute, 1, 0);
+    }
+
+    @Test
+    public void addGuestGoal() {
+        // given
+        Match match = createMatch();
+        assertEquals(0, match.getGoals().size());
+
+        // when
+        int minute = 12;
+        resultService.addGuestGoal(match, minute);
+
+        // then
+        assertGoalIsMade(match, minute, 0, 1);
+    }
+
+    private void assertGoalIsMade(Match match, int minute, int expectedHomeGoals, int expectedGuastGoals) {
+        assertNotNull(match);
+        assertEquals(1, match.getGoals().size());
+        final Goal goal = match.getGoals().get(0);
+        assertEquals(expectedHomeGoals, goal.getNewResult().getHomeGoals());
+        assertEquals(expectedGuastGoals, goal.getNewResult().getGuestGoals());
+        assertEquals(minute, goal.getMinute());
+        assertNotNull(goal.getTeam());
+        assertNotNull(goal.getScorer());
+    }
 
     @Test
     public void calculateNextMinuteAddsOneMinuteToMatch() {
@@ -61,8 +97,8 @@ public class ResultServiceTest {
 
     private Match createMatch() {
         Match match = new Match();
-        match.setHomeTeam(new Team(TEAM_1));
-        match.setGuestTeam(new Team(TEAM_2));
+        match.setHomeTeam(TestUtil.createTeam("Homie"));
+        match.setGuestTeam(TestUtil.createTeam("Guesty"));
         return match;
     }
 
