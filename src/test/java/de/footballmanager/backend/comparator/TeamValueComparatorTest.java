@@ -17,8 +17,8 @@ import static org.fest.assertions.Assertions.assertThat;
 public class TeamValueComparatorTest {
 
 
-    public static final String TEAM_1 = "team1";
-    public static final String TEAM_2 = "team2";
+    private static final String TEAM_1 = "team1";
+    private static final String TEAM_2 = "team2";
     private Map<Team, TableEntry> teamTableEntryMap;
     private Team team1;
     private Team team2;

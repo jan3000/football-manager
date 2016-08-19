@@ -30,13 +30,6 @@ public class LeagueService {
     @Autowired
     private TrialAndErrorTimeTableService timeTableService;
 
-    private static final Predicate<Match> IS_ENDED_PREDICATE = new Predicate<Match>() {
-        @Override
-        public boolean apply(Match input) {
-            return input.isFinished();
-        }
-    };
-
     private League league;
     private TimeTable timeTable;
     private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
@@ -75,7 +68,7 @@ public class LeagueService {
     }
 
     private boolean haveAllMatchesEnded(List<Match> matches) {
-        return Collections2.filter(matches, IS_ENDED_PREDICATE).size() == matches.size();
+        return Collections2.filter(matches, Match::isFinished).size() == matches.size();
     }
 
     public TimeTable getTimeTable() {
