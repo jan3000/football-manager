@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.stream.IntStream;
 
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -22,7 +24,16 @@ import de.footballmanager.backend.exception.TimeTableCreationStuckException;
 @Service
 public class TrialAndErrorTimeTableService {
 
-    public TimeTable createTimeTable(final List<Team> teams) {
+    private List<DateTime> getMatchDates() {
+        final DateTime startDate = new DateTime("2015-08-15");
+        List<DateTime> dates = Lists.newArrayListWithCapacity(34);
+        IntStream.range(0, 17).forEach(i -> dates.add(startDate.plusWeeks(i)));
+        final DateTime startDateSecondHalf = startDate.plusWeeks(17).plusWeeks(6);
+        IntStream.range(0, 17).forEach(i -> dates.add(startDateSecondHalf.plusWeeks(i)));
+        return dates;
+    }
+
+    TimeTable createTimeTable(final List<Team> teams) {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(teams),
                 "if you like to create a timeTable, please pass some teams");
 
@@ -32,12 +43,16 @@ public class TrialAndErrorTimeTableService {
 
         List<MatchDay> allMatchDays = Lists.newArrayList(firstRoundMatchDays);
         allMatchDays.addAll(secondRoundMatchDays);
+        List<DateTime> matchDates = getMatchDates();
+        allMatchDays.forEach(match -> {
+            match.setDate(matchDates.remove(0));
+        });
         TimeTable timeTable = new TimeTable();
         timeTable.addMatchDays(allMatchDays);
         return timeTable;
     }
 
-    protected List<MatchDay> getSecondRoundMatches(final List<MatchDay> firstRoundMatches) {
+    List<MatchDay> getSecondRoundMatches(final List<MatchDay> firstRoundMatches) {
         Preconditions.checkNotNull("firstRoundMatches must be set to add secondRoundMatches", firstRoundMatches);
 
         List<MatchDay> secondRoundMatchDays = Lists.newArrayList();

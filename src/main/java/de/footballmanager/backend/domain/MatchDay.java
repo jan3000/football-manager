@@ -3,9 +3,12 @@ package de.footballmanager.backend.domain;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.footballmanager.backend.serializer.CustomDateSerializer;
 import org.joda.time.DateTime;
 
 import com.google.common.collect.Lists;
+
 
 public class MatchDay {
 
@@ -23,6 +26,7 @@ public class MatchDay {
         this.matches = matches;
     }
 
+    @JsonSerialize(using = CustomDateSerializer.class)
     public DateTime getDate() {
         return date;
     }

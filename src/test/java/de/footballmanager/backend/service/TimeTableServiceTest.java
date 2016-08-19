@@ -312,6 +312,7 @@ public class TimeTableServiceTest {
         List<MatchDay> matchDays = timeTable.getAllMatchDays();
         assertNotNull(matchDays);
         assertEquals(NUMBER_OF_MATCH_DAYS, matchDays.size());
+        assertNotNull(matchDays.get(0).getDate());
 
         assertAppearanceOfTeamsInMatchDays(matchDays);
         assertAllTeamsHaveSameSumOfMatches2(matchDays, NUMBER_OF_MATCH_DAYS);

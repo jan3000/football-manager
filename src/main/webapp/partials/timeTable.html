@@ -1,13 +1,18 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-offset-1 col-sm-7">
-            <div class="col-sm-6">
+            <div class="col-sm-3">
                 <h4>Match day: {{shownMatchDay}}</h4>
             </div>
-            <div class="btn btn-success" ng-disabled="matchDayNumber === 1"
-                 ng-click="getPreviousMatchDay()">previous</div>
-            <div class="btn btn-success" ng-disabled="matchDayNumber === 34" ng-click="getNextMatchDay()">next</div>
-            <!--<div class="btn btn-success" ng-click="runNextMatchDay()">run</div>-->
+            <div class="col-sm-3">
+                <h4>{{matchDate}}</h4>
+            </div>
+            <div class="col-sm-6">
+                <div class="btn btn-success" ng-disabled="matchDayNumber === 1"
+                     ng-click="getPreviousMatchDay()">previous</div>
+                <div class="btn btn-success" ng-disabled="matchDayNumber === 34" ng-click="getNextMatchDay()">next</div>
+                <!--<div class="btn btn-success" ng-click="runNextMatchDay()">run</div>-->
+            </div>
         </div>
     </div>
 

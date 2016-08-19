@@ -7,9 +7,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.joda.time.DateTime;
 
 public class TimeTable {
 
+    private DateTime startDateOfSeason;
     private int currentMatchDay = 1;
     private final List<MatchDay> matchDays = Lists.newArrayList();
 

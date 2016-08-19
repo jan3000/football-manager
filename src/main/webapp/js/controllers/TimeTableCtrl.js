@@ -25,8 +25,9 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
         $log.log('getMatchDay: ' + matchDay);
         $http.get('rest/home/timeTable/' + matchDay).then(function (result) {
             $scope.getTable(matchDay);
-            //$log.log('getMatchDay: ' + JSON.stringify(result));
+            $log.log('getMatchDay: ' + JSON.stringify(result));
             $scope.shownMatchDay = result.data.matchDayNumber;
+            $scope.matchDate = result.data.date;
             //$log.log('$scope.shownMatchDay: ' + $scope.shownMatchDay);
             $scope.matches = result.data.matches;
         });
