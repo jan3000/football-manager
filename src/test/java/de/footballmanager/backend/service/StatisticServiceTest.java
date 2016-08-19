@@ -11,9 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static de.footballmanager.backend.util.TestUtil.TEAM_1;
-import static de.footballmanager.backend.util.TestUtil.TEAM_2;
-import static de.footballmanager.backend.util.TestUtil.buildMatch;
+import static de.footballmanager.backend.util.TestUtil.*;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class StatisticServiceTest {

@@ -1,11 +1,8 @@
 package de.footballmanager.backend.service;
 
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
+import com.google.common.collect.Maps;
+import de.footballmanager.backend.comparator.ResultComparator;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.LeagueTestUtil;
@@ -13,9 +10,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.google.common.collect.Maps;
-
-import de.footballmanager.backend.comparator.ResultComparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import static org.fest.assertions.Assertions.assertThat;
 
