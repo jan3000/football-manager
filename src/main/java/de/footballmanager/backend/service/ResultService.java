@@ -21,19 +21,14 @@ public class ResultService {
     private static final Random RANDOM = new Random();
 
     public void calculateNextMinute(List<Match> matches) {
-        for (Match match : matches) {
-            if (!match.isFinished()) {
-                simulateMatchMinute(match, match.getMinute());
-            }
-        }
+        matches.stream()
+                .filter(match -> !match.isFinished())
+                .forEach(match -> simulateMatchMinute(match, match.getMinute()));
     }
 
     private void simulateMatchMinute(Match match, int minute) {
         if (isGoalInThisMinute(match.getHomeTeam().getStrength(), true)) {
-            Player goalMaker = getScorer(match.getHomeTeam());
-            Goal goal = new Goal(minute, match.getHomeTeam(), goalMaker, null, new Result(match.getGoalsHomeTeam() + 1,
-                    match.getGoalsGuestTeam()));
-            match.increaseGoalsHomeTeam(goal);
+            addGoal(match, minute);
         }
 
         if (isGoalInThisMinute(match.getGuestTeam().getStrength(), false)) {
@@ -51,8 +46,15 @@ public class ResultService {
         // TODO cards, injuries, changes
     }
 
+    private void addGoal(Match match, int minute) {
+        Player goalMaker = getScorer(match.getHomeTeam());
+        Goal goal = new Goal(minute, match.getHomeTeam(), goalMaker, null, new Result(match.getGoalsHomeTeam() + 1,
+                match.getGoalsGuestTeam()));
+        match.increaseGoalsHomeTeam(goal);
+    }
+
     @Cacheable(cacheNames = "scorerMaps", key = "#team.name")
-    protected Player getScorer(Team team) {
+    Player getScorer(Team team) {
         Preconditions.checkArgument(team.getName() != null, "team must have a name");
         Preconditions.checkArgument(!team.getPlayers().isEmpty(), "no players set in team %s", team.getName());
         Map<Integer, Player> scoreToPlayer;
@@ -67,8 +69,10 @@ public class ResultService {
         return scoreToPlayer.get(getMaxKey(scoreToPlayer));
     }
 
-    private Integer getMaxKey(Map<Integer, Player> scoreToPlayer) {
-        return scoreToPlayer.keySet().stream().max(Comparator.naturalOrder()).get();
+    Integer getMaxKey(Map<Integer, Player> scoreToPlayer) {
+        return scoreToPlayer.keySet().stream()
+                .max(Comparator.naturalOrder())
+                .orElseThrow(() -> new IllegalArgumentException("failed to get current scorer"));
     }
 
 
@@ -87,7 +91,7 @@ public class ResultService {
      * @deprecated use calculateNextMinute() instead.
      */
     @Deprecated()
-    public void calculateResult(final Match match) {
+    void calculateResult(final Match match) {
         int additionalTime = new Random().nextInt(5);
         match.setAdditionalTime(additionalTime);
         for (int minute = 1; minute <= 90 + additionalTime; minute++) {

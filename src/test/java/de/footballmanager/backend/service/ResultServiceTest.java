@@ -1,11 +1,13 @@
 package de.footballmanager.backend.service;
 
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.comparator.ResultComparator;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.LeagueTestUtil;
+import jersey.repackaged.com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,11 +16,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.stream.IntStream;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.*;
 
 public class ResultServiceTest {
 
+    private static final String TEAM_1 = "Team1";
+    private static final String TEAM_2 = "Team2";
     private ResultService resultService;
 
     @Before
@@ -26,13 +32,80 @@ public class ResultServiceTest {
         resultService = new ResultService();
     }
 
+
+
+    @Test
+    public void calculateNextMinuteAddsOneMinuteToMatch() {
+        List<Match> matches = Lists.newArrayList();
+        Match match = createMatch();
+        matches.add(match);
+        assertEquals(1, match.getMinute());
+        resultService.calculateNextMinute(matches);
+        assertNotNull(matches);
+        assertEquals(1, matches.size());
+        assertEquals(2, match.getMinute());
+        assertFalse(match.isFinished());
+    }
+
+    @Test
+    public void calculateNextMinuteFinished() {
+        List<Match> matches = Lists.newArrayList();
+        Match match = createMatch();
+        IntStream.range(1, 89).forEach(i -> match.increaseMinute());
+        matches.add(match);
+        assertEquals(89, match.getMinute());
+        resultService.calculateNextMinute(matches);
+        assertEquals(90, match.getMinute());
+        assertTrue(match.isFinished());
+    }
+
+    private Match createMatch() {
+        Match match = new Match();
+        match.setHomeTeam(new Team(TEAM_1));
+        match.setGuestTeam(new Team(TEAM_2));
+        return match;
+    }
+
+    @Test
+    public void getMaxKey() {
+        assertMaxKey(20);
+    }
+
+    @Test
+    public void getMaxKeyEqualKeys() {
+        assertMaxKey(40);
+    }
+
+    private void assertMaxKey(int key1) {
+        Map<Integer, Player> valueToPlayer = Maps.newHashMap();
+        valueToPlayer.put(key1, createPlayer("Wood", Position.DEFENSIVE_MIDFIELDER, 12));
+        valueToPlayer.put(40, createPlayer("Water", Position.DEFENSIVE_MIDFIELDER, 12));
+        Integer maxKey = resultService.getMaxKey(valueToPlayer);
+        assertNotNull(maxKey);
+        assertEquals(Integer.valueOf(40), maxKey);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getMaxKeyEmptyMap() {
+        resultService.getMaxKey(Maps.newHashMap());
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getScorerNoPlayersSet() {
+        Team team = new Team("Hamburger SV");
+        resultService.getScorer(team);
+    }
+
     @Test
     public void getScorer() {
         Team team = new Team("Hamburger SV");
-        Player player = createPlayer("Furtok", Position.STRIKER, 88);
-        team.getPlayers().add(player);
+        Player player1 = createPlayer("Water", Position.STRIKER, 88);
+        Player player2 = createPlayer("Wood", Position.STRIKER, 87);
+        team.getPlayers().add(player1);
+        team.getPlayers().add(player2);
         Player scorer = resultService.getScorer(team);
-        assertThat(scorer).isNotNull();
+        assertThat(scorer).isIn(Sets.newHashSet(player1, player2));
     }
 
     private Player createPlayer(String lastName, Position position, int strength) {
@@ -41,6 +114,10 @@ public class ResultServiceTest {
         return player;
     }
 
+
+    // -------------------------------------------------------------------------------
+    // TODO: where to put this
+    // -------------------------------------------------------------------------------
     @Test
     @Ignore
     public void calculateResult() throws Exception {
