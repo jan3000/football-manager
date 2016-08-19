@@ -51,7 +51,7 @@ public class TrialAndErrorTimeTableService {
     }
 
     List<MatchDay> getSecondRoundMatches(final List<MatchDay> firstRoundMatches) {
-        Preconditions.checkNotNull("firstRoundMatches must be set to add secondRoundMatches", firstRoundMatches);
+        Preconditions.checkNotNull(firstRoundMatches, "firstRoundMatches must be set to add secondRoundMatches");
 
         List<MatchDay> secondRoundMatchDays = Lists.newArrayList();
         int numberOfMatchDaysFirstRound = firstRoundMatches.size();
@@ -185,7 +185,7 @@ public class TrialAndErrorTimeTableService {
 
     protected void addMatchesToMatchDayIfNotContainedAlready(final MatchDay matchDay,
                                                              final List<Match> possibleMatchesToAdd) {
-        Preconditions.checkNotNull("matchDay must be set", matchDay);
+        Preconditions.checkNotNull(matchDay, "matchDay must be set");
         Preconditions.checkArgument(!CollectionUtils.isEmpty(possibleMatchesToAdd));
         for (Match match : possibleMatchesToAdd) {
             if (isTeamNotInMatchDay(matchDay, match.getHomeTeam())
@@ -196,7 +196,7 @@ public class TrialAndErrorTimeTableService {
     }
 
     protected boolean isTeamNotInMatchDay(final MatchDay matchDay, final Team team) {
-        Preconditions.checkNotNull("matchDay should not be null in isTeamNotInMatchDay", matchDay);
+        Preconditions.checkNotNull(matchDay, "matchDay should not be null in isTeamNotInMatchDay");
         return !matchDay.containsTeam(team);
     }
 

@@ -21,7 +21,7 @@ public class League {
 
     public League(final List<Team> teams) {
         super();
-        Preconditions.checkNotNull("teams must be set to create a league", teams);
+        Preconditions.checkNotNull(teams, "teams must be set to create a league");
         this.teams = teams;
     }
 

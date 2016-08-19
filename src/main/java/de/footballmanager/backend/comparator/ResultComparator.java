@@ -2,6 +2,7 @@ package de.footballmanager.backend.comparator;
 
 import de.footballmanager.backend.domain.Result;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Map;
 

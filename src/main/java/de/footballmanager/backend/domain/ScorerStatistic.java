@@ -39,7 +39,7 @@ public class ScorerStatistic implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-        Preconditions.checkArgument(o instanceof ScorerStatistic, "object i not of type ScorerStatistic");
+        Preconditions.checkArgument(o instanceof ScorerStatistic, "object is not of type ScorerStatistic");
         ScorerStatistic that = (ScorerStatistic) o;
         if (that.getGoals() > this.getGoals()) {
             return 1;

@@ -23,7 +23,6 @@ public class TimeTable {
         Preconditions.checkArgument(matchDayNumber <= matchDays.size(), "matchDay number must not exceed " +
                 matchDays.size());
         MatchDay matchDay = matchDays.get(matchDayNumber - 1);
-//        System.out.println("matchDay: " + matchDay);
         return matchDay;
     }
 
@@ -46,12 +45,12 @@ public class TimeTable {
 
     public String print() {
         StringBuffer buffi = new StringBuffer();
-        buffi.append("TimeTable\n");
+        buffi.append("TimeTable%n");
         for (MatchDay matchDay : matchDays) {
-            buffi.append(String.format("%s\n", StringUtils.repeat("-", 50)));
-            buffi.append(String.format("MatchDay %s:\n", matchDay.getMatchDayNumber()));
+            buffi.append(String.format("%s%n", StringUtils.repeat("-", 50)));
+            buffi.append(String.format("MatchDay %s:%n", matchDay.getMatchDayNumber()));
             for (Match match : matchDay.getMatches()) {
-                buffi.append(String.format("%s\n", match.printMatch()));
+                buffi.append(String.format("%s%n", match.printMatch()));
             }
         }
         return buffi.toString();
