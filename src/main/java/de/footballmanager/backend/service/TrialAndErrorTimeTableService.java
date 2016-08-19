@@ -1,25 +1,23 @@
 package de.footballmanager.backend.service;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import de.footballmanager.backend.domain.Match;
+import de.footballmanager.backend.domain.MatchDay;
+import de.footballmanager.backend.domain.Team;
+import de.footballmanager.backend.domain.TimeTable;
+import de.footballmanager.backend.exception.TimeTableCreationStuckException;
+import org.joda.time.DateTime;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.stream.IntStream;
-
-import org.joda.time.DateTime;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import de.footballmanager.backend.domain.Match;
-import de.footballmanager.backend.domain.MatchDay;
-import de.footballmanager.backend.domain.Team;
-import de.footballmanager.backend.domain.TimeTable;
-import de.footballmanager.backend.exception.TimeTableCreationStuckException;
 
 @Service
 public class TrialAndErrorTimeTableService {
@@ -71,7 +69,7 @@ public class TrialAndErrorTimeTableService {
     }
 
     protected List<MatchDay> buildAllPossibleMatchDayPermutationsRetry(final List<Team> teams,
-            final List<Match> allFirstRoundMatches) {
+                                                                       final List<Match> allFirstRoundMatches) {
 
         List<MatchDay> result = null;
         boolean goOn = true;
@@ -86,8 +84,8 @@ public class TrialAndErrorTimeTableService {
         return result;
     }
 
-    protected  List<MatchDay> buildAllPossibleMatchDayPermutations(final List<Team> teams,
-            final List<Match> allFirstRoundMatches) throws TimeTableCreationStuckException {
+    protected List<MatchDay> buildAllPossibleMatchDayPermutations(final List<Team> teams,
+                                                                  final List<Match> allFirstRoundMatches) throws TimeTableCreationStuckException {
         int numberOfMatchDays = getNumberOfMatchDaysOfOneRound(teams);
         MatchDay[] newMatchDays = new MatchDay[numberOfMatchDays];
 
@@ -108,7 +106,7 @@ public class TrialAndErrorTimeTableService {
     }
 
     protected MatchDay addNextMatchDayBasedOnScoring(final MatchDay[] formerMatchDays,
-            final List<Match> stillAvailableMatches, final int numberOfMatchesPerMatchDay)
+                                                     final List<Match> stillAvailableMatches, final int numberOfMatchesPerMatchDay)
             throws TimeTableCreationStuckException {
 
         // get number of new match day
@@ -160,7 +158,7 @@ public class TrialAndErrorTimeTableService {
     }
 
     protected void addMatchesWithMinimalScore(final MatchDay newMatchDay,
-            final Map<Match, Integer> matchToScore, final int minimalValue) {
+                                              final Map<Match, Integer> matchToScore, final int minimalValue) {
         // get all matches with minimal value
         List<Match> matchesWithMinimalScore = getMatchesWithSameScore(matchToScore, minimalValue);
         addMatchesToMatchDayIfNotContainedAlready(newMatchDay, matchesWithMinimalScore);
@@ -186,7 +184,7 @@ public class TrialAndErrorTimeTableService {
     }
 
     protected void addMatchesToMatchDayIfNotContainedAlready(final MatchDay matchDay,
-            final List<Match> possibleMatchesToAdd) {
+                                                             final List<Match> possibleMatchesToAdd) {
         Preconditions.checkNotNull("matchDay must be set", matchDay);
         Preconditions.checkArgument(!CollectionUtils.isEmpty(possibleMatchesToAdd));
         for (Match match : possibleMatchesToAdd) {
@@ -203,7 +201,7 @@ public class TrialAndErrorTimeTableService {
     }
 
     protected Map<Match, Integer> calculateScoreMapping(final List<Match> allPossibleMatches,
-            final MatchDay formerMatchDay) {
+                                                        final MatchDay formerMatchDay) {
         Map<Match, Integer> matchToScore = Maps.newHashMap();
         for (Match match : allPossibleMatches) {
 

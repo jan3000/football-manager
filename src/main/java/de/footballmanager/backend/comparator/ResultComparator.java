@@ -1,9 +1,9 @@
 package de.footballmanager.backend.comparator;
 
+import de.footballmanager.backend.domain.Result;
+
 import java.util.Comparator;
 import java.util.Map;
-
-import de.footballmanager.backend.domain.Result;
 
 public class ResultComparator implements Comparator<Result> {
 

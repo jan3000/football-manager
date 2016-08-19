@@ -1,13 +1,12 @@
 package de.footballmanager.backend.domain;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.Lists;
 import de.footballmanager.backend.serializer.CustomDateSerializer;
 import org.joda.time.DateTime;
 
-import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class MatchDay {

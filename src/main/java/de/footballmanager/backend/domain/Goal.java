@@ -10,7 +10,8 @@ public class Goal {
     private Result newResult;
     private KindOfGoal kindOfGoal;
 
-    public Goal() {}
+    public Goal() {
+    }
 
     public Goal(final int minute, final Team team, final Player scorer, final KindOfGoal kindOfGoal,
                 final Result newResult) {

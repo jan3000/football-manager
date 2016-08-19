@@ -2,7 +2,7 @@ package de.footballmanager.backend.domain;
 
 import com.google.common.base.Preconditions;
 
-public class ScorerStatistic implements Comparable{
+public class ScorerStatistic implements Comparable {
     private String player;
     private String team;
     private int goals;

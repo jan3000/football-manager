@@ -23,7 +23,6 @@ public class TeamStatistic {
     private Integer[] placementsInSeason = new Integer[34];
 
 
-
     public TeamStatistic(String teamName) {
         this.teamName = teamName;
         for (int i = 0; i < MINUTES; i++) {

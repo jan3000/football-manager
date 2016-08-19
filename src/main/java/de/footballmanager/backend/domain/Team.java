@@ -15,7 +15,8 @@ public class Team {
     private int strength;
     private List<Player> players = Lists.newArrayList();
 
-    public Team() {}
+    public Team() {
+    }
 
     public Team(final String name) {
         super();

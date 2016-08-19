@@ -1,10 +1,9 @@
 package de.footballmanager.backend.domain;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import de.footballmanager.backend.enumeration.ResultType;
+
+import java.util.List;
 
 public class Match {
 
@@ -21,7 +20,8 @@ public class Match {
     private boolean finished = false;
     private final List<Goal> goals = Lists.newArrayList();
 
-    public Match() {}
+    public Match() {
+    }
 
     public Match(final Team homeTeam, final Team guestTeam) {
         super();
@@ -198,6 +198,7 @@ public class Match {
         builder.append("]");
         return builder.toString();
     }
+
     private class PlayerChange {
         private int minute;
         private Player in;

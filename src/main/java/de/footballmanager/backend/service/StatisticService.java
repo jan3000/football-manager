@@ -6,8 +6,6 @@ import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

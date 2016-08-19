@@ -8,7 +8,7 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
     $scope.getCurrentMatchDay = function () {
         return TimeTableService.getCurrentMatchDay();
     };
-    
+
     $scope.getPreviousMatchDay = function () {
         if ($scope.shownMatchDay > 1) {
             $scope.shownMatchDay--;
