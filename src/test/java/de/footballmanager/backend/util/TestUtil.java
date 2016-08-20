@@ -1,11 +1,9 @@
 package de.footballmanager.backend.util;
 
 import com.google.common.collect.Lists;
-import de.footballmanager.backend.domain.Match;
-import de.footballmanager.backend.domain.Player;
-import de.footballmanager.backend.domain.Result;
-import de.footballmanager.backend.domain.Team;
+import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
+import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -18,6 +16,19 @@ public class TestUtil {
     public static final String TEAM_3 = "team3";
     public static final String TEAM_4 = "team4";
 
+    public static League createLeague() {
+        League league = new League();
+        List<Team> teams = Lists.newArrayList();
+        IntStream.range(1,10).forEach(i -> teams.add(createTeam("Team" + i)));
+        league.setTeams(teams);
+        league.setTimeTable(createTimeTable(teams));
+        return league;
+    }
+
+    public static TimeTable createTimeTable(List<Team> teams) {
+        TrialAndErrorTimeTableService timeTableService = new TrialAndErrorTimeTableService();
+        return timeTableService.createTimeTable(teams);
+    }
 
     public static Match createMatch(String team1, String team2, int homeGoals, int guestGoals) {
         Match match = new Match();
@@ -30,6 +41,7 @@ public class TestUtil {
 
     public static Team createTeam(String name) {
         Team team = new Team(name);
+        team.setStrength(88);
         List<Player> players = Lists.newArrayList();
 
         IntStream.range(1, 11).forEach(i -> players.add(createPlayer("Mr.", String.valueOf(i))));

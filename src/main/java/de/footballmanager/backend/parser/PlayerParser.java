@@ -26,7 +26,7 @@ public class PlayerParser {
             Position.LEFT_DEFENDER, Position.LEFT_MIDFIELDER, Position.LEFT_WINGER, Position.OFFENSIVE_MIDFIELDER,
             Position.RIGHT_DEFENDER, Position.RIGHT_MIDFIELDER, Position.RIGHT_WINGER, Position.STOPPER,
             Position.STRIKER};
-    private static final int MINIMAL_NUMBER_OF_PLAYERS = 20;
+    static final int MINIMAL_NUMBER_OF_PLAYERS = 20;
     private static final Path RESOURCE_DIRECTORY = Paths.get("src/main/resources");
     private static final Random RANDOM = new Random();
 
@@ -123,17 +123,6 @@ public class PlayerParser {
         return names;
     }
 
-    public static void main(String[] args) {
-        PlayerParser playerParser = new PlayerParser();
-        League league = new League();
-        List<Team> teams = Lists.newArrayList();
-        Team team = new Team("Hamburg");
-        team.setStrength(80);
-        teams.add(team);
-
-        league.setTeams(teams);
-        playerParser.parsePlayerForLeague(league);
-    }
 
 
 }

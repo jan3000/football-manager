@@ -31,7 +31,7 @@ public class TrialAndErrorTimeTableService {
         return dates;
     }
 
-    TimeTable createTimeTable(final List<Team> teams) {
+    public TimeTable createTimeTable(final List<Team> teams) {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(teams),
                 "if you like to create a timeTable, please pass some teams");
 
