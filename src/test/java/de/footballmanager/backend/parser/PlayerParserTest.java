@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import static de.footballmanager.backend.parser.PlayerParser.MINIMAL_NUMBER_OF_PLAYERS;
 import static de.footballmanager.backend.util.TestUtil.createLeague;
-import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -51,8 +50,8 @@ public class PlayerParserTest {
 
     private boolean areTeamsHavingMoreThan20Players(List<Team> teams) {
         return teams.stream()
-                        .filter(team -> team.getPlayers().size() < MINIMAL_NUMBER_OF_PLAYERS)
-                        .collect(Collectors.toList()).isEmpty();
+                .filter(team -> team.getPlayers().size() < MINIMAL_NUMBER_OF_PLAYERS)
+                .collect(Collectors.toList()).isEmpty();
     }
 
     private boolean doAllPlayersHaveNames(List<Team> teams) {

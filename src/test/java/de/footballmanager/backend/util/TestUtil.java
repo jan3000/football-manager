@@ -19,7 +19,7 @@ public class TestUtil {
     public static League createLeague() {
         League league = new League();
         List<Team> teams = Lists.newArrayList();
-        IntStream.range(1,10).forEach(i -> teams.add(createTeam("Team" + i)));
+        IntStream.range(1, 10).forEach(i -> teams.add(createTeam("Team" + i)));
         league.setTeams(teams);
         league.setTimeTable(createTimeTable(teams));
         return league;
@@ -47,7 +47,7 @@ public class TestUtil {
         IntStream.range(1, 11).forEach(i -> players.add(createPlayer("Mr.", String.valueOf(i))));
         team.setPlayers(players);
         team.setName(name);
-        return  team;
+        return team;
     }
 
     public static Player createPlayer(String firstName, String lastName) {

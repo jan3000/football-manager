@@ -9,9 +9,9 @@
                 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                 http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
-    <context:annotation-config />
-    <context:component-scan base-package="de.footballmanager.*" />
-    <cache:annotation-driven />
+    <context:annotation-config/>
+    <context:component-scan base-package="de.footballmanager.*"/>
+    <cache:annotation-driven/>
 
     <!-- simple cache manager -->
     <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
