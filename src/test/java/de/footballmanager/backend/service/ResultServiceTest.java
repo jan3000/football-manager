@@ -3,7 +3,6 @@ package de.footballmanager.backend.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.comparator.ResultComparator;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.LeagueTestUtil;
@@ -13,6 +12,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -182,6 +182,25 @@ public class ResultServiceTest {
         resultToCountTreeMap.putAll(resultToCountMap);
         printMap(resultToCountTreeMap);
 
+    }
+
+
+    public class ResultComparator implements Comparator<Result> {
+
+        private final Map<Result, Integer> map;
+
+        public ResultComparator(final Map<Result, Integer> map) {
+            super();
+            this.map = map;
+        }
+
+        public int compare(final Result result1, final Result result2) {
+            if (map.get(result1) > map.get(result2)) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
     }
 
     private Map<Result, Integer> fillAndPrintMap(final TimeTable timeTable, final Map<Result, Integer> resultToCountMap) {

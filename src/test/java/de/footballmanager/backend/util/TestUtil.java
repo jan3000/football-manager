@@ -41,4 +41,8 @@ public class TestUtil {
     public static Player createPlayer(String firstName, String lastName) {
         return new Player.Builder(firstName, lastName).setPosition(Position.LEFT_MIDFIELDER).build();
     }
+
+    public static Result createResult(int homeGoals, int guestGoals) {
+        return new Result(homeGoals, guestGoals);
+    }
 }
