@@ -32,7 +32,16 @@ public class StrengthServiceTest {
         positionToPlayer.put(GOALY, createPlayer(GOALY, 100));
         positionToPlayer.put(CENTRAL_STOPPER, createPlayer(CENTRAL_STOPPER, 100));
         positionToPlayer.put(CENTRAL_DEFENSIVE_MIDFIELDER, createPlayer(CENTRAL_DEFENSIVE_MIDFIELDER, 100));
-        assertEquals(300, strengthService.getStrength(positionToPlayer));
+        assertEquals(100, strengthService.getStrength(positionToPlayer));
+    }
+
+    @Test
+    public void getStrengthNotIdealPosition() {
+        HashMap<Position, Player> positionToPlayer = Maps.newHashMap();
+        positionToPlayer.put(GOALY, createPlayer(GOALY, 100));
+        positionToPlayer.put(CENTRAL_STOPPER, createPlayer(LEFT_STOPPER, 100));
+        positionToPlayer.put(CENTRAL_DEFENSIVE_MIDFIELDER, createPlayer(CENTRAL_DEFENSIVE_MIDFIELDER, 100));
+        assertEquals(89, strengthService.getStrength(positionToPlayer));
     }
 
 
@@ -51,7 +60,9 @@ public class StrengthServiceTest {
                 new Object[]{LEFT_DEFENDER, LEFT_DEFENDER, 100},
                 new Object[]{GOALY, LEFT_DEFENDER, 100 - COEFFICIENT_WRONG_GOALY},
                 new Object[]{CENTRAL_STRIKER, GOALY, 100 - COEFFICIENT_WRONG_GOALY},
+                new Object[]{CENTRAL_STRIKER, LEFT_STRIKER, 100 - COEFFICIENT_SAME_LEVEL - COEFFICIENT_WING_TO_CENTRAL},
                 new Object[]{CENTRAL_STRIKER, CENTRAL_STOPPER, 100 - COEFFICIENT_NOT_SAME_LEVEL},
+                new Object[]{LEFT_DEFENDER, RIGHT_DEFENDER, 100 - COEFFICIENT_OPPOSITE_SIDE - COEFFICIENT_SAME_LEVEL},
                 new Object[]{CENTRAL_STRIKER, LEFT_STRIKER, 100 - COEFFICIENT_WING_TO_CENTRAL - COEFFICIENT_SAME_LEVEL},
                 new Object[]{LEFT_STRIKER, CENTRAL_STRIKER, 100 - COEFFICIENT_WING_TO_CENTRAL - COEFFICIENT_SAME_LEVEL},
                 new Object[]{CENTRAL_STRIKER, LEFT_DEFENDER, 100 - COEFFICIENT_NOT_SAME_LEVEL - COEFFICIENT_WING_TO_CENTRAL},
