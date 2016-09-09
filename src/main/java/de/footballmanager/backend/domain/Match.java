@@ -11,6 +11,7 @@ import java.util.Map;
 public class Match {
 
     private static final int MINUTES_OF_GAME = 90;
+    public static final int MINUTES_HALF_TIME = 45;
     private Team homeTeam;
     private Team guestTeam;
 
@@ -21,7 +22,8 @@ public class Match {
     private int additionalTime = 0;
     private List<Player> yellowCards;
     private List<Player> redCards;
-    private List<PlayerChange> playerChanges;
+    private List<PlayerChange> playerChangesHomeTeam = Lists.newArrayListWithCapacity(3);
+    private List<PlayerChange> playerChangesGuestTeam = Lists.newArrayListWithCapacity(3);
 
     private final List<Goal> goals = Lists.newArrayList();
     private final Result halfTime = new Result(0, 0);
@@ -61,7 +63,7 @@ public class Match {
 
     public void increaseGoalsHomeTeam(final Goal goal) {
         validateMatchIsRunning();
-        if (goal.getMinute() <= 45) {
+        if (goal.getMinute() <= MINUTES_HALF_TIME) {
             halfTime.increaseHomeGoal();
         }
         result.increaseHomeGoal();
@@ -75,7 +77,7 @@ public class Match {
 
     public void increaseGoalsGuestTeam(final Goal goal) {
         validateMatchIsRunning();
-        if (goal.getMinute() <= 45) {
+        if (goal.getMinute() <= MINUTES_HALF_TIME) {
             halfTime.increaseGuestGoal();
         }
         result.increaseGuestGoal();
@@ -83,7 +85,7 @@ public class Match {
     }
 
 
-    public boolean areTeamsSet() {
+    private boolean areTeamsSet() {
         return guestTeam != null && homeTeam != null;
     }
 
@@ -92,6 +94,33 @@ public class Match {
         return areTeamsSet() && (homeTeam.equals(team) || guestTeam.equals(team));
     }
 
+    public void changePlayer(Player in, Player out, boolean isHomeTeam) {
+        if (isHomeTeam) {
+            Preconditions.checkArgument(positionPlayerMapHomeTeam.values().contains(out), String.format("coming out player {%s} not member of current players", out));
+            Preconditions.checkArgument(homeTeam.getPlayers().contains(in), String.format("coming in player {%s} not member of team", in));
+            Preconditions.checkArgument(playerChangesHomeTeam.size() < 3, "max number of player changes already reached");
+            positionPlayerMapHomeTeam.entrySet().forEach(positionToPlayer -> {
+                Position position = positionToPlayer.getKey();
+                if (position.equals(out.getPosition())) {
+                    System.out.println("changed " + position);
+                    positionPlayerMapHomeTeam.put(position, in);
+                    playerChangesHomeTeam.add(new PlayerChange(minute, in, out));
+                }
+            });
+        }
+    }
+
+    public List<PlayerChange> getPlayerChangesHomeTeam() {
+        return playerChangesHomeTeam;
+    }
+
+    public List<PlayerChange> getPlayerChangesGuestTeam() {
+        return playerChangesGuestTeam;
+    }
+
+    public boolean isStarted() {
+        return isStarted;
+    }
 
     public Map<Position, Player> getPositionPlayerMapHomeTeam() {
         return positionPlayerMapHomeTeam;
@@ -256,6 +285,12 @@ public class Match {
         private int minute;
         private Player in;
         private Player out;
+
+        public PlayerChange(int minute, Player in, Player out) {
+            this.minute = minute;
+            this.in = in;
+            this.out = out;
+        }
 
         public int getMinute() {
             return minute;

@@ -85,12 +85,12 @@ public class HomeController implements FootballManagerFacade{
 
     @Override
     public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
-
+        leagueService.setStartElevenHome(matchDayNumber, teamName, positionToStartEleven);
     }
 
     @Override
     public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
-
+        leagueService.setStartElevenGuest(matchDayNumber, teamName, positionToStartEleven);
     }
 
     @Override

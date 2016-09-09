@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static de.footballmanager.backend.enumeration.Position.*;
+
 public class TestUtil {
 
 
@@ -66,26 +68,30 @@ public class TestUtil {
     public static Map<Position, Player> createStartEleven(Team team) {
         Map<Position, Player> positionPlayerMap = Maps.newHashMap();
         List<Player> players = team.getPlayers();
-        positionPlayerMap.put(Position.GOALY, players.get(0));
-        positionPlayerMap.put(Position.LEFT_DEFENDER, players.get(1));
-        positionPlayerMap.put(Position.LEFT_STOPPER, players.get(2));
-        positionPlayerMap.put(Position.RIGHT_STOPPER, players.get(3));
-        positionPlayerMap.put(Position.RIGHT_DEFENDER, players.get(4));
-        positionPlayerMap.put(Position.CENTRAL_DEFENSIVE_MIDFIELDER, players.get(5));
-        positionPlayerMap.put(Position.LEFT_MIDFIELDER, players.get(6));
-        positionPlayerMap.put(Position.RIGHT_MIDFIELDER, players.get(7));
-        positionPlayerMap.put(Position.CENTRAL_OFFENSIVE_MIDFIELDER, players.get(8));
-        positionPlayerMap.put(Position.LEFT_STRIKER, players.get(9));
-        positionPlayerMap.put(Position.RIGHT_STRIKER, players.get(10));
+        positionPlayerMap.put(GOALY, players.get(0));
+        positionPlayerMap.put(LEFT_DEFENDER, players.get(1));
+        positionPlayerMap.put(LEFT_STOPPER, players.get(2));
+        positionPlayerMap.put(RIGHT_STOPPER, players.get(3));
+        positionPlayerMap.put(RIGHT_DEFENDER, players.get(4));
+        positionPlayerMap.put(CENTRAL_DEFENSIVE_MIDFIELDER, players.get(5));
+        positionPlayerMap.put(LEFT_MIDFIELDER, players.get(6));
+        positionPlayerMap.put(RIGHT_MIDFIELDER, players.get(7));
+        positionPlayerMap.put(CENTRAL_OFFENSIVE_MIDFIELDER, players.get(8));
+        positionPlayerMap.put(LEFT_STRIKER, players.get(9));
+        positionPlayerMap.put(RIGHT_STRIKER, players.get(10));
         return positionPlayerMap;
     }
+
+    private static List<Position> positions = Lists.newArrayList(GOALY, LEFT_DEFENDER, LEFT_STOPPER, RIGHT_STOPPER,
+            RIGHT_DEFENDER, CENTRAL_DEFENSIVE_MIDFIELDER, LEFT_MIDFIELDER, RIGHT_MIDFIELDER,
+            CENTRAL_OFFENSIVE_MIDFIELDER, LEFT_STRIKER, RIGHT_STRIKER);
 
     public static Team createTeam(String name) {
         Team team = new Team(name);
         team.setStrength(88);
         List<Player> players = Lists.newArrayList();
 
-        IntStream.range(0, 11).forEach(i -> players.add(createPlayer("Mr.", String.valueOf(i))));
+        IntStream.range(0, 11).forEach(i -> players.add(createPlayer("Mr.", String.valueOf(i), positions.get(i))));
         team.setPlayers(players);
         team.setName(name);
         return team;
@@ -93,12 +99,13 @@ public class TestUtil {
 
     public static Team createTeam(String name, int strength) {
         Team team = createTeam(name);
+        createStartEleven(team);
         team.setStrength(strength);
         return team;
     }
 
-    public static Player createPlayer(String firstName, String lastName) {
-        return new Player.Builder(firstName, lastName).setPosition(Position.LEFT_MIDFIELDER).build();
+    public static Player createPlayer(String firstName, String lastName, Position position) {
+        return new Player.Builder(firstName, lastName).setPosition(position).build();
     }
 
     public static Player createPlayer(Position position, int strength) {

@@ -5,6 +5,8 @@ import de.footballmanager.backend.enumeration.Position;
 import org.joda.time.DateTime;
 import org.joda.time.Years;
 
+import java.util.Objects;
+
 public class Player {
 
     private final String lastname;
@@ -104,6 +106,25 @@ public class Player {
 
     public int getAge() {
         return Years.yearsBetween(getDateOfBirth(), new DateTime()).getYears();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return strength == player.strength &&
+                Objects.equals(lastname, player.lastname) &&
+                Objects.equals(firstname, player.firstname) &&
+                position == player.position &&
+                Objects.equals(dateOfBirth, player.dateOfBirth) &&
+                homeCountry == player.homeCountry &&
+                Objects.equals(playerStatistics, player.playerStatistics);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lastname, firstname, position, dateOfBirth, homeCountry, strength, playerStatistics);
     }
 
     @Override
