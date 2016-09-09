@@ -1,6 +1,7 @@
 package de.footballmanager.backend.api;
 
 
+import de.footballmanager.backend.domain.Match;
 import de.footballmanager.backend.domain.Player;
 import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.enumeration.Position;
@@ -16,7 +17,8 @@ public abstract interface FootballManagerFacade {
 
 
     // Match Day
-    public void setStart11(Map<Position, Player> positionToStart11);
+    public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven);
+    public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven);
 
     // Statistics
 

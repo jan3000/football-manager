@@ -62,7 +62,23 @@ public class Match {
         addGoal(goal);
     }
 
-//    public void getAdditionalTime() throws NotSupportedException {
+    public Map<Position, Player> getPositionPlayerMapHomeTeam() {
+        return positionPlayerMapHomeTeam;
+    }
+
+    public void setPositionPlayerMapHomeTeam(Map<Position, Player> positionPlayerMapHomeTeam) {
+        this.positionPlayerMapHomeTeam = positionPlayerMapHomeTeam;
+    }
+
+    public Map<Position, Player> getPositionPlayerMapGuestTeam() {
+        return positionPlayerMapGuestTeam;
+    }
+
+    public void setPositionPlayerMapGuestTeam(Map<Position, Player> positionPlayerMapGuestTeam) {
+        this.positionPlayerMapGuestTeam = positionPlayerMapGuestTeam;
+    }
+
+    //    public void getAdditionalTime() throws NotSupportedException {
 //        throw new NotSupportedException();
 //    }
 

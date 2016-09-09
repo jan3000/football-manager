@@ -22,10 +22,7 @@ import java.util.stream.Stream;
 @Service
 public class PlayerParser {
 
-    private static final Position[] ALL_POSITIONS = new Position[]{Position.DEFENSIVE_MIDFIELDER, Position.GOALY,
-            Position.LEFT_DEFENDER, Position.LEFT_MIDFIELDER, Position.LEFT_WINGER, Position.OFFENSIVE_MIDFIELDER,
-            Position.RIGHT_DEFENDER, Position.RIGHT_MIDFIELDER, Position.RIGHT_WINGER, Position.STOPPER,
-            Position.STRIKER};
+    private static final Position[] ALL_POSITIONS =Position.values();
     static final int MINIMAL_NUMBER_OF_PLAYERS = 20;
     private static final Path RESOURCE_DIRECTORY = Paths.get("src/main/resources");
     private static final Random RANDOM = new Random();
@@ -81,24 +78,24 @@ public class PlayerParser {
         positions = Lists.newArrayListWithCapacity(numberOfPlayers);
         positions.add(Position.GOALY);
         positions.add(Position.GOALY);
-        positions.add(Position.STOPPER);
-        positions.add(Position.STOPPER);
+        positions.add(Position.CENTRAL_STOPPER);
+        positions.add(Position.LEFT_STOPPER);
         positions.add(Position.LEFT_DEFENDER);
         positions.add(Position.LEFT_DEFENDER);
         positions.add(Position.RIGHT_DEFENDER);
         positions.add(Position.RIGHT_DEFENDER);
-        positions.add(Position.DEFENSIVE_MIDFIELDER);
-        positions.add(Position.DEFENSIVE_MIDFIELDER);
+        positions.add(Position.CENTRAL_DEFENSIVE_MIDFIELDER);
+        positions.add(Position.RIGHT_DEFENSIVE_MIDFIELDER);
         positions.add(Position.LEFT_MIDFIELDER);
         positions.add(Position.LEFT_MIDFIELDER);
         positions.add(Position.RIGHT_MIDFIELDER);
-        positions.add(Position.OFFENSIVE_MIDFIELDER);
-        positions.add(Position.OFFENSIVE_MIDFIELDER);
+        positions.add(Position.CENTRAL_OFFENSIVE_MIDFIELDER);
+        positions.add(Position.CENTRAL_OFFENSIVE_MIDFIELDER);
         positions.add(Position.LEFT_WINGER);
         positions.add(Position.RIGHT_WINGER);
         positions.add(Position.RIGHT_WINGER);
-        positions.add(Position.STRIKER);
-        positions.add(Position.STRIKER);
+        positions.add(Position.RIGHT_STRIKER);
+        positions.add(Position.CENTRAL_STRIKER);
 
         for (int i = MINIMAL_NUMBER_OF_PLAYERS; i < numberOfPlayers; i++) {
             positions.add(ALL_POSITIONS[RANDOM.nextInt(ALL_POSITIONS.length)]);

@@ -1,6 +1,8 @@
 package de.footballmanager.backend.controller;
 
+import de.footballmanager.backend.api.FootballManagerFacade;
 import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.service.LeagueService;
 import de.footballmanager.backend.service.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +17,12 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Map;
 
 @Path("/home")
 @RequestScoped //  bean lives as long as a single HTTP request-response cycle
 @Component
-public class HomeController {
+public class HomeController implements FootballManagerFacade{
 
     @Autowired
     private LeagueService leagueService;
@@ -73,6 +76,51 @@ public class HomeController {
     @Produces(MediaType.APPLICATION_JSON)
     public List<ScorerStatistic> getLeagueStatictics() {
         return statisticService.getScorerTable(leagueService.getTeams(), leagueService.getTimeTable());
+    }
+
+    @Override
+    public Team getTeam(String name) {
+        return null;
+    }
+
+    @Override
+    public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
+
+    }
+
+    @Override
+    public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
+
+    }
+
+    @Override
+    public void initGame() {
+
+    }
+
+    @Override
+    public void calculateMatchDay() {
+
+    }
+
+    @Override
+    public void showTable() {
+
+    }
+
+    @Override
+    public void showFormerMatchDay() {
+
+    }
+
+    @Override
+    public void showTeamDetails() {
+
+    }
+
+    @Override
+    public void changeTeamDetails() {
+
     }
 }
 
