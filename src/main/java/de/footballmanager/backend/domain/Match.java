@@ -1,14 +1,21 @@
 package de.footballmanager.backend.domain;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.enumeration.ResultType;
 
 import java.util.List;
+import java.util.Map;
 
 public class Match {
 
     private Team homeTeam;
     private Team guestTeam;
+
+    private Map<Position, Player> positionPlayerMapHomeTeam = Maps.newHashMap();
+    private Map<Position, Player> positionPlayerMapGuestTeam = Maps.newHashMap();
+
     private int minute = 1;
     private int additionalTime = 0;
     private List<Player> yellowCards;
@@ -119,9 +126,9 @@ public class Match {
         builder.append(String.format("%s \t- \t%s \t%s : %s  (%s)", homeTeam.getName(), guestTeam.getName(),
                 result.getHomeGoals(), result.getGuestGoals(), halfTime.print()));
         for (Goal goal : goals) {
-            builder.append(String.format("%n%s. Minute\t%s", goal.getMinute(), goal.getNewResult().print()));
+            builder.append(String.format("\n%s. Minute\t%s", goal.getMinute(), goal.getNewResult().print()));
         }
-        builder.append("%n");
+        builder.append("\n");
         return builder.toString();
     }
 

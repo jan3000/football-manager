@@ -61,7 +61,6 @@ public class LeagueService {
             generateChart(timeTable.getCurrentMatchDay());
             timeTable.incrementCurrentMatchDay();
         }
-        ;
 
         return matchDay;
     }
