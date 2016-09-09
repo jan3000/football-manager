@@ -14,9 +14,9 @@ public class StrengthService {
     static final int COEFFICIENT_SAME_LEVEL = 15;
     static final int COEFFICIENT_NOT_SAME_LEVEL = 40;
     static final int COEFFICIENT_OPPOSITE_SIDE = 20;
-    public static final String LEFT = "LEFT";
-    public static final String RIGHT = "RIGHT";
-    public static final String CENTRAL = "CENTRAL";
+    private static final String LEFT = "LEFT";
+    private static final String RIGHT = "RIGHT";
+    private static final String CENTRAL = "CENTRAL";
 
     public int getStrength(Map<Position, Player> positionToPlayer) {
         int sum = positionToPlayer.keySet().stream()
@@ -83,24 +83,6 @@ public class StrengthService {
 
     private boolean containsValue(Position position1, String left) {
         return position1.name().contains(left);
-    }
-
-    public static class PositionMapping {
-        private Position currentPosition;
-        private Position playersPosition;
-
-        public PositionMapping(Position currentPosition, Position playersPosition) {
-            this.currentPosition = currentPosition;
-            this.playersPosition = playersPosition;
-        }
-
-        public Position getCurrentPosition() {
-            return currentPosition;
-        }
-
-        public Position getPlayersPosition() {
-            return playersPosition;
-        }
     }
 
 }

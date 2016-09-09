@@ -8,9 +8,11 @@ import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.TestUtil;
 import jersey.repackaged.com.google.common.collect.Sets;
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -20,8 +22,8 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.stream.IntStream;
 
-import static de.footballmanager.backend.util.TestUtil.TEAM_1;
-import static de.footballmanager.backend.util.TestUtil.TEAM_2;
+import static de.footballmanager.backend.util.TestUtil.*;
+import static org.easymock.EasyMock.*;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.*;
 
@@ -37,7 +39,7 @@ public class ResultServiceTest {
     @Test
     public void addHomeGoal() {
         // given
-        Match match = createMatch();
+        Match match = createRunningMatch();
         assertEquals(0, match.getGoals().size());
 
         // when
@@ -51,7 +53,7 @@ public class ResultServiceTest {
     @Test
     public void addGuestGoal() {
         // given
-        Match match = createMatch();
+        Match match = createRunningMatch();
         assertEquals(0, match.getGoals().size());
 
         // when
@@ -75,8 +77,9 @@ public class ResultServiceTest {
 
     @Test
     public void calculateNextMinuteAddsOneMinuteToMatch() {
+        StrengthService strengthService = mockStrengthService();
         List<Match> matches = Lists.newArrayList();
-        Match match = createMatch();
+        Match match = createRunningMatch();
         matches.add(match);
         assertEquals(1, match.getMinute());
         resultService.calculateNextMinute(matches);
@@ -84,25 +87,33 @@ public class ResultServiceTest {
         assertEquals(1, matches.size());
         assertEquals(2, match.getMinute());
         assertFalse(match.isFinished());
+        verify(strengthService);
     }
 
     @Test
     public void calculateNextMinuteFinished() {
+
+        StrengthService strengthService = mockStrengthService();
+
         List<Match> matches = Lists.newArrayList();
-        Match match = createMatch();
+        Match match = createRunningMatch();
         IntStream.range(1, 89).forEach(i -> match.increaseMinute());
         matches.add(match);
         assertEquals(89, match.getMinute());
         resultService.calculateNextMinute(matches);
         assertEquals(90, match.getMinute());
         assertTrue(match.isFinished());
+
+        verify(strengthService);
     }
 
-    private Match createMatch() {
-        Match match = new Match();
-        match.setHomeTeam(TestUtil.createTeam("Homie"));
-        match.setGuestTeam(TestUtil.createTeam("Guesty"));
-        return match;
+    private StrengthService mockStrengthService() {
+        StrengthService strengthService = createMock(StrengthService.class);
+        expect(strengthService.getStrength(anyObject())).andReturn(100).times(2);
+
+        replay(strengthService);
+        ReflectionTestUtils.setField(resultService, "strengthService", strengthService);
+        return strengthService;
     }
 
 
@@ -191,7 +202,12 @@ public class ResultServiceTest {
 
     //TODO go on here with testing the resultService
     @Test
-    public void test() {
+    public void bulkResultTest() {
+        StrengthService strengthService = createMock(StrengthService.class);
+        expect(strengthService.getStrength(anyObject())).andReturn(100).anyTimes();
+
+        replay(strengthService);
+        ReflectionTestUtils.setField(resultService, "strengthService", strengthService);
         Team team1 = TestUtil.createTeam(TEAM_1, 80);
         Team team2 = TestUtil.createTeam(TEAM_2, 80);
 
@@ -203,10 +219,11 @@ public class ResultServiceTest {
         Map<Result, Integer> resultToCountMap = Maps.newHashMap();
         createResultToCountMap(resultToCountMap, matches);
         printMap(resultToCountMap);
+        verify(strengthService);
     }
 
     private List<Match> runCompleteMatches(Team team1, Team team2) {
-        List<Match> matches = Lists.newArrayList(TestUtil.createMatch(team1, team2, false));
+        List<Match> matches = Lists.newArrayList(createMatch(team1, team2, false));
         IntStream.range(1,90).forEach(i -> {
             resultService.calculateNextMinute(matches);
         });

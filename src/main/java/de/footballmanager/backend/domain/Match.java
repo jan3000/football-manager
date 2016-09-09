@@ -1,7 +1,7 @@
 package de.footballmanager.backend.domain;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.enumeration.ResultType;
 
@@ -13,8 +13,8 @@ public class Match {
     private Team homeTeam;
     private Team guestTeam;
 
-    private Map<Position, Player> positionPlayerMapHomeTeam = Maps.newHashMap();
-    private Map<Position, Player> positionPlayerMapGuestTeam = Maps.newHashMap();
+    private Map<Position, Player> positionPlayerMapHomeTeam = new MaxSizeHashMap<>(11);
+    private Map<Position, Player> positionPlayerMapGuestTeam = new MaxSizeHashMap<>(11);
 
     private int minute = 1;
     private int additionalTime = 0;
@@ -22,13 +22,13 @@ public class Match {
     private List<Player> redCards;
     private List<PlayerChange> playerChanges;
 
+    private final List<Goal> goals = Lists.newArrayList();
     private final Result halfTime = new Result(0, 0);
     private Result result = new Result(0, 0);
-    private boolean finished = false;
-    private final List<Goal> goals = Lists.newArrayList();
+    private boolean isFinished = false;
+    private boolean isStarted = false;
 
-    public Match() {
-    }
+    public Match() {}
 
     public Match(final Team homeTeam, final Team guestTeam) {
         super();
@@ -36,17 +36,27 @@ public class Match {
         this.guestTeam = guestTeam;
     }
 
-    public ResultType getResultType() {
-        if (result.getHomeGoals() > result.getGuestGoals()) {
-            return ResultType.HOME_WON;
-        } else if (result.getHomeGoals() < result.getGuestGoals()) {
-            return ResultType.GUEST_WON;
-        } else {
-            return ResultType.DRAW;
-        }
+    private void validateMatchPrepared() {
+        Preconditions.checkNotNull(homeTeam, "home team not set");
+        Preconditions.checkNotNull(guestTeam, "guest team not set");
+
+        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 11, "start eleven of home not set correctly");
+        Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 11, "start eleven of guest not set correctly");
+
+    }
+
+    public void start() {
+        validateMatchPrepared();
+        isStarted = true;
+    }
+
+    public void increaseMinute() {
+        validateMatchIsRunning();
+        minute++;
     }
 
     public void increaseGoalsHomeTeam(final Goal goal) {
+        validateMatchIsRunning();
         if (goal.getMinute() <= 45) {
             halfTime.increaseHomeGoal();
         }
@@ -54,13 +64,30 @@ public class Match {
         addGoal(goal);
     }
 
+    private void validateMatchIsRunning() {
+        Preconditions.checkArgument(isStarted, "match not started yet");
+        Preconditions.checkArgument(!isFinished(), "match already isFinished");
+    }
+
     public void increaseGoalsGuestTeam(final Goal goal) {
+        validateMatchIsRunning();
         if (goal.getMinute() <= 45) {
             halfTime.increaseGuestGoal();
         }
         result.increaseGuestGoal();
         addGoal(goal);
     }
+
+
+    public boolean areTeamsSet() {
+        return guestTeam != null && homeTeam != null;
+    }
+
+
+    public boolean containsTeam(final Team team) {
+        return areTeamsSet() && (homeTeam.equals(team) || guestTeam.equals(team));
+    }
+
 
     public Map<Position, Player> getPositionPlayerMapHomeTeam() {
         return positionPlayerMapHomeTeam;
@@ -83,7 +110,8 @@ public class Match {
 //    }
 
     public void setFinished(final boolean finished) {
-        this.finished = finished;
+        Preconditions.checkArgument(minute >= 90, String.format("do not finish match before 90 minutes passed: {%s}", minute));
+        this.isFinished = finished;
     }
 
     public int getGoalsHomeTeam() {
@@ -114,19 +142,9 @@ public class Match {
         this.additionalTime = additionalTime;
     }
 
-    public void increaseMinute() {
-        minute++;
-    }
 
     public int getMinute() {
         return minute;
-    }
-
-    public boolean containsTeam(final Team team) {
-        if (isValid()) {
-            return homeTeam.equals(team) || guestTeam.equals(team);
-        }
-        return false;
     }
 
     public void addGoal(final Goal goal) {
@@ -137,20 +155,16 @@ public class Match {
         return goals;
     }
 
-    public String printMatch() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(String.format("%s \t- \t%s \t%s : %s  (%s)", homeTeam.getName(), guestTeam.getName(),
-                result.getHomeGoals(), result.getGuestGoals(), halfTime.print()));
-        for (Goal goal : goals) {
-            builder.append(String.format("\n%s. Minute\t%s", goal.getMinute(), goal.getNewResult().print()));
+    public ResultType getResultType() {
+        if (result.getHomeGoals() > result.getGuestGoals()) {
+            return ResultType.HOME_WON;
+        } else if (result.getHomeGoals() < result.getGuestGoals()) {
+            return ResultType.GUEST_WON;
+        } else {
+            return ResultType.DRAW;
         }
-        builder.append("\n");
-        return builder.toString();
     }
 
-    public boolean isValid() {
-        return guestTeam != null && homeTeam != null;
-    }
 
     public Result getResult() {
         return result;
@@ -165,7 +179,19 @@ public class Match {
     }
 
     public boolean isFinished() {
-        return finished;
+        return isFinished;
+    }
+
+
+    public String printMatch() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.format("%s \t- \t%s \t%s : %s  (%s)", homeTeam.getName(), guestTeam.getName(),
+                result.getHomeGoals(), result.getGuestGoals(), halfTime.print()));
+        for (Goal goal : goals) {
+            builder.append(String.format("\n%s. Minute\t%s", goal.getMinute(), goal.getNewResult().print()));
+        }
+        builder.append("\n");
+        return builder.toString();
     }
 
     @Override

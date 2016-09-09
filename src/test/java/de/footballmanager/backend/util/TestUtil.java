@@ -1,11 +1,13 @@
 package de.footballmanager.backend.util;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 public class TestUtil {
@@ -30,8 +32,16 @@ public class TestUtil {
         return timeTableService.createTimeTable(teams);
     }
 
+    public static Match createRunningMatch() {
+        return createMatch(createTeam(TEAM_1), createTeam(TEAM_2), false);
+    }
+
+    public static Match createMatch() {
+        return createMatch(TEAM_1, TEAM_2, 0, 0);
+    }
+
     public static Match createMatch(String team1, String team2, int homeGoals, int guestGoals) {
-        return createMatch(new Team(team1), new Team(team2), homeGoals, guestGoals);
+        return createMatch(createTeam(team1), createTeam(team2), homeGoals, guestGoals);
     }
 
     public static Match createMatch(Team team1, Team team2, int homeGoals, int guestGoals) {
@@ -40,12 +50,35 @@ public class TestUtil {
         return match;
     }
 
-    public static Match createMatch(Team team1, Team team2, boolean isFinished) {
+    public static Match createMatch(Team homeTeam, Team guestTeam, boolean isCreateFinishedMatch) {
         Match match = new Match();
-        match.setFinished(isFinished);
-        match.setHomeTeam(team1);
-        match.setGuestTeam(team2);
+        match.setHomeTeam(homeTeam);
+        match.setGuestTeam(guestTeam);
+        match.setPositionPlayerMapHomeTeam(createStartEleven(homeTeam));
+        match.setPositionPlayerMapGuestTeam(createStartEleven(guestTeam));
+        match.start();
+        if (isCreateFinishedMatch) {
+            IntStream.range(1, 90).forEach(i -> match.increaseMinute());
+            match.setFinished(true);
+        }
         return match;
+    }
+
+    public static Map<Position, Player> createStartEleven(Team team) {
+        Map<Position, Player> positionPlayerMap = Maps.newHashMap();
+        List<Player> players = team.getPlayers();
+        positionPlayerMap.put(Position.GOALY, players.get(0));
+        positionPlayerMap.put(Position.LEFT_DEFENDER, players.get(1));
+        positionPlayerMap.put(Position.LEFT_STOPPER, players.get(2));
+        positionPlayerMap.put(Position.RIGHT_STOPPER, players.get(3));
+        positionPlayerMap.put(Position.RIGHT_DEFENDER, players.get(4));
+        positionPlayerMap.put(Position.CENTRAL_DEFENSIVE_MIDFIELDER, players.get(5));
+        positionPlayerMap.put(Position.LEFT_MIDFIELDER, players.get(6));
+        positionPlayerMap.put(Position.RIGHT_MIDFIELDER, players.get(7));
+        positionPlayerMap.put(Position.CENTRAL_OFFENSIVE_MIDFIELDER, players.get(8));
+        positionPlayerMap.put(Position.LEFT_STRIKER, players.get(9));
+        positionPlayerMap.put(Position.RIGHT_STRIKER, players.get(10));
+        return positionPlayerMap;
     }
 
     public static Team createTeam(String name) {
@@ -53,7 +86,7 @@ public class TestUtil {
         team.setStrength(88);
         List<Player> players = Lists.newArrayList();
 
-        IntStream.range(1, 11).forEach(i -> players.add(createPlayer("Mr.", String.valueOf(i))));
+        IntStream.range(0, 11).forEach(i -> players.add(createPlayer("Mr.", String.valueOf(i))));
         team.setPlayers(players);
         team.setName(name);
         return team;

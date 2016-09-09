@@ -47,10 +47,7 @@ public class LeagueServiceTest {
     public void runNextMinuteAllMatchesFinished() {
         // prepare
         MatchDay matchDay = new MatchDay();
-        Match match = new Match();
-        match.setHomeTeam(new Team(TEAM_1));
-        match.setGuestTeam(new Team(TEAM_2));
-        match.setFinished(true);
+        Match match = createMatch(createTeam(TEAM_1), createTeam(TEAM_2), true);
         matchDay.getMatches().add(match);
         ResultService resultService = setUpResultService(matchDay);
 
