@@ -28,3 +28,7 @@
 .bold-text {
     font-weight: bold;
 }
+
+.body {
+    font-size: 10px; !important;
+}

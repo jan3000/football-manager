@@ -9,9 +9,9 @@ import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.TestUtil;
 import jersey.repackaged.com.google.common.collect.Sets;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +19,8 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.stream.IntStream;
 
+import static de.footballmanager.backend.util.TestUtil.TEAM_1;
+import static de.footballmanager.backend.util.TestUtil.TEAM_2;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.*;
 
@@ -102,6 +104,7 @@ public class ResultServiceTest {
         return match;
     }
 
+
     @Test
     public void getMaxKey() {
         assertMaxKey(20);
@@ -155,7 +158,7 @@ public class ResultServiceTest {
     // TODO: where to put this
     // -------------------------------------------------------------------------------
     @Test
-    @Ignore
+//    @Ignore
     public void calculateResult() throws Exception {
         TrialAndErrorTimeTableService timeTableService = new TrialAndErrorTimeTableService();
         List<Team> teams = LeagueTestUtil.getLeagueTeams();
@@ -175,7 +178,7 @@ public class ResultServiceTest {
 
             // testSorting of end table according to the teams strength
             // test distribution of match results
-            fillAndPrintMap(timeTable, resultToCountMap);
+            fillAndPrintMap(resultToCountMap, timeTable.getAllMatchDays());
         }
         System.out.println("\n");
         TreeMap<Result, Integer> resultToCountTreeMap = Maps.newTreeMap(new ResultComparator(resultToCountMap));
@@ -185,44 +188,61 @@ public class ResultServiceTest {
     }
 
 
-    public class ResultComparator implements Comparator<Result> {
+    //TODO go on here with testing the resultService
+    @Test
+    public void test() {
+        Team team1 = TestUtil.createTeam(TEAM_1, 80);
+        Team team2 = TestUtil.createTeam(TEAM_2, 80);
 
-        private final Map<Result, Integer> map;
-
-        public ResultComparator(final Map<Result, Integer> map) {
-            super();
-            this.map = map;
-        }
-
-        public int compare(final Result result1, final Result result2) {
-            if (map.get(result1) > map.get(result2)) {
-                return 1;
-            } else {
-                return -1;
-            }
-        }
+        List<Match> matches = Lists.newArrayList();
+        IntStream.rangeClosed(1,10000).forEach(i -> {
+            matches.addAll(runCompleteMatches(team1, team2));
+//            System.out.println(matches.get(0).getResult().print());
+        });
+        Map<Result, Integer> resultToCountMap = Maps.newHashMap();
+        createResultToCountMap(resultToCountMap, matches);
+        printMap(resultToCountMap);
     }
 
-    private Map<Result, Integer> fillAndPrintMap(final TimeTable timeTable, final Map<Result, Integer> resultToCountMap) {
-        for (MatchDay matchDay : timeTable.getAllMatchDays()) {
-            for (Match match : matchDay.getMatches()) {
-                Result result = match.getResult();
-                if (!resultToCountMap.containsKey(result)) {
-                    resultToCountMap.put(result, 1);
-                } else {
-                    resultToCountMap.put(result, resultToCountMap.get(result) + 1);
-                }
-            }
+    private List<Match> runCompleteMatches(Team team1, Team team2) {
+        List<Match> matches = Lists.newArrayList(TestUtil.createMatch(team1, team2, false));
+        IntStream.range(1,90).forEach(i -> {
+            resultService.calculateNextMinute(matches);
+        });
+        return matches;
+
+    }
+
+
+    private Map<Result, Integer> fillAndPrintMap(final Map<Result, Integer> resultToCountMap, List<MatchDay> matchDays) {
+        for (MatchDay matchDay : matchDays) {
+            createResultToCountMap(resultToCountMap, matchDay.getMatches());
         }
 
         printMap(resultToCountMap);
         return resultToCountMap;
     }
 
+    private void createResultToCountMap(Map<Result, Integer> resultToCountMap, List<Match> matches) {
+        for (Match match : matches) {
+            Result result = match.getResult();
+            if (!resultToCountMap.containsKey(result)) {
+                resultToCountMap.put(result, 1);
+            } else {
+                resultToCountMap.put(result, resultToCountMap.get(result) + 1);
+            }
+        }
+    }
+
     private void printMap(final Map<Result, Integer> resultToCountMap) {
-        for (Entry<Result, Integer> resultToCount : resultToCountMap.entrySet()) {
-            System.out.println(String.format("resultToCount: %s\t %s", resultToCount.getKey().print(),
-                    resultToCount.getValue()));
+        TreeMap<Result, Integer> resultToCountMapSorted = Maps.newTreeMap(new ResultComparator(resultToCountMap));
+        resultToCountMapSorted.putAll(resultToCountMap);
+
+        int totalAmountOfResults = resultToCountMapSorted.values().stream().reduce(0, Integer::sum);
+        System.out.println("totalAmountOfResults: " + totalAmountOfResults);
+        for (Entry<Result, Integer> resultToCount : resultToCountMapSorted.entrySet()) {
+            System.out.println(String.format("resultToCount: %s\t %s\t %s", resultToCount.getKey().print(),
+                    resultToCount.getValue(), BigDecimal.valueOf(resultToCount.getValue() * 100).divide(BigDecimal.valueOf(totalAmountOfResults))));
         }
     }
 
@@ -230,6 +250,26 @@ public class ResultServiceTest {
         for (MatchDay matchDay : timeTable.getAllMatchDays()) {
             for (Match match : matchDay.getMatches()) {
                 org.junit.Assert.assertTrue(match.isFinished());
+            }
+        }
+    }
+
+
+
+    private class ResultComparator implements Comparator<Result> {
+
+        private final Map<Result, Integer> map;
+
+        ResultComparator(final Map<Result, Integer> map) {
+            super();
+            this.map = map;
+        }
+
+        public int compare(final Result result1, final Result result2) {
+            if (map.get(result1) < map.get(result2)) {
+                return 1;
+            } else {
+                return -1;
             }
         }
     }

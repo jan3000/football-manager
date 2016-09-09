@@ -44,15 +44,15 @@ public class TimeTable {
     }
 
     public String print() {
-        StringBuffer buffi = new StringBuffer();
-        buffi.append("TimeTable%n");
+        StringBuilder buildi = new StringBuilder();
+        buildi.append("TimeTable\n");
         for (MatchDay matchDay : matchDays) {
-            buffi.append(String.format("%s%n", StringUtils.repeat("-", 50)));
-            buffi.append(String.format("MatchDay %s:%n", matchDay.getMatchDayNumber()));
+            buildi.append(String.format("%s\n", StringUtils.repeat("-", 50)));
+            buildi.append(String.format("MatchDay %s:\n", matchDay.getMatchDayNumber()));
             for (Match match : matchDay.getMatches()) {
-                buffi.append(String.format("%s%n", match.printMatch()));
+                buildi.append(String.format("%s", match.printMatch()));
             }
         }
-        return buffi.toString();
+        return buildi.toString();
     }
 }

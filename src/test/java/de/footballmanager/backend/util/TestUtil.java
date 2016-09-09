@@ -31,11 +31,20 @@ public class TestUtil {
     }
 
     public static Match createMatch(String team1, String team2, int homeGoals, int guestGoals) {
-        Match match = new Match();
-        match.setFinished(true);
-        match.setHomeTeam(new Team(team1));
-        match.setGuestTeam(new Team(team2));
+        return createMatch(new Team(team1), new Team(team2), homeGoals, guestGoals);
+    }
+
+    public static Match createMatch(Team team1, Team team2, int homeGoals, int guestGoals) {
+        Match match = createMatch(team1, team2, true);
         match.setResult(new Result(homeGoals, guestGoals));
+        return match;
+    }
+
+    public static Match createMatch(Team team1, Team team2, boolean isFinished) {
+        Match match = new Match();
+        match.setFinished(isFinished);
+        match.setHomeTeam(team1);
+        match.setGuestTeam(team2);
         return match;
     }
 
@@ -47,6 +56,12 @@ public class TestUtil {
         IntStream.range(1, 11).forEach(i -> players.add(createPlayer("Mr.", String.valueOf(i))));
         team.setPlayers(players);
         team.setName(name);
+        return team;
+    }
+
+    public static Team createTeam(String name, int strength) {
+        Team team = createTeam(name);
+        team.setStrength(strength);
         return team;
     }
 

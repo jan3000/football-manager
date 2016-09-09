@@ -1,35 +1,42 @@
 package de.footballmanager.backend.api;
 
 
-public class FootballManagerFacade {
+import de.footballmanager.backend.domain.Player;
+import de.footballmanager.backend.domain.Team;
+import de.footballmanager.backend.enumeration.Position;
 
-    public void initGame() {
-    }
+import java.util.List;
+import java.util.Map;
 
-    ;
+public abstract interface FootballManagerFacade {
 
-    public void calculateMatchDay() {
-    }
 
-    ;
+    // Team screen
+    public Team getTeam(String name);
 
-    public void showTable() {
-    }
 
-    ;
+    // Match Day
+    public void setStart11(Map<Position, Player> positionToStart11);
 
-    public void showFormerMatchDay() {
-    }
+    // Statistics
 
-    ;
 
-    public void showTeamDetails() {
-    }
+    public void initGame() ;
+    
+    
+    public void calculateMatchDay() ;
+    
 
-    ;
+    public void showTable() ;
 
-    public void changeTeamDetails() {
-    }
 
-    ;
+    public void showFormerMatchDay();
+
+
+    public void showTeamDetails() ;
+
+
+    public void changeTeamDetails();
+
+
 }
