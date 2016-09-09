@@ -69,6 +69,10 @@ public class TestUtil {
         return new Player.Builder(firstName, lastName).setPosition(Position.LEFT_MIDFIELDER).build();
     }
 
+    public static Player createPlayer(Position position, int strength) {
+        return new Player.Builder("name", "name").setPosition(position).setStrength(strength).build();
+    }
+
     public static Result createResult(int homeGoals, int guestGoals) {
         return new Result(homeGoals, guestGoals);
     }

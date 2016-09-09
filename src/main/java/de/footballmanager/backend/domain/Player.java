@@ -21,6 +21,7 @@ public class Player {
         this.firstname = builder.firstName;
         this.lastname = builder.lastName;
         this.position = builder.position;
+        this.strength = builder.strength;
 
     }
 
@@ -40,6 +41,10 @@ public class Player {
 
         public Builder setPosition(Position position) {
             this.position = position;
+            return this;
+        }
+        public Builder setStrength(int strength) {
+            this.strength = strength;
             return this;
         }
 

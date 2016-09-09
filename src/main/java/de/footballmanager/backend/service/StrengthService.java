@@ -1,53 +1,43 @@
 package de.footballmanager.backend.service;
 
-import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.Player;
 import de.footballmanager.backend.enumeration.Position;
-import javafx.geometry.Pos;
 
 import java.util.Map;
 
-import static de.footballmanager.backend.enumeration.Position.*;
+import static de.footballmanager.backend.enumeration.Position.GOALY;
 
 public class StrengthService {
 
-    private static final Map<PositionMapping, Integer> POSITION_STRENGTH_COEFFICIENT_MAP = Maps.newHashMap();
-    private static final PositionMapping GOALY_TO_GOALY = new PositionMapping(LEFT_STRIKER, LEFT_STOPPER);
-    static {
-
-
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, LEFT_STOPPER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, RIGHT_STOPPER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, CENTRAL_STOPPER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, LEFT_DEFENDER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, RIGHT_DEFENDER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, CENTRAL_DEFENSIVE_MIDFIELDER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, LEFT_DEFENSIVE_MIDFIELDER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, RIGHT_DEFENSIVE_MIDFIELDER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, CENTRAL_OFFENSIVE_MIDFIELDER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, LEFT_OFFENSIVE_MIDFIELDER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, RIGHT_OFFENSIVE_MIDFIELDER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, LEFT_WINGER), 1);
-        POSITION_STRENGTH_COEFFICIENT_MAP.put(new PositionMapping(LEFT_STRIKER, RIGHT_WINGER), 1);
-    }
+    static final int COEFFICIENT_WRONG_GOALY = 90;
+    static final int COEFFICIENT_WING_TO_CENTRAL = 15;
+    static final int COEFFICIENT_SAME_LEVEL = 15;
+    static final int COEFFICIENT_NOT_SAME_LEVEL = 40;
 
     public int getStrength(Map<Position, Player> positionToPlayer) {
-        int teamStrength = 0;
-        positionToPlayer.keySet().forEach(position -> {
-            Player player = positionToPlayer.get(position);
-        });
-        return 100;
+        return positionToPlayer.keySet().stream()
+                .mapToInt(position -> getPlayerStrengthOnPosition(position, positionToPlayer.get(position)))
+                .sum();
     }
 
-    public int getPlayerStrengthOnPosition(Position position, Player player) {
-        int coefficient = 100;
+    int getPlayerStrengthOnPosition(Position position, Player player) {
+        double coefficient = 100;
         if (!isSamePosition(position, player.getPosition())) {
-            if (isNonGoalyInGoal(position, player)) {
-                coefficient = 10;
+            if (isNonGoalyInGoal(position, player) || isGoalyInField(position, player)) {
+                coefficient = coefficient - COEFFICIENT_WRONG_GOALY;
+                return new Double(coefficient / 100d * player.getStrength()).intValue();
             }
-            return 100;
+            if (isWingToCentral(position, player.getPosition()) || isCentralToWing(position, player.getPosition())) {
+                coefficient = coefficient - COEFFICIENT_WING_TO_CENTRAL;
+            }
+            if (isSameLevel(position, player.getPosition())) {
+                coefficient = coefficient - COEFFICIENT_SAME_LEVEL;
+            } else {
+                coefficient = coefficient - COEFFICIENT_NOT_SAME_LEVEL;
+            }
         }
-        return coefficient / 100 * player.getStrength();
+
+        return new Double(coefficient / 100 * player.getStrength()).intValue();
     }
 
     boolean isNonGoalyInGoal(Position position, Player player) {
@@ -71,6 +61,11 @@ public class StrengthService {
     boolean isWingToCentral(Position position1, Position position2) {
         return (containsValue(position1, "LEFT") || containsValue(position1, "RIGHT"))
                 && containsValue(position2, "CENTRAL");
+    }
+
+    boolean isCentralToWing(Position position1, Position position2) {
+        return (containsValue(position2, "LEFT") || containsValue(position2, "RIGHT"))
+                && containsValue(position1, "CENTRAL");
     }
 
     private boolean containsValue(Position position1, String left) {

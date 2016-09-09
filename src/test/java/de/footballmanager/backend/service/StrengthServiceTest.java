@@ -1,5 +1,6 @@
 package de.footballmanager.backend.service;
 
+import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.Player;
 import de.footballmanager.backend.enumeration.Position;
 import junitparams.JUnitParamsRunner;
@@ -8,7 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.HashMap;
+
 import static de.footballmanager.backend.enumeration.Position.*;
+import static de.footballmanager.backend.service.StrengthService.*;
+import static de.footballmanager.backend.util.TestUtil.createPlayer;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnitParamsRunner.class)
@@ -20,6 +25,39 @@ public class StrengthServiceTest {
     public void setUp() {
         strengthService = new StrengthService();
     }
+
+    @Test
+    public void getStrength() {
+        HashMap<Position, Player> positionToPlayer = Maps.newHashMap();
+        positionToPlayer.put(GOALY, createPlayer(GOALY, 100));
+        positionToPlayer.put(CENTRAL_STOPPER, createPlayer(CENTRAL_STOPPER, 100));
+        positionToPlayer.put(CENTRAL_DEFENSIVE_MIDFIELDER, createPlayer(CENTRAL_DEFENSIVE_MIDFIELDER, 100));
+        assertEquals(300, strengthService.getStrength(positionToPlayer));
+    }
+
+
+    @Test
+    @Parameters(method = "paramsForGetPlayerStrengthOnPosition")
+    public void getPlayerStrengthOnPosition(Position position1, Position playerPosition, int expectedStrength) {
+        Player player = new Player.Builder("James", "First").setPosition(playerPosition).build();
+        player.setStrength(100);
+        int playerStrengthOnPosition = strengthService.getPlayerStrengthOnPosition(position1, player);
+        assertEquals(expectedStrength, playerStrengthOnPosition);
+    }
+
+    private Object[] paramsForGetPlayerStrengthOnPosition() {
+        return new Object[]{
+                new Object[]{GOALY, GOALY, 100},
+                new Object[]{LEFT_DEFENDER, LEFT_DEFENDER, 100},
+                new Object[]{GOALY, LEFT_DEFENDER, 100 - COEFFICIENT_WRONG_GOALY},
+                new Object[]{CENTRAL_STRIKER, GOALY, 100 - COEFFICIENT_WRONG_GOALY},
+                new Object[]{CENTRAL_STRIKER, CENTRAL_STOPPER, 100 - COEFFICIENT_NOT_SAME_LEVEL},
+                new Object[]{CENTRAL_STRIKER, LEFT_STRIKER, 100 - COEFFICIENT_WING_TO_CENTRAL - COEFFICIENT_SAME_LEVEL},
+                new Object[]{LEFT_STRIKER, CENTRAL_STRIKER, 100 - COEFFICIENT_WING_TO_CENTRAL - COEFFICIENT_SAME_LEVEL},
+                new Object[]{CENTRAL_STRIKER, LEFT_DEFENDER, 100 - COEFFICIENT_NOT_SAME_LEVEL - COEFFICIENT_WING_TO_CENTRAL},
+        };
+    }
+
 
     @Test
     @Parameters(method = "paramsForIsSamePosition")
@@ -34,6 +72,22 @@ public class StrengthServiceTest {
                 new Object[]{CENTRAL_OFFENSIVE_MIDFIELDER, GOALY, false}
         };
     }
+
+    @Test
+    @Parameters(method = "paramsForIsGoalyInField")
+    public void isGoalyInField(Position position1, Position playerPosition, boolean isTrue) {
+        Player player = new Player.Builder("James", "First").setPosition(playerPosition).build();
+        assertEquals(isTrue, strengthService.isGoalyInField(position1, player));
+    }
+
+    private Object[] paramsForIsGoalyInField() {
+        return new Object[]{
+                new Object[]{GOALY, GOALY, false},
+                new Object[]{GOALY, CENTRAL_DEFENSIVE_MIDFIELDER, false},
+                new Object[]{CENTRAL_OFFENSIVE_MIDFIELDER, GOALY, true}
+        };
+    }
+
     @Test
     @Parameters(method = "paramsForIsSameLevel")
     public void isSameLevel(Position position1, Position position2, boolean isTrue) {
@@ -91,8 +145,6 @@ public class StrengthServiceTest {
                 new Object[]{CENTRAL_STRIKER, CENTRAL_DEFENSIVE_MIDFIELDER, false},
         };
     }
-
-
 
 
 }
