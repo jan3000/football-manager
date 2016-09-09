@@ -59,7 +59,6 @@ public class TestUtil {
         match.start();
         if (isCreateFinishedMatch) {
             IntStream.range(1, 90).forEach(i -> match.increaseMinute());
-            match.setFinished(true);
         }
         return match;
     }

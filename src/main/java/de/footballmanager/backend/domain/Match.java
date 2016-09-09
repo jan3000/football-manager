@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class Match {
 
+    private static final int MINUTES_OF_GAME = 90;
     private Team homeTeam;
     private Team guestTeam;
 
@@ -53,6 +54,9 @@ public class Match {
     public void increaseMinute() {
         validateMatchIsRunning();
         minute++;
+        if (minute >= MINUTES_OF_GAME + additionalTime) {
+            setFinished(true);
+        }
     }
 
     public void increaseGoalsHomeTeam(final Goal goal) {
@@ -109,8 +113,8 @@ public class Match {
 //        throw new NotSupportedException();
 //    }
 
-    public void setFinished(final boolean finished) {
-        Preconditions.checkArgument(minute >= 90, String.format("do not finish match before 90 minutes passed: {%s}", minute));
+    private void setFinished(final boolean finished) {
+        Preconditions.checkArgument(minute >= MINUTES_OF_GAME + additionalTime, String.format("do not finish match before 90 minutes passed: {%s}", minute));
         this.isFinished = finished;
     }
 

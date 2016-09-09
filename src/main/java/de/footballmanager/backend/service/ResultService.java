@@ -40,9 +40,6 @@ public class ResultService {
         }
         match.increaseMinute();
 
-        if (match.getMinute() == 90) {
-            match.setFinished(true);
-        }
         // TODO calculate additionalTime
         // TODO cards, injuries, changes
     }
@@ -106,6 +103,5 @@ public class ResultService {
 
             simulateMatchMinute(match, minute);
         }
-        match.setFinished(true);
     }
 }
