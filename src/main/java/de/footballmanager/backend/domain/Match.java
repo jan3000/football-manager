@@ -2,11 +2,13 @@ package de.footballmanager.backend.domain;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.enumeration.ResultType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Match {
 
@@ -94,20 +96,28 @@ public class Match {
         return areTeamsSet() && (homeTeam.equals(team) || guestTeam.equals(team));
     }
 
-    public void changePlayer(Player in, Player out, boolean isHomeTeam) {
-        if (isHomeTeam) {
-            Preconditions.checkArgument(positionPlayerMapHomeTeam.values().contains(out), String.format("coming out player {%s} not member of current players", out));
-            Preconditions.checkArgument(homeTeam.getPlayers().contains(in), String.format("coming in player {%s} not member of team", in));
-            Preconditions.checkArgument(playerChangesHomeTeam.size() < 3, "max number of player changes already reached");
-            positionPlayerMapHomeTeam.entrySet().forEach(positionToPlayer -> {
-                Position position = positionToPlayer.getKey();
-                if (position.equals(out.getPosition())) {
-                    System.out.println("changed " + position);
-                    positionPlayerMapHomeTeam.put(position, in);
-                    playerChangesHomeTeam.add(new PlayerChange(minute, in, out));
-                }
-            });
+    public void changePlayer(Player in, Player out, boolean isHomeTeamChange) {
+        if (isHomeTeamChange) {
+            changePlayerHome(in, out, positionPlayerMapHomeTeam, homeTeam, playerChangesHomeTeam);
+        } else {
+            changePlayerHome(in, out, positionPlayerMapGuestTeam, guestTeam, playerChangesGuestTeam);
         }
+
+    }
+
+    private void changePlayerHome(Player in, Player out, Map<Position, Player> positionPlayerMap, Team team, List<PlayerChange> playerChanges) {
+        Preconditions.checkArgument(positionPlayerMap.values().contains(out), String.format("coming out player {%s} not member of current players", out));
+        Preconditions.checkArgument(team.getPlayers().contains(in), String.format("coming in player {%s} not member of team", in));
+        Preconditions.checkArgument(!positionPlayerMap.values().contains(in), String.format("coming in player {%s} already playing", in));
+        Preconditions.checkState(playerChanges.size() < 3, "max number of player changes already reached");
+        positionPlayerMap.entrySet().forEach(positionToPlayer -> {
+            Position position = positionToPlayer.getKey();
+            if (position.equals(out.getPosition())) {
+                System.out.println("changed " + position);
+                positionPlayerMap.put(position, in);
+                playerChanges.add(new PlayerChange(minute, in, out));
+            }
+        });
     }
 
     public List<PlayerChange> getPlayerChangesHomeTeam() {
@@ -127,7 +137,14 @@ public class Match {
     }
 
     public void setPositionPlayerMapHomeTeam(Map<Position, Player> positionPlayerMapHomeTeam) {
+        Preconditions.checkArgument(positionPlayerMapHomeTeam.values().stream()
+                .filter(player -> !homeTeam.getPlayers().contains(player))
+                .collect(Collectors.toList())
+                .isEmpty(), "players must be part of the team");
+        Preconditions.checkArgument(Sets.newHashSet(positionPlayerMapHomeTeam.values()).size() == 11, "players must be different");
+
         this.positionPlayerMapHomeTeam = positionPlayerMapHomeTeam;
+
     }
 
     public Map<Position, Player> getPositionPlayerMapGuestTeam() {
@@ -281,7 +298,7 @@ public class Match {
         return builder.toString();
     }
 
-    private class PlayerChange {
+    class PlayerChange {
         private int minute;
         private Player in;
         private Player out;
