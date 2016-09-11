@@ -4,8 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
+import de.footballmanager.backend.service.TeamManagerService;
 import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -79,6 +81,24 @@ public class TestUtil {
         positionPlayerMap.put(CENTRAL_OFFENSIVE_MIDFIELDER, players.get(8));
         positionPlayerMap.put(LEFT_STRIKER, players.get(9));
         positionPlayerMap.put(RIGHT_STRIKER, players.get(10));
+        return positionPlayerMap;
+    }
+
+    public static Map<Position, Player> createStartEleven(Team team, TeamManagerService.System system) {
+        Map<Position, Player> positionPlayerMap = Maps.newHashMap();
+        List<Player> players = team.getPlayers();
+        Iterator<Position> positionIterator = system.getPositions().iterator();
+        positionPlayerMap.put(positionIterator.next(), players.get(0));
+        positionPlayerMap.put(positionIterator.next(), players.get(1));
+        positionPlayerMap.put(positionIterator.next(), players.get(2));
+        positionPlayerMap.put(positionIterator.next(), players.get(3));
+        positionPlayerMap.put(positionIterator.next(), players.get(4));
+        positionPlayerMap.put(positionIterator.next(), players.get(5));
+        positionPlayerMap.put(positionIterator.next(), players.get(6));
+        positionPlayerMap.put(positionIterator.next(), players.get(7));
+        positionPlayerMap.put(positionIterator.next(), players.get(8));
+        positionPlayerMap.put(positionIterator.next(), players.get(9));
+        positionPlayerMap.put(positionIterator.next(), players.get(10));
         return positionPlayerMap;
     }
 

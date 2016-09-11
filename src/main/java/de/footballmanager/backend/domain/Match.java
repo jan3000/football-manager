@@ -1,6 +1,7 @@
 package de.footballmanager.backend.domain;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import de.footballmanager.backend.enumeration.Position;
@@ -137,6 +138,8 @@ public class Match {
     }
 
     public void setPositionPlayerMapHomeTeam(Map<Position, Player> positionPlayerMapHomeTeam) {
+        Preconditions.checkState(!isStarted, "startEleven cannot be set if match already started");
+        Preconditions.checkState(!isFinished, "startEleven cannot be set if match already finished");
         Preconditions.checkArgument(positionPlayerMapHomeTeam.values().stream()
                 .filter(player -> !homeTeam.getPlayers().contains(player))
                 .collect(Collectors.toList())
@@ -148,7 +151,7 @@ public class Match {
     }
 
     public Map<Position, Player> getPositionPlayerMapGuestTeam() {
-        return positionPlayerMapGuestTeam;
+        return ImmutableMap.copyOf(positionPlayerMapGuestTeam);
     }
 
     public void setPositionPlayerMapGuestTeam(Map<Position, Player> positionPlayerMapGuestTeam) {
@@ -160,6 +163,7 @@ public class Match {
 //    }
 
     private void setFinished(final boolean finished) {
+        Preconditions.checkState(isStarted, "match cannot be finished if it has not been started");
         Preconditions.checkArgument(minute >= MINUTES_OF_GAME + additionalTime, String.format("do not finish match before 90 minutes passed: {%s}", minute));
         this.isFinished = finished;
     }

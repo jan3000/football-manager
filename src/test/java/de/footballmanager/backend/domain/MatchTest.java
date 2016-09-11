@@ -2,15 +2,17 @@ package de.footballmanager.backend.domain;
 
 import com.google.common.collect.Lists;
 import de.footballmanager.backend.enumeration.Position;
+import de.footballmanager.backend.util.TestUtil;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static de.footballmanager.backend.enumeration.Position.GOALY;
 import static de.footballmanager.backend.enumeration.Position.LEFT_MIDFIELDER;
-import static de.footballmanager.backend.util.TestUtil.createPlayer;
-import static de.footballmanager.backend.util.TestUtil.createRunningMatch;
+import static de.footballmanager.backend.util.TestUtil.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -190,4 +192,48 @@ public class MatchTest {
         assertEquals(3, runningMatch.getPlayerChangesGuestTeam().size());
 
     }
+
+    @Test
+    public void setPositionPlayerMapHomeTeam() {
+        Match match = new Match();
+        Team teamHome = TestUtil.createTeam(TEAM_1);
+        match.setHomeTeam(teamHome);
+        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome);
+        match.setPositionPlayerMapHomeTeam(positionPlayerMap);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setPositionPlayerMapHomeTeamSamePlayerTwiceShouldThrowException() {
+        Match match = new Match();
+        Team teamHome = TestUtil.createTeam(TEAM_1);
+        match.setHomeTeam(teamHome);
+        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome);
+        Iterator<Position> iterator = positionPlayerMap.keySet().iterator();
+        Position position1 = iterator.next();
+        Position position2 = iterator.next();
+        positionPlayerMap.put(position1, positionPlayerMap.get(position2));
+        match.setPositionPlayerMapHomeTeam(positionPlayerMap);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setPositionPlayerMapHomeTeamPlayerNotInTeamShouldThrowException() {
+        Match match = new Match();
+        Team teamHome = TestUtil.createTeam(TEAM_1);
+        match.setHomeTeam(teamHome);
+        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome);
+        Iterator<Position> iterator = positionPlayerMap.keySet().iterator();
+        Position position1 = iterator.next();
+        positionPlayerMap.put(position1, createPlayer("Unknown", "Player", GOALY));
+        match.setPositionPlayerMapHomeTeam(positionPlayerMap);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setPositionPlayerMapHomeTeamMatchAlreadyRunningShouldThrowException() {
+        Match match = createRunningMatch();
+        Team teamHome = TestUtil.createTeam(TEAM_1);
+        match.setHomeTeam(teamHome);
+        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome);
+        match.setPositionPlayerMapHomeTeam(positionPlayerMap);
+    }
+
 }
