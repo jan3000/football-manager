@@ -21,18 +21,18 @@ public class MatchTest {
     @Test
     public void changeOnePlayerHome() {
         Match runningMatch = createRunningMatch();
-        changeOnePlayer(runningMatch, runningMatch.getPositionPlayerMapHomeTeam(), runningMatch.getPlayerChangesHomeTeam(), runningMatch.getHomeTeam(), true);
+        changeOnePlayer(runningMatch, runningMatch.getPlayerChangesHomeTeam(), runningMatch.getHomeTeam(), true);
     }
 
     @Test
     public void changeOnePlayerGuest() {
         Match runningMatch = createRunningMatch();
-        changeOnePlayer(runningMatch, runningMatch.getPositionPlayerMapGuestTeam(), runningMatch.getPlayerChangesGuestTeam(), runningMatch.getGuestTeam(), false);
+        changeOnePlayer(runningMatch, runningMatch.getPlayerChangesGuestTeam(), runningMatch.getGuestTeam(), false);
     }
 
-    private void changeOnePlayer(Match match, Map<Position, Player> positionPlayerMap, List<Match.PlayerChange> playerChanges, Team team, boolean isHomeTeam) {
+    private void changeOnePlayer(Match match, List<Match.PlayerChange> playerChanges, Team team, boolean isHomeTeam) {
         // given
-        Collection<Player> currentEleven = positionPlayerMap.values();
+        Collection<Player> currentEleven = getPositionPlayerMap(match, isHomeTeam).values();
 
         Player out = currentEleven.iterator().next();
         Position positionForChange = out.getPosition();
@@ -44,12 +44,23 @@ public class MatchTest {
         match.changePlayer(in, out, isHomeTeam);
 
         // then
+        Map<Position, Player> positionPlayerMap = getPositionPlayerMap(match, isHomeTeam);
         assertEquals(11, positionPlayerMap.entrySet().size());
         assertTrue(positionPlayerMap.values().contains(in));
         assertTrue(!positionPlayerMap.values().contains(out));
         assertEquals(in, positionPlayerMap.get(positionForChange));
 
         assertEquals(1, playerChanges.size());
+    }
+
+    private Map<Position, Player> getPositionPlayerMap(Match match, boolean isHomeTeam) {
+        Map<Position, Player> positionPlayerMap;
+        if (isHomeTeam) {
+            positionPlayerMap = match.getPositionPlayerMapHomeTeam();
+        } else {
+            positionPlayerMap = match.getPositionPlayerMapGuestTeam();
+        }
+        return positionPlayerMap;
     }
 
 
@@ -145,16 +156,17 @@ public class MatchTest {
         team.getPlayers().addAll(Lists.newArrayList(in1, in2, in3, in4));
 
         // when
-        runningMatch.changePlayer(in1, players.iterator().next(), isHomeTeamChange);
+        Iterator<Player> iterator = players.iterator();
+        runningMatch.changePlayer(in1, iterator.next(), isHomeTeamChange);
         assertEquals(1, playerChanges.size());
 
-        runningMatch.changePlayer(in2, players.iterator().next(), isHomeTeamChange);
+        runningMatch.changePlayer(in2, iterator.next(), isHomeTeamChange);
         assertEquals(2, playerChanges.size());
 
-        runningMatch.changePlayer(in3, players.iterator().next(), isHomeTeamChange);
+        runningMatch.changePlayer(in3, iterator.next(), isHomeTeamChange);
         assertEquals(3, playerChanges.size());
 
-        runningMatch.changePlayer(in4, players.iterator().next(), isHomeTeamChange);
+        runningMatch.changePlayer(in4, iterator.next(), isHomeTeamChange);
     }
 
     @Test
@@ -173,22 +185,25 @@ public class MatchTest {
         runningMatch.getGuestTeam().getPlayers().addAll(Lists.newArrayList(in4, in5, in6));
 
         // when
-        runningMatch.changePlayer(in1, playersHome.iterator().next(), true);
+        Iterator<Player> homeIterator = playersHome.iterator();
+        Iterator<Player> guestIterator = playersGuest.iterator();
+
+        runningMatch.changePlayer(in1, homeIterator.next(), true);
         assertEquals(1, runningMatch.getPlayerChangesHomeTeam().size());
 
-        runningMatch.changePlayer(in4, playersGuest.iterator().next(), false);
+        runningMatch.changePlayer(in4, guestIterator.next(), false);
         assertEquals(1, runningMatch.getPlayerChangesGuestTeam().size());
 
-        runningMatch.changePlayer(in5, playersGuest.iterator().next(), false);
+        runningMatch.changePlayer(in5, guestIterator.next(), false);
         assertEquals(2, runningMatch.getPlayerChangesGuestTeam().size());
 
-        runningMatch.changePlayer(in2, playersHome.iterator().next(), true);
+        runningMatch.changePlayer(in2, homeIterator.next(), true);
         assertEquals(2, runningMatch.getPlayerChangesHomeTeam().size());
 
-        runningMatch.changePlayer(in3, playersHome.iterator().next(), true);
+        runningMatch.changePlayer(in3, homeIterator.next(), true);
         assertEquals(3, runningMatch.getPlayerChangesHomeTeam().size());
 
-        runningMatch.changePlayer(in6, playersGuest.iterator().next(), false);
+        runningMatch.changePlayer(in6, guestIterator.next(), false);
         assertEquals(3, runningMatch.getPlayerChangesGuestTeam().size());
 
     }
