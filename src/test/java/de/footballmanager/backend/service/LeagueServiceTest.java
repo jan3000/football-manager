@@ -47,7 +47,7 @@ public class LeagueServiceTest {
     public void runNextMinuteAllMatchesFinished() {
         // prepare
         MatchDay matchDay = new MatchDay();
-        Match match = createMatch(createTeam(TEAM_1), createTeam(TEAM_2), true);
+        Match match = createMatch(createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2), createTeam(TEAM_2, PlayingSystem.SYSTEM_4_4_2), true);
         matchDay.getMatches().add(match);
         ResultService resultService = setUpResultService(matchDay);
 

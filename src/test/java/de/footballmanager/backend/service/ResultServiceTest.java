@@ -8,7 +8,6 @@ import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.TestUtil;
 import jersey.repackaged.com.google.common.collect.Sets;
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -208,8 +207,8 @@ public class ResultServiceTest {
 
         replay(strengthService);
         ReflectionTestUtils.setField(resultService, "strengthService", strengthService);
-        Team team1 = TestUtil.createTeam(TEAM_1, 80);
-        Team team2 = TestUtil.createTeam(TEAM_2, 80);
+        Team team1 = TestUtil.createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2);
+        Team team2 = TestUtil.createTeam(TEAM_2, PlayingSystem.SYSTEM_4_4_2);
 
         List<Match> matches = Lists.newArrayList();
         IntStream.rangeClosed(1,10000).forEach(i -> {

@@ -211,18 +211,18 @@ public class MatchTest {
     @Test
     public void setPositionPlayerMapHomeTeam() {
         Match match = new Match();
-        Team teamHome = TestUtil.createTeam(TEAM_1);
+        Team teamHome = TestUtil.createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2);
         match.setHomeTeam(teamHome);
-        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome);
+        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome, PlayingSystem.SYSTEM_4_4_2);
         match.setPositionPlayerMapHomeTeam(positionPlayerMap);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void setPositionPlayerMapHomeTeamSamePlayerTwiceShouldThrowException() {
         Match match = new Match();
-        Team teamHome = TestUtil.createTeam(TEAM_1);
+        Team teamHome = TestUtil.createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2);
         match.setHomeTeam(teamHome);
-        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome);
+        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome, PlayingSystem.SYSTEM_4_4_2);
         Iterator<Position> iterator = positionPlayerMap.keySet().iterator();
         Position position1 = iterator.next();
         Position position2 = iterator.next();
@@ -233,9 +233,9 @@ public class MatchTest {
     @Test(expected = IllegalArgumentException.class)
     public void setPositionPlayerMapHomeTeamPlayerNotInTeamShouldThrowException() {
         Match match = new Match();
-        Team teamHome = TestUtil.createTeam(TEAM_1);
+        Team teamHome = TestUtil.createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2);
         match.setHomeTeam(teamHome);
-        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome);
+        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome, PlayingSystem.SYSTEM_4_4_2);
         Iterator<Position> iterator = positionPlayerMap.keySet().iterator();
         Position position1 = iterator.next();
         positionPlayerMap.put(position1, createPlayer("Unknown", "Player", GOALY));
@@ -245,9 +245,9 @@ public class MatchTest {
     @Test(expected = IllegalStateException.class)
     public void setPositionPlayerMapHomeTeamMatchAlreadyRunningShouldThrowException() {
         Match match = createRunningMatch();
-        Team teamHome = TestUtil.createTeam(TEAM_1);
+        Team teamHome = TestUtil.createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2);
         match.setHomeTeam(teamHome);
-        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome);
+        Map<Position, Player> positionPlayerMap = createStartEleven(teamHome, PlayingSystem.SYSTEM_4_4_2);
         match.setPositionPlayerMapHomeTeam(positionPlayerMap);
     }
 

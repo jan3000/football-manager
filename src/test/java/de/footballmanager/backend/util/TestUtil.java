@@ -6,13 +6,11 @@ import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
 
-import java.net.SocketTimeoutException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.IntStream;
-
-import static de.footballmanager.backend.enumeration.Position.*;
 
 public class TestUtil {
 
@@ -25,7 +23,7 @@ public class TestUtil {
     public static League createLeague() {
         League league = new League();
         List<Team> teams = Lists.newArrayList();
-        IntStream.range(1, 10).forEach(i -> teams.add(createTeam("Team" + i)));
+        IntStream.range(1, 10).forEach(i -> teams.add(createTeam("Team" + i, PlayingSystem.SYSTEM_4_4_2)));
         league.setTeams(teams);
         league.setTimeTable(createTimeTable(teams));
         return league;
@@ -37,7 +35,7 @@ public class TestUtil {
     }
 
     public static Match createRunningMatch() {
-        return createMatch(createTeam(TEAM_1), createTeam(TEAM_2), false);
+        return createMatch(createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2), createTeam(TEAM_2, PlayingSystem.SYSTEM_4_4_2), false);
     }
 
     public static Match createMatch() {
@@ -45,7 +43,7 @@ public class TestUtil {
     }
 
     public static Match createMatch(String team1, String team2, int homeGoals, int guestGoals) {
-        return createMatch(createTeam(team1), createTeam(team2), homeGoals, guestGoals);
+        return createMatch(createTeam(team1, PlayingSystem.SYSTEM_4_4_2), createTeam(team2, PlayingSystem.SYSTEM_4_4_2), homeGoals, guestGoals);
     }
 
     public static Match createMatch(Team team1, Team team2, int homeGoals, int guestGoals) {
@@ -58,8 +56,8 @@ public class TestUtil {
         Match match = new Match();
         match.setHomeTeam(homeTeam);
         match.setGuestTeam(guestTeam);
-        match.setPositionPlayerMapHomeTeam(createStartEleven(homeTeam));
-        match.setPositionPlayerMapGuestTeam(createStartEleven(guestTeam));
+        match.setPositionPlayerMapHomeTeam(createStartEleven(homeTeam, PlayingSystem.SYSTEM_4_4_2));
+        match.setPositionPlayerMapGuestTeam(createStartEleven(guestTeam, PlayingSystem.SYSTEM_4_4_2));
         match.start();
         if (isCreateFinishedMatch) {
             IntStream.range(1, 90).forEach(i -> match.increaseMinute());
@@ -67,9 +65,9 @@ public class TestUtil {
         return match;
     }
 
-    public static Map<Position, Player> createStartEleven(Team team) {
+    public static Map<Position, Player> createStartEleven(Team team, PlayingSystem playingSystem) {
         Map<Position, Player> positionPlayerMap = Maps.newHashMap();
-        setPlayerPositions(team, PlayingSystem.SYSTEM_4_4_2);
+        setPlayerPositions(team, playingSystem);
 
         List<Player> players = team.getPlayers();
         Iterator<Player> iterator = players.iterator();
@@ -80,33 +78,35 @@ public class TestUtil {
         return positionPlayerMap;
     }
 
+    /**
+     * Adds position of system to the first 11 players, for the others goaly position
+     * @param team
+     * @param system
+     */
     public static void setPlayerPositions(Team team, PlayingSystem system) {
         List<Player> players = team.getPlayers();
         Iterator<Position> positionIterator = system.getPositions().iterator();
-        players.forEach(player -> player.setPosition(positionIterator.next()));
-
+        IntStream.range(0,11).forEach(i -> players.get(i).setPosition(positionIterator.next()));
+        if (players.size() > 11) {
+            IntStream.range(11, players.size()).forEach(i -> {
+                players.get(i).setPosition(Position.GOALY);
+            });
+        }
     }
 
-    private static List<Position> positions = Lists.newArrayList(GOALY, LEFT_DEFENDER, LEFT_STOPPER, RIGHT_STOPPER,
-            RIGHT_DEFENDER, CENTRAL_DEFENSIVE_MIDFIELDER, LEFT_MIDFIELDER, RIGHT_MIDFIELDER,
-            CENTRAL_OFFENSIVE_MIDFIELDER, LEFT_STRIKER, RIGHT_STRIKER);
-
-    public static Team createTeam(String name) {
+    public static Team createTeam(String name, PlayingSystem playingSystem) {
         Team team = new Team(name);
         team.setStrength(88);
         List<Player> players = Lists.newArrayList();
-
-        IntStream.range(0, 11).forEach(i -> players.add(createPlayer("Mr.", String.valueOf(i), positions.get(i))));
+        IntStream.range(0, 22).forEach(i -> players.add(createPlayer("Mr.", String.valueOf(i))));
         team.setPlayers(players);
         team.setName(name);
+        createStartEleven(team, playingSystem);
         return team;
     }
 
-    public static Team createTeam(String name, int strength) {
-        Team team = createTeam(name);
-        createStartEleven(team);
-        team.setStrength(strength);
-        return team;
+    public static Player createPlayer(String firstName, String lastName) {
+        return new Player.Builder(firstName, lastName).build();
     }
 
     public static Player createPlayer(String firstName, String lastName, Position position) {

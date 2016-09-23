@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamManagerService {
@@ -27,12 +28,18 @@ public class TeamManagerService {
         });
     }
 
-    public boolean hasPlayerForSystem(Team team, PlayingSystem system) {
+    boolean hasPlayerForSystem(Team team, PlayingSystem system) {
         List<Position> positionsInTeam = Lists.newArrayList();
         List<Player> players = team.getPlayers();
         players.forEach(player -> positionsInTeam.add(player.getPosition()));
 
         return positionsInTeam.containsAll(system.getPositions());
+    }
+
+    public List<PlayingSystem> getPossibleSystems(Team team) {
+        return PlayingSystem.STANDARD_SYSTEMS.stream()
+                .filter(playingSystem -> hasPlayerForSystem(team, playingSystem))
+                .collect(Collectors.toList());
     }
 
 //    Map<Position, Player> getPositionPlayerMap(Team team) {
