@@ -106,7 +106,6 @@ public class Match {
         } else {
             changePlayerHome(in, out, positionPlayerMapGuestTeam, guestTeam, playerChangesGuestTeam);
         }
-
     }
 
     private void changePlayerHome(Player in, Player out, Map<Position, Player> positionPlayerMap, Team team, List<PlayerChange> playerChanges) {

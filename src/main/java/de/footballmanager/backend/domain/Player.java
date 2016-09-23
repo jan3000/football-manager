@@ -11,7 +11,7 @@ public class Player {
 
     private final String lastname;
     private final String firstname;
-    private final Position position;
+    private Position position;
     private DateTime dateOfBirth;
     private CountryCode homeCountry;
     private int strength;
@@ -69,6 +69,10 @@ public class Player {
 
     public Position getPosition() {
         return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
     public DateTime getDateOfBirth() {
