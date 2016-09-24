@@ -222,7 +222,7 @@ public class ResultServiceTest {
     }
 
     private List<Match> runCompleteMatches(Team team1, Team team2) {
-        List<Match> matches = Lists.newArrayList(createMatch(team1, team2, false));
+        List<Match> matches = Lists.newArrayList(createMatch(team1, team2, false, true));
         IntStream.range(1,90).forEach(i -> {
             resultService.calculateNextMinute(matches);
         });

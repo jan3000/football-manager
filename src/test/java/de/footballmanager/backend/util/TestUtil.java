@@ -5,11 +5,11 @@ import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
+import org.joda.time.DateTime;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.IntStream;
 
 public class TestUtil {
@@ -35,8 +35,23 @@ public class TestUtil {
         return timeTableService.createTimeTable(teams);
     }
 
+    public static MatchDay createMatchDay() {
+        MatchDay matchDay = new MatchDay();
+        Team team1 = createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2);
+        Team team2 = createTeam(TEAM_2, PlayingSystem.SYSTEM_4_4_2);
+        Team team3 = createTeam(TEAM_3, PlayingSystem.SYSTEM_4_4_2);
+        Team team4 = createTeam(TEAM_4, PlayingSystem.SYSTEM_4_4_2);
+        Match match1 = createMatch(team1, team2, false, false);
+        matchDay.addMatch(match1);
+        Match match2 = createMatch(team3, team4, false, false);
+        matchDay.addMatch(match2);
+        matchDay.setDate(new DateTime());
+        matchDay.setMatchDayNumber(1);
+        return matchDay;
+    }
+
     public static Match createRunningMatch() {
-        return createMatch(createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2), createTeam(TEAM_2, PlayingSystem.SYSTEM_4_4_2), false);
+        return createMatch(createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2), createTeam(TEAM_2, PlayingSystem.SYSTEM_4_4_2), false, true);
     }
 
     public static Match createMatch() {
@@ -48,18 +63,20 @@ public class TestUtil {
     }
 
     public static Match createMatch(Team team1, Team team2, int homeGoals, int guestGoals) {
-        Match match = createMatch(team1, team2, true);
+        Match match = createMatch(team1, team2, true, true);
         match.setResult(new Result(homeGoals, guestGoals));
         return match;
     }
 
-    public static Match createMatch(Team homeTeam, Team guestTeam, boolean isCreateFinishedMatch) {
+    public static Match createMatch(Team homeTeam, Team guestTeam, boolean isCreateFinishedMatch, boolean isMatchStarted) {
         Match match = new Match();
         match.setHomeTeam(homeTeam);
         match.setGuestTeam(guestTeam);
         match.setPositionPlayerMapHomeTeam(createStartEleven(homeTeam, PlayingSystem.SYSTEM_4_4_2));
         match.setPositionPlayerMapGuestTeam(createStartEleven(guestTeam, PlayingSystem.SYSTEM_4_4_2));
-        match.start();
+        if (isMatchStarted) {
+            match.start();
+        }
         if (isCreateFinishedMatch) {
             IntStream.range(1, 90).forEach(i -> match.increaseMinute());
         }

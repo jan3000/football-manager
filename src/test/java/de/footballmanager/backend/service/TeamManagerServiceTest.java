@@ -2,10 +2,7 @@ package de.footballmanager.backend.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import de.footballmanager.backend.domain.Pair;
-import de.footballmanager.backend.domain.Player;
-import de.footballmanager.backend.domain.PlayingSystem;
-import de.footballmanager.backend.domain.Team;
+import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.TestUtil;
 import junitparams.JUnitParamsRunner;
@@ -19,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static de.footballmanager.backend.enumeration.Position.*;
+import static de.footballmanager.backend.util.TestUtil.createMatchDay;
 import static de.footballmanager.backend.util.TestUtil.createTeam;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -36,14 +34,39 @@ public class TeamManagerServiceTest {
     }
 
     @Test
-    public void getBestPlayerForBestSystem() {
+    public void getBestPlayerForBestSystemReturnsSystemAndPlayersInCaseOfMultipleSystemMatches() {
+        // given
+        Team team = createTeamForFourSystems();
+        List<Player> players = team.getPlayers();
+
+        removeTail(players, 17);
+
+        // when
+        Pair<PlayingSystem, Map<Position, Player>> bestPlayersForBestSystem = teamManagerService.getBestPlayersForBestSystem(team);
+
+        // then
+        assertNotNull(bestPlayersForBestSystem);
+        PlayingSystem playingSystem = bestPlayersForBestSystem.getFirst();
+        Map<Position, Player> positionPlayerMap = bestPlayersForBestSystem.getSecond();
+        assertNotNull(playingSystem);
+        assertNotNull(positionPlayerMap);
+        assertEquals(11, positionPlayerMap.size());
+    }
+
+    @Test
+    public void getBestPlayerForBestSystem443() {
+        // given
         Team team = createTeamForFourSystems();
         List<Player> players = team.getPlayers();
         setPositionAndStrength(players.get(15), LEFT_WINGER, 99);
         setPositionAndStrength(players.get(0), GOALY, 29);
 
         removeTail(players, 17);
+
+        // when
         Pair<PlayingSystem, Map<Position, Player>> bestPlayersForBestSystem = teamManagerService.getBestPlayersForBestSystem(team);
+
+        // then
         assertNotNull(bestPlayersForBestSystem);
         PlayingSystem playingSystem = bestPlayersForBestSystem.getFirst();
         Map<Position, Player> positionPlayerMap = bestPlayersForBestSystem.getSecond();
@@ -65,8 +88,6 @@ public class TeamManagerServiceTest {
         assertPlayerSelected(team, "Mr.", "13", positionPlayerMap.get(CENTRAL_STRIKER));
     }
 
-
-
     @Test
     public void getTeamStrength() {
         Team team = createTeam("Team", PlayingSystem.SYSTEM_4_4_2);
@@ -74,6 +95,24 @@ public class TeamManagerServiceTest {
         int teamStrength = teamManagerService.getTeamStrength(positionPlayerMap.values());
         assertEquals(TestUtil.DEFAULT_STRENGTH, teamStrength);
     }
+
+    @Test
+    public void setStartEleven() {
+        MatchDay matchDay = createMatchDay();
+        teamManagerService.setStartEleven(matchDay);
+        assertNotNull(matchDay);
+        Match match1 = matchDay.getMatches().get(0);
+        Match match2 = matchDay.getMatches().get(1);
+        assertNotNull(match1.getPositionPlayerMapHomeTeam());
+        assertEquals(11, match1.getPositionPlayerMapHomeTeam().size());
+        assertNotNull(match1.getPositionPlayerMapGuestTeam());
+        assertEquals(11, match1.getPositionPlayerMapGuestTeam().size());
+        assertNotNull(match2.getPositionPlayerMapHomeTeam());
+        assertEquals(11, match1.getPositionPlayerMapHomeTeam().size());
+        assertNotNull(match2.getPositionPlayerMapGuestTeam());
+        assertEquals(11, match1.getPositionPlayerMapGuestTeam().size());
+    }
+
 
     @Test
     public void getBestPlayersForSystemSelectionBasedOnPosition() {

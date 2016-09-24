@@ -23,11 +23,17 @@ public class TeamManagerService {
 
     public void setStartEleven(MatchDay matchDay) {
         matchDay.getMatches().forEach(match -> {
-            if (isTeamMangedByComputer(match.getHomeTeam())) {
-
-            }
+            Team homeTeam = match.getHomeTeam();
+            Team guestTeam = match.getGuestTeam();
+            Lists.newArrayList(homeTeam, guestTeam).forEach(team -> {
+                if (isTeamMangedByComputer(team)) {
+                    Pair<PlayingSystem, Map<Position, Player>> pair = getBestPlayersForBestSystem(team);
+                    match.setPositionPlayerMapHomeTeam(pair.getSecond());
+                }
+            });
         });
     }
+
 
     boolean hasPlayerForSystem(Team team, PlayingSystem system) {
         List<Position> positionsInTeam = Lists.newArrayList();
