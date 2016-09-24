@@ -36,7 +36,7 @@ public class Player {
         private CountryCode homeCountry;
         private int strength;
 
-        public Builder(String lastName, String firstName) {
+        public Builder(String firstName, String lastName) {
             this.lastName = lastName;
             this.firstName = firstName;
         }

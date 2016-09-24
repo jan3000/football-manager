@@ -19,6 +19,7 @@ public class TestUtil {
     public static final String TEAM_2 = "team2";
     public static final String TEAM_3 = "team3";
     public static final String TEAM_4 = "team4";
+    public static final int DEFAULT_STRENGTH = 88;
 
     public static League createLeague() {
         League league = new League();
@@ -96,9 +97,13 @@ public class TestUtil {
 
     public static Team createTeam(String name, PlayingSystem playingSystem) {
         Team team = new Team(name);
-        team.setStrength(88);
+        team.setStrength(DEFAULT_STRENGTH);
         List<Player> players = Lists.newArrayList();
-        IntStream.range(0, 22).forEach(i -> players.add(createPlayer("Mr.", String.valueOf(i))));
+        IntStream.range(0, 22).forEach(i -> {
+            Player player = createPlayer("Mr.", String.valueOf(i));
+            player.setStrength(DEFAULT_STRENGTH);
+            players.add(player);
+        });
         team.setPlayers(players);
         team.setName(name);
         createStartEleven(team, playingSystem);
