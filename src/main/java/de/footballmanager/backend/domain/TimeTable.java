@@ -22,8 +22,12 @@ public class TimeTable {
         Preconditions.checkArgument(matchDayNumber >= 1, "matchDay must be greater 0");
         Preconditions.checkArgument(matchDayNumber <= matchDays.size(), "matchDay number must not exceed " +
                 matchDays.size());
-        MatchDay matchDay = matchDays.get(matchDayNumber - 1);
-        return matchDay;
+        return matchDays.get(matchDayNumber - 1);
+    }
+
+    public Match getMatch(int matchDayNumber, String teamName) {
+        MatchDay matchDay = getMatchDay(matchDayNumber);
+        return matchDay.getMatchOfTeam(teamName);
     }
 
     public int getCurrentMatchDay() {

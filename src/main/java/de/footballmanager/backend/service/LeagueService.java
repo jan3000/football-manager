@@ -5,6 +5,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.comparator.TeamValueComparator;
 import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.parser.LeagueParser;
 import de.footballmanager.backend.parser.PlayerParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,18 @@ public class LeagueService {
         } catch (JAXBException | FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
+        getMatch(matchDayNumber, teamName).setPositionPlayerMapHomeTeam(positionToStartEleven);
+    }
+
+    private Match getMatch(int matchDayNumber, String teamName) {
+        return timeTable.getMatch(matchDayNumber, teamName);
+    }
+
+    public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
+        getMatch(matchDayNumber, teamName).setPositionPlayerMapGuestTeam(positionToStartEleven);
     }
 
     public List<Team> getTeams() {

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,9 @@ public class ResultService {
     private static final int WIN_PROBABILITY_BALANCE_CONSTANT = 30;
     private static final Random RANDOM = new Random();
 
+    @Autowired
+    private StrengthService strengthService;
+
     public void calculateNextMinute(List<Match> matches) {
         matches.stream()
                 .filter(match -> !match.isFinished())
@@ -27,18 +31,15 @@ public class ResultService {
     }
 
     private void simulateMatchMinute(Match match, int minute) {
-        if (isGoalInThisMinute(match.getHomeTeam().getStrength(), true)) {
+        if (isGoalInThisMinute(strengthService.getStrength(match.getPositionPlayerMapHomeTeam()), true)) {
             addHomeGoal(match, minute);
         }
 
-        if (isGoalInThisMinute(match.getGuestTeam().getStrength(), false)) {
+        if (isGoalInThisMinute(strengthService.getStrength(match.getPositionPlayerMapGuestTeam()), false)) {
             addGuestGoal(match, minute);
         }
         match.increaseMinute();
 
-        if (match.getMinute() == 90) {
-            match.setFinished(true);
-        }
         // TODO calculate additionalTime
         // TODO cards, injuries, changes
     }
@@ -102,6 +103,5 @@ public class ResultService {
 
             simulateMatchMinute(match, minute);
         }
-        match.setFinished(true);
     }
 }
