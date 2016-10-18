@@ -13,10 +13,10 @@ import java.io.InputStreamReader;
 @Service
 public class LeagueParser {
 
-    public League parse() throws JAXBException, FileNotFoundException {
+    public League parse(String teamsFilePath) throws JAXBException, FileNotFoundException {
         JAXBContext jaxbContext = JAXBContext.newInstance(League.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         return (League) unmarshaller.unmarshal(new BufferedReader(new InputStreamReader(
-                Thread.currentThread().getContextClassLoader().getResourceAsStream("team.xml"))));
+                Thread.currentThread().getContextClassLoader().getResourceAsStream(teamsFilePath))));
     }
 }

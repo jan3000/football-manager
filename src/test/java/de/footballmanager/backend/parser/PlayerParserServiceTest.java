@@ -10,25 +10,25 @@ import org.junit.Test;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.footballmanager.backend.parser.PlayerParser.MINIMAL_NUMBER_OF_PLAYERS;
+import static de.footballmanager.backend.parser.PlayerParserService.MINIMAL_NUMBER_OF_PLAYERS;
 import static de.footballmanager.backend.util.TestUtil.createLeague;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class PlayerParserTest {
+public class PlayerParserServiceTest {
 
     @Test
     public void parsePlayerForLeague() {
 
         // given
-        PlayerParser playerParser = new PlayerParser();
+        PlayerParserService playerParserService = new PlayerParserService();
         League league = createLeague();
         removeAllPlayersFromTeams(league);
         List<Team> teams = league.getTeams();
         assertFalse(areTeamsHavingMoreThan20Players(teams));
 
         // when
-        playerParser.parsePlayerForLeague(league);
+        playerParserService.parsePlayerForLeague(league, "names.txt", "surnames.txt");
 
         // then
         assertTrue(areTeamsHavingMoreThan20Players(teams));

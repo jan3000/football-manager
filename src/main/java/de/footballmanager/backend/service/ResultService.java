@@ -25,6 +25,7 @@ public class ResultService {
     private StrengthService strengthService;
 
     public void calculateNextMinute(List<Match> matches) {
+        Preconditions.checkArgument(matches.stream().allMatch(Match::isStarted), "All matches must be started before running");
         matches.stream()
                 .filter(match -> !match.isFinished())
                 .forEach(match -> simulateMatchMinute(match, match.getMinute()));

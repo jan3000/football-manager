@@ -21,7 +21,13 @@ public class TeamManagerService {
         }
     };
 
-    public void setStartEleven(MatchDay matchDay) {
+    public void setTeamManager(Manager manager, Team team) {
+        Preconditions.checkNotNull(manager, "manager must be set");
+        Preconditions.checkNotNull(team, "team must be set");
+        team.setManager(manager);
+    }
+
+    public void setStartElevenIfComputerManaged(MatchDay matchDay) {
         matchDay.getMatches().forEach(match -> {
             Team homeTeam = match.getHomeTeam();
             Team guestTeam = match.getGuestTeam();
@@ -35,7 +41,7 @@ public class TeamManagerService {
     }
 
 
-    boolean hasPlayerForSystem(Team team, PlayingSystem system) {
+    public boolean hasPlayerForSystem(Team team, PlayingSystem system) {
         List<Position> positionsInTeam = Lists.newArrayList();
         List<Player> players = team.getPlayers();
         players.forEach(player -> positionsInTeam.add(player.getPosition()));
@@ -47,6 +53,10 @@ public class TeamManagerService {
         return PlayingSystem.STANDARD_SYSTEMS.stream()
                 .filter(playingSystem -> hasPlayerForSystem(team, playingSystem))
                 .collect(Collectors.toList());
+    }
+
+    public void setBestPlayersForSystem(Team team, PlayingSystem playingSystem) {
+//        playingSystem.getPositions().
     }
 
     public ListMultimap<Position, Player> getPositionToPlayerMap(Team team) {
@@ -81,6 +91,9 @@ public class TeamManagerService {
 
     public Pair<PlayingSystem, Map<Position, Player>> getBestPlayersForBestSystem(Team team) {
         List<PlayingSystem> possibleSystems = getPossibleSystems(team);
+        if (possibleSystems.isEmpty()) {
+
+        }
         Map<PlayingSystem, Integer> systemStrengthMap = Maps.newHashMap();
         Map<PlayingSystem, Map<Position, Player>> systemToBestElevenMap = Maps.newHashMap();
         possibleSystems.forEach(playingSystem -> {
@@ -91,7 +104,9 @@ public class TeamManagerService {
         PlayingSystem bestPlayingSystem = systemStrengthMap
                 .entrySet()
                 .stream()
-                .max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get()
+                .max((entry1, entry2) -> {
+                    return entry1.getValue() > entry2.getValue() ? 1 : -1;
+                }).get()
                 .getKey();
         return new Pair<PlayingSystem, Map<Position, Player>>(bestPlayingSystem, systemToBestElevenMap.get(bestPlayingSystem));
     }
@@ -107,15 +122,8 @@ public class TeamManagerService {
 //    }
 
     private boolean isTeamMangedByComputer(Team team) {
-        return !userToTeam.values().contains(team);
-    }
-
-    public Map<String, Team> getUserToTeam() {
-        return ImmutableMap.copyOf(userToTeam);
-    }
-
-    public void addUserToTeam(String userName, Team team) {
-        this.userToTeam.put(userName, team);
+        Preconditions.checkNotNull(team.getManager(), "no manager set for team {}", team.getName());
+        return team.getManager().isComputerManaged();
     }
 
 }

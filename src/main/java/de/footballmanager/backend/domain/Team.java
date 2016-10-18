@@ -6,11 +6,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.List;
+import java.util.Objects;
 
 @XmlRootElement(name = "team")
-@XmlType(propOrder = {"name", "strength", "players"})
+@XmlType(propOrder = {"name", "strength", "players", "manager"})
 public class Team {
 
+    private Manager manager;
     private String name;
     private int strength;
     private List<Player> players = Lists.newArrayList();
@@ -55,47 +57,35 @@ public class Team {
         this.strength = strength;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
+    public Manager getManager() {
+        return manager;
+    }
+
+    public void setManager(Manager manager) {
+        this.manager = manager;
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Team other = (Team) obj;
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Team team = (Team) o;
+        return Objects.equals(name, team.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Team [name=");
-        builder.append(name);
-        builder.append(", strength=");
-        builder.append(strength);
-        builder.append(", players=");
-        builder.append(players);
-        builder.append("]");
-        return builder.toString();
+        return "Team{" +
+                "manager=" + manager +
+                ", name='" + name + '\'' +
+                ", strength=" + strength +
+                ", players=" + players +
+                '}';
     }
 
 }

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.neovisionaries.i18n.CountryCode;
 import de.footballmanager.backend.domain.League;
+import de.footballmanager.backend.domain.Manager;
 import de.footballmanager.backend.domain.Player;
 import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.enumeration.Position;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class PlayerParser {
+public class PlayerParserService {
 
     private static final Position[] ALL_POSITIONS =Position.values();
     static final int MINIMAL_NUMBER_OF_PLAYERS = 20;
@@ -31,19 +32,23 @@ public class PlayerParser {
     private List<Integer> strengths;
     private League league;
 
-    public void parsePlayerForLeague(League league) {
+    public void parsePlayerForLeague(League league, String firstNameFilePath, String lastNameFilePath) {
         Preconditions.checkArgument(league != null);
         Preconditions.checkArgument(!league.getTeams().isEmpty());
-        List<String> names = normalizeNames(readInNames("names.txt"));
-        List<String> surnames = normalizeNames(readInNames("surnames.txt"));
+        List<String> names = normalizeNames(readInNames(firstNameFilePath));
+        List<String> surnames = normalizeNames(readInNames(lastNameFilePath));
 
         for (Team team : league.getTeams()) {
             int numberOfPlayers = getNumberOfPlayers();
             setPositionsOfPlayers(numberOfPlayers);
+            Manager manager = new Manager();
+            manager.setFirstName(getRandomName(names));
+            manager.setFirstName(getRandomName(surnames));
+            team.setManager(manager);
 
             for (int i = 0; i < numberOfPlayers; i++) {
-                String firstName = names.get(RANDOM.nextInt(names.size()));
-                String surName = surnames.get(RANDOM.nextInt(surnames.size()));
+                String firstName = getRandomName(names);
+                String surName = getRandomName(surnames);
 
                 Player player = new Player.Builder(firstName, surName).setPosition(positions.get(i)).build();
                 player.setHomeCountry(CountryCode.DE);
@@ -53,6 +58,10 @@ public class PlayerParser {
                 team.getPlayers().add(player);
             }
         }
+    }
+
+    private String getRandomName(List<String> names) {
+        return names.get(RANDOM.nextInt(names.size()));
     }
 
     private DateTime getDate() {

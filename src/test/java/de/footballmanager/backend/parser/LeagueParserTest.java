@@ -13,7 +13,7 @@ public class LeagueParserTest {
     @Test
     public void parse() throws JAXBException, FileNotFoundException {
         LeagueParser leagueParser = new LeagueParser();
-        League league = leagueParser.parse();
+        League league = leagueParser.parse("team.xml");
         assertThat(league).isNotNull();
         assertThat(league.getTeams().size()).isEqualTo(18);
     }

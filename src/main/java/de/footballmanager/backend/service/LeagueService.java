@@ -7,7 +7,7 @@ import de.footballmanager.backend.comparator.TeamValueComparator;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.parser.LeagueParser;
-import de.footballmanager.backend.parser.PlayerParser;
+import de.footballmanager.backend.parser.PlayerParserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class LeagueService {
     @Autowired
     private LeagueParser leagueParser;
     @Autowired
-    private PlayerParser playerParser;
+    private PlayerParserService playerParserService;
     @Autowired
     private ResultService resultService;
     @Autowired
@@ -38,15 +38,20 @@ public class LeagueService {
     public void initLeague() {
         try {
             if (league == null) {
-                System.out.println("INIT STARTED");
-                league = leagueParser.parse();
-                timeTable = timeTableService.createTimeTable(league.getTeams());
-                playerParser.parsePlayerForLeague(league);
-                System.out.println("INIT FINISHED");
+                createLeague("team.xml", "names.txt", "surnames.txt");
             }
         } catch (JAXBException | FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public void createLeague(String teamsFile, String firstNameFile, String lastNameFile)
+            throws JAXBException, FileNotFoundException {
+        System.out.println("INIT STARTED");
+        league = leagueParser.parse(teamsFile);
+        timeTable = timeTableService.createTimeTable(league.getTeams());
+        playerParserService.parsePlayerForLeague(league, firstNameFile, lastNameFile);
+        System.out.println("INIT FINISHED");
     }
 
     public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {

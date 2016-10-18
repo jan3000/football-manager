@@ -6,8 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.enumeration.ResultType;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -15,9 +13,8 @@ import java.util.stream.Collectors;
 
 public class Match {
 
-
     private static final int MINUTES_OF_GAME = 90;
-    public static final int MINUTES_HALF_TIME = 45;
+    private static final int MINUTES_HALF_TIME = 45;
     private Team homeTeam;
     private Team guestTeam;
 
@@ -45,17 +42,18 @@ public class Match {
         this.guestTeam = guestTeam;
     }
 
-    private void validateMatchPrepared() {
+    private void validateIsMatchPrepared() {
         Preconditions.checkNotNull(homeTeam, "home team not set");
         Preconditions.checkNotNull(guestTeam, "guest team not set");
 
-        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 11, "start eleven of home not set correctly");
-        Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 11, "start eleven of guest not set correctly");
+        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 11, "start eleven of home team not set correctly");
+        Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 11, "start eleven of guest team not set correctly");
 
     }
 
     public void start() {
-        validateMatchPrepared();
+
+        validateIsMatchPrepared();
         isStarted = true;
     }
 

@@ -20,7 +20,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 @Service
-public class TrialAndErrorTimeTableService {
+public class TrialAndErrorTimeTableService implements TimeTableService {
 
     private List<DateTime> getMatchDates() {
         final DateTime startDate = new DateTime("2015-08-15");
@@ -31,6 +31,7 @@ public class TrialAndErrorTimeTableService {
         return dates;
     }
 
+    @Override
     public TimeTable createTimeTable(final List<Team> teams) {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(teams),
                 "if you like to create a timeTable, please pass some teams");

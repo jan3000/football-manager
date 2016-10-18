@@ -18,9 +18,7 @@ import java.util.Optional;
 import static de.footballmanager.backend.enumeration.Position.*;
 import static de.footballmanager.backend.util.TestUtil.createMatchDay;
 import static de.footballmanager.backend.util.TestUtil.createTeam;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(JUnitParamsRunner.class)
 public class TeamManagerServiceTest {
@@ -32,6 +30,45 @@ public class TeamManagerServiceTest {
     public void setUp() {
         teamManagerService = new TeamManagerService();
     }
+
+    @Test
+    public void hasPlayerForSystem() {
+        // given
+        Team team = createTeam("Hamburger SV", PlayingSystem.SYSTEM_4_4_2);
+        team.setPlayers(team.getPlayers().subList(0, 11));
+
+        assertTrue(teamManagerService.hasPlayerForSystem(team, PlayingSystem.SYSTEM_4_4_2));
+    }
+
+    @Test
+    public void hasPlayerForSystemNo() {
+        // given
+        Team team = createTeam("Hamburger SV", PlayingSystem.SYSTEM_4_4_2);
+        team.setPlayers(team.getPlayers().subList(0, 11));
+        team.getPlayers().get(0).setPosition(Position.RIGHT_WINGER);
+
+        assertFalse(teamManagerService.hasPlayerForSystem(team, PlayingSystem.SYSTEM_4_4_2));
+    }
+
+    @Test
+    public void getBestPlayersIfMultipleSystemsHaveSameStrength() {
+        // given
+        Team team = createTeamForFourSystems();
+
+        // when
+        Pair<PlayingSystem, Map<Position, Player>> bestPlayersForBestSystem = teamManagerService.
+                getBestPlayersForBestSystem(team);
+
+        // then
+        assertNotNull(bestPlayersForBestSystem);
+        PlayingSystem playingSystem = bestPlayersForBestSystem.getFirst();
+        Map<Position, Player> positionPlayerMap = bestPlayersForBestSystem.getSecond();
+        assertNotNull(playingSystem);
+        assertNotNull(positionPlayerMap);
+        assertEquals(11, positionPlayerMap.size());
+
+    }
+
 
     @Test
     public void getBestPlayerForBestSystemReturnsSystemAndPlayersInCaseOfMultipleSystemMatches() {
@@ -99,7 +136,7 @@ public class TeamManagerServiceTest {
     @Test
     public void setStartEleven() {
         MatchDay matchDay = createMatchDay();
-        teamManagerService.setStartEleven(matchDay);
+        teamManagerService.setStartElevenIfComputerManaged(matchDay);
         assertNotNull(matchDay);
         Match match1 = matchDay.getMatches().get(0);
         Match match2 = matchDay.getMatches().get(1);

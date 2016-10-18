@@ -72,8 +72,8 @@ public class TestUtil {
         Match match = new Match();
         match.setHomeTeam(homeTeam);
         match.setGuestTeam(guestTeam);
-        match.setPositionPlayerMapHomeTeam(createStartEleven(homeTeam, PlayingSystem.SYSTEM_4_4_2));
-        match.setPositionPlayerMapGuestTeam(createStartEleven(guestTeam, PlayingSystem.SYSTEM_4_4_2));
+        match.setPositionPlayerMapHomeTeam(createStartElevenMatchingGivenSystem(homeTeam, PlayingSystem.SYSTEM_4_4_2));
+        match.setPositionPlayerMapGuestTeam(createStartElevenMatchingGivenSystem(guestTeam, PlayingSystem.SYSTEM_4_4_2));
         if (isMatchStarted) {
             match.start();
         }
@@ -83,7 +83,7 @@ public class TestUtil {
         return match;
     }
 
-    public static Map<Position, Player> createStartEleven(Team team, PlayingSystem playingSystem) {
+    public static Map<Position, Player> createStartElevenMatchingGivenSystem(Team team, PlayingSystem playingSystem) {
         Map<Position, Player> positionPlayerMap = Maps.newHashMap();
         setPlayerPositions(team, playingSystem);
 
@@ -114,6 +114,7 @@ public class TestUtil {
 
     public static Team createTeam(String name, PlayingSystem playingSystem) {
         Team team = new Team(name);
+        team.setManager(new Manager());
         team.setStrength(DEFAULT_STRENGTH);
         List<Player> players = Lists.newArrayList();
         IntStream.range(0, 22).forEach(i -> {
@@ -123,7 +124,7 @@ public class TestUtil {
         });
         team.setPlayers(players);
         team.setName(name);
-        createStartEleven(team, playingSystem);
+        createStartElevenMatchingGivenSystem(team, playingSystem);
         return team;
     }
 

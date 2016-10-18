@@ -75,7 +75,7 @@ public class LeagueServiceTest {
     }
 
     @Test
-    public void getCurrentTable() {
+    public void getCurrentTableForThreeTeams() {
         // prepare
         setUpTimeTable();
 
