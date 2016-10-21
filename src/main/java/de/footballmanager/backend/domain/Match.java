@@ -29,7 +29,7 @@ public class Match {
     private List<PlayerChange> playerChangesGuestTeam = Lists.newArrayListWithCapacity(3);
 
     private final List<Goal> goals = Lists.newArrayList();
-    private final Result halfTime = new Result(0, 0);
+    private final Result halfTimeResult = new Result(0, 0);
     private Result result = new Result(0, 0);
     private boolean isFinished = false;
     private boolean isStarted = false;
@@ -78,7 +78,7 @@ public class Match {
     public void increaseGoalsHomeTeam(final Goal goal) {
         validateMatchIsRunning();
         if (goal.getMinute() <= MINUTES_HALF_TIME) {
-            halfTime.increaseHomeGoal();
+            halfTimeResult.increaseHomeGoal();
         }
         result.increaseHomeGoal();
         addGoal(goal);
@@ -92,7 +92,7 @@ public class Match {
     public void increaseGoalsGuestTeam(final Goal goal) {
         validateMatchIsRunning();
         if (goal.getMinute() <= MINUTES_HALF_TIME) {
-            halfTime.increaseGuestGoal();
+            halfTimeResult.increaseGuestGoal();
         }
         result.increaseGuestGoal();
         addGoal(goal);
@@ -108,6 +108,9 @@ public class Match {
         return areTeamsSet() && (homeTeam.equals(team) || guestTeam.equals(team));
     }
 
+    /**
+     * Position is kept
+     */
     public void changePlayer(Team team, Player in, Player out) {
         Preconditions.checkArgument(this.containsTeam(team), "cannot change player for not contained team: ", team);
         if (isHomeTeam(team)) {
@@ -149,14 +152,11 @@ public class Match {
     }
 
     public void setPositionPlayerMapHomeTeam(Map<Position, Player> positionPlayerMapHomeTeam) {
-        Preconditions.checkState(!isStarted, "startEleven cannot be set if match already started");
+//        Preconditions.checkState(!isStarted, "startEleven cannot be set if match already started");
         Preconditions.checkState(!isFinished, "startEleven cannot be set if match already finished");
         List<Player> playersNotPartOfTeam = positionPlayerMapHomeTeam.values().stream()
                 .filter(player -> !homeTeam.getPlayers().contains(player))
                 .collect(Collectors.toList());
-        if (!playersNotPartOfTeam.isEmpty()) {
-            System.out.println(playersNotPartOfTeam);
-        }
         Preconditions.checkArgument(playersNotPartOfTeam.isEmpty(), "players must be part of the team");
         Preconditions.checkArgument(Sets.newHashSet(positionPlayerMapHomeTeam.values()).size() == 11, "players must be different");
 
@@ -195,6 +195,8 @@ public class Match {
     }
 
     public void setHomeTeam(final Team homeTeam) {
+        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 0,
+                "home team cannot be changed if start eleven is set already");
         this.homeTeam = homeTeam;
     }
 
@@ -203,6 +205,8 @@ public class Match {
     }
 
     public void setGuestTeam(final Team guestTeam) {
+        Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 0,
+                "guest team cannot be changed if start eleven is set already");
         this.guestTeam = guestTeam;
     }
 
@@ -242,8 +246,8 @@ public class Match {
         this.result = result;
     }
 
-    public Result getHalfTime() {
-        return halfTime;
+    public Result getHalfTimeResult() {
+        return halfTimeResult;
     }
 
     public boolean isFinished() {
@@ -254,7 +258,7 @@ public class Match {
     public String printMatch() {
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("%s \t- \t%s \t%s : %s  (%s)", homeTeam.getName(), guestTeam.getName(),
-                result.getHomeGoals(), result.getGuestGoals(), halfTime.print()));
+                result.getHomeGoals(), result.getGuestGoals(), halfTimeResult.print()));
         for (Goal goal : goals) {
             builder.append(String.format("\n%s. Minute\t%s", goal.getMinute(), goal.getNewResult().print()));
         }

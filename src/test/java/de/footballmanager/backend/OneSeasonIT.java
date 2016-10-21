@@ -2,16 +2,12 @@ package de.footballmanager.backend;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
-import de.footballmanager.backend.parser.PlayerParserService;
 import de.footballmanager.backend.service.LeagueService;
 import de.footballmanager.backend.service.ResultService;
 import de.footballmanager.backend.service.TeamManagerService;
 import de.footballmanager.backend.service.TimeTableService;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import static de.footballmanager.backend.enumeration.Position.GOALY;
-import static de.footballmanager.backend.enumeration.Position.LEFT_DEFENDER;
 import static org.junit.Assert.*;
 
-@Ignore("go on here")
+//@Ignore("go on here")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
 public class OneSeasonIT {
@@ -61,15 +55,12 @@ public class OneSeasonIT {
         assertEquals(2, numberOfDays);
 
 
-
-
         // when: run match day 1
         MatchDay matchDay = timeTable.getMatchDay(1);
         Match match = matchDay.getMatches().get(0);
-        ListMultimap<Position, Player> positionToPlayerMap = teamManagerService.getPositionToPlayerMap(managedTeam);
-        Map<Position, Player> bestPlayersForSystem = teamManagerService.getBestPlayersForSystem(managedTeam,
-                PlayingSystem.SYSTEM_4_4_2);
-        teamManagerService.setStartEleven(match, managedTeam, bestPlayersForSystem);
+        Pair<PlayingSystem, Map<Position, Player>> pair = teamManagerService.getBestPlayersForBestSystem(managedTeam);
+        Map<Position, Player> startEleven = pair.getSecond();
+        teamManagerService.setStartEleven(match, managedTeam, startEleven);
         teamManagerService.setStartElevenIfComputerManaged(matchDay);
         List<Match> matches = matchDay.getMatches();
         assertEquals(1, matches.size());
@@ -78,19 +69,20 @@ public class OneSeasonIT {
         matches.forEach(Match::start);
 
         // run first half
-        IntStream.range(0, 45).forEach(i -> resultService.calculateNextMinute(matches));
+        IntStream.range(1, 45).forEach(i -> resultService.calculateNextMinute(matches));
         assertTrue(match.isStarted());
         assertFalse(match.isFinished());
-        assertNotNull(match.getHalfTime());
-        assertTrue(match.getResult() == null);
+        assertNotNull(match.getHalfTimeResult());
         assertEquals(45, match.getMinute());
 
-        // make manual player change
+        // make manual player change after 45 minutes
         List<Player> substituteBench = teamManagerService.getSubstituteBench(match, managedTeam);
         teamManagerService.changePlayer(match, managedTeam, substituteBench.get(2),
-                bestPlayersForSystem.get(Position.LEFT_DEFENDER));
+                startEleven.get(Position.LEFT_DEFENDER));
+        IntStream.range(46, 70).forEach(i -> resultService.calculateNextMinute(matches));
 
-        // make manual system change
+        // make manual system change after 70 minutes
+//        teamManagerService.changePlayingSystem(match, managedTeam, );
 
 
 

@@ -47,7 +47,7 @@ public class LeagueServiceTest {
     public void runNextMinuteAllMatchesFinished() {
         // prepare
         MatchDay matchDay = new MatchDay();
-        Match match = createMatch(createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2), createTeam(TEAM_2, PlayingSystem.SYSTEM_4_4_2), true, true);
+        Match match = createMatch(createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2), createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2), true, true);
         matchDay.getMatches().add(match);
         ResultService resultService = setUpResultService(matchDay);
 
@@ -87,14 +87,14 @@ public class LeagueServiceTest {
         assertThat(currentTable.getEntries()).hasSize(3);
 
         TableEntry tableEntry1 = currentTable.getEntries().get(2);
-        assertTable(tableEntry1, TEAM_1, 3, 1);
+        assertTable(tableEntry1, TEAM_NAME_1, 3, 1);
         assertGoals(tableEntry1, 3, 4, 3, 7);
         assertHomeStatistics(tableEntry1, 0, 1, 1);
         assertAwayStatistics(tableEntry1, 0, 0, 2);
         assertTotalStatistics(tableEntry1, 0, 1, 3);
 
         TableEntry tableEntry2 = currentTable.getEntries().get(0);
-        assertTable(tableEntry2, TEAM_2, 1, 10);
+        assertTable(tableEntry2, TEAM_NAME_2, 1, 10);
         assertGoals(tableEntry2, 7, 3, 4, 2);
         assertHomeStatistics(tableEntry2, 2, 0, 0);
         assertAwayStatistics(tableEntry2, 1, 1, 0);
@@ -121,7 +121,7 @@ public class LeagueServiceTest {
         assertThat(currentTable.getEntries()).hasSize(2);
 
         TableEntry tableEntry1 = currentTable.getEntries().get(0);
-        assertTable(tableEntry1, TEAM_2, 1, 3);
+        assertTable(tableEntry1, TEAM_NAME_2, 1, 3);
         assertGoals(tableEntry1, 3, 2, 0, 0);
         assertHomeStatistics(tableEntry1, 1, 0, 0);
         assertAwayStatistics(tableEntry1, 0, 0, 0);
@@ -137,12 +137,12 @@ public class LeagueServiceTest {
 
     private void setUpTimeTable() {
         TimeTable timeTable = new TimeTable();
-        MatchDay matchDay1 = new MatchDay(Lists.newArrayList(createMatch(TEAM_2, TEAM_3, 3, 2)));
-        MatchDay matchDay2 = new MatchDay(Lists.newArrayList(createMatch(TEAM_3, TEAM_1, 3, 2)));
-        MatchDay matchDay3 = new MatchDay(Lists.newArrayList(createMatch(TEAM_1, TEAM_2, 2, 2)));
-        MatchDay matchDay4 = new MatchDay(Lists.newArrayList(createMatch(TEAM_3, TEAM_2, 0, 2)));
-        MatchDay matchDay5 = new MatchDay(Lists.newArrayList(createMatch(TEAM_1, TEAM_3, 1, 2)));
-        MatchDay matchDay6 = new MatchDay(Lists.newArrayList(createMatch(TEAM_2, TEAM_1, 4, 1)));
+        MatchDay matchDay1 = new MatchDay(Lists.newArrayList(createFinishedMatch(TEAM_NAME_2, TEAM_3, 3, 2, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2)));
+        MatchDay matchDay2 = new MatchDay(Lists.newArrayList(createFinishedMatch(TEAM_3, TEAM_NAME_1, 3, 2, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2)));
+        MatchDay matchDay3 = new MatchDay(Lists.newArrayList(createFinishedMatch(TEAM_NAME_1, TEAM_NAME_2, 2, 2, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2)));
+        MatchDay matchDay4 = new MatchDay(Lists.newArrayList(createFinishedMatch(TEAM_3, TEAM_NAME_2, 0, 2, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2)));
+        MatchDay matchDay5 = new MatchDay(Lists.newArrayList(createFinishedMatch(TEAM_NAME_1, TEAM_3, 1, 2, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2)));
+        MatchDay matchDay6 = new MatchDay(Lists.newArrayList(createFinishedMatch(TEAM_NAME_2, TEAM_NAME_1, 4, 1, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2)));
         timeTable.addMatchDays(Lists.newArrayList(matchDay1, matchDay2, matchDay3, matchDay4, matchDay5, matchDay6));
         timeTable.setCurrentMatchDay(6);
         ReflectionTestUtils.setField(leagueService, "timeTable", timeTable);

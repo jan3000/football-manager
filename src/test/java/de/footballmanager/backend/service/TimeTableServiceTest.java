@@ -64,19 +64,19 @@ public class TimeTableServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void isTeamNotInMatchDayMatchDayNull() throws Exception {
-        timeTableService.isTeamNotInMatchDay(null, new Team(TestUtil.TEAM_1));
+        timeTableService.isTeamNotInMatchDay(null, new Team(TestUtil.TEAM_NAME_1));
     }
 
     @Test
     public void isTeamNotInMatchDayMatchNull() throws Exception {
         MatchDay matchDay = new MatchDay();
-        assertTrue(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_1)));
+        assertTrue(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_NAME_1)));
     }
 
     @Test
     public void isTeamNotInMatchDayHappyCase() throws Exception {
         MatchDay matchDay = new MatchDay();
-        Match match = new Match(new Team(TEAM_1), new Team(TEAM_2));
+        Match match = new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2));
         matchDay.addMatch(match);
         assertTrue(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_3)));
     }
@@ -84,17 +84,17 @@ public class TimeTableServiceTest {
     @Test
     public void isTeamNotInMatchDayFalseBecauseOfHomeTeam() throws Exception {
         MatchDay matchDay = new MatchDay();
-        Match match = new Match(new Team(TEAM_1), new Team(TEAM_2));
+        Match match = new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2));
         matchDay.addMatch(match);
-        assertFalse(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_1)));
+        assertFalse(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_NAME_1)));
     }
 
     @Test
     public void isTeamNotInMatchDayFalseBecauseOfGuestTeam() throws Exception {
         MatchDay matchDay = new MatchDay();
-        Match match = new Match(new Team(TEAM_1), new Team(TEAM_2));
+        Match match = new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2));
         matchDay.addMatch(match);
-        assertFalse(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_2)));
+        assertFalse(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_NAME_2)));
     }
 
     // -------------------------------------------------------------
@@ -104,7 +104,7 @@ public class TimeTableServiceTest {
     @Test(expected = NullPointerException.class)
     public void addMatchIfNotContainedAlreadyMatchDayIsNull() throws Exception {
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        matchesWithMinimalScore.add(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(null, matchesWithMinimalScore);
     }
 
@@ -125,7 +125,7 @@ public class TimeTableServiceTest {
     public void addMatchIfNotContainedAlreadyEmptyMatchDay() throws Exception {
         MatchDay matchDay = new MatchDay();
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        matchesWithMinimalScore.add(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(1, matchDay.getNumberOfMatches());
     }
@@ -135,7 +135,7 @@ public class TimeTableServiceTest {
         MatchDay matchDay = new MatchDay();
         matchDay.addMatch(new Match(new Team(TEAM_3), new Team(TEAM_4)));
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        matchesWithMinimalScore.add(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(2, matchDay.getNumberOfMatches());
     }
@@ -143,9 +143,9 @@ public class TimeTableServiceTest {
     @Test
     public void addMatchIfNotContainedAlreadyMatchContained() throws Exception {
         MatchDay matchDay = new MatchDay();
-        matchDay.addMatch(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchDay.addMatch(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        matchesWithMinimalScore.add(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(1, matchDay.getNumberOfMatches());
     }
@@ -153,9 +153,9 @@ public class TimeTableServiceTest {
     @Test
     public void addMatchIfNotContainedAlreadySwitchedMatchContained() throws Exception {
         MatchDay matchDay = new MatchDay();
-        matchDay.addMatch(new Match(new Team(TEAM_2), new Team(TEAM_1)));
+        matchDay.addMatch(new Match(new Team(TEAM_NAME_2), new Team(TEAM_NAME_1)));
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        matchesWithMinimalScore.add(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(1, matchDay.getNumberOfMatches());
     }
@@ -168,15 +168,15 @@ public class TimeTableServiceTest {
     public void getMatchesWithSameScore() throws Exception {
 
         Map<Match, Integer> matchToScore = Maps.newHashMap();
-        Match match1Against2 = new Match(new Team(TEAM_1), new Team(TEAM_2));
+        Match match1Against2 = new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2));
         matchToScore.put(match1Against2, 0);
-        Match match3Against2 = new Match(new Team(TEAM_3), new Team(TEAM_2));
+        Match match3Against2 = new Match(new Team(TEAM_3), new Team(TEAM_NAME_2));
         matchToScore.put(match3Against2, 0);
-        Match match1Against3 = new Match(new Team(TEAM_1), new Team(TEAM_3));
+        Match match1Against3 = new Match(new Team(TEAM_NAME_1), new Team(TEAM_3));
         matchToScore.put(match1Against3, 1);
-        Match match2Against3 = new Match(new Team(TEAM_2), new Team(TEAM_3));
+        Match match2Against3 = new Match(new Team(TEAM_NAME_2), new Team(TEAM_3));
         matchToScore.put(match2Against3, 1);
-        Match match2Against4 = new Match(new Team(TEAM_2), new Team(TEAM_4));
+        Match match2Against4 = new Match(new Team(TEAM_NAME_2), new Team(TEAM_4));
         matchToScore.put(match2Against4, 2);
         Match match3Against4 = new Match(new Team(TEAM_3), new Team(TEAM_4));
         matchToScore.put(match3Against4, 3);

@@ -16,8 +16,8 @@ import java.util.stream.IntStream;
 public class TestUtil {
 
 
-    public static final String TEAM_1 = "team1";
-    public static final String TEAM_2 = "team2";
+    public static final String TEAM_NAME_1 = "team1";
+    public static final String TEAM_NAME_2 = "team2";
     public static final String TEAM_3 = "team3";
     public static final String TEAM_4 = "team4";
     public static final int DEFAULT_STRENGTH = 88;
@@ -38,8 +38,8 @@ public class TestUtil {
 
     public static MatchDay createMatchDay() {
         MatchDay matchDay = new MatchDay();
-        Team team1 = createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2);
-        Team team2 = createTeam(TEAM_2, PlayingSystem.SYSTEM_4_4_2);
+        Team team1 = createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2);
+        Team team2 = createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2);
         Team team3 = createTeam(TEAM_3, PlayingSystem.SYSTEM_4_4_2);
         Team team4 = createTeam(TEAM_4, PlayingSystem.SYSTEM_4_4_2);
         Match match1 = createMatch(team1, team2, false, false);
@@ -52,15 +52,41 @@ public class TestUtil {
     }
 
     public static Match createRunningMatch() {
-        return createMatch(createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2), createTeam(TEAM_2, PlayingSystem.SYSTEM_4_4_2), false, true);
+        return createMatch(createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2), createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2), false, true);
     }
 
     public static Match createMatch() {
-        return createMatch(TEAM_1, TEAM_2, 0, 0);
+        return createMatch(TEAM_NAME_1, TEAM_NAME_2, 0, 0, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2);
+    }
+    public static Match createMatch(PlayingSystem homeSystem, PlayingSystem guestSystem) {
+        return createMatch(TEAM_NAME_1, TEAM_NAME_2, 0, 0, homeSystem, guestSystem);
     }
 
-    public static Match createMatch(String team1, String team2, int homeGoals, int guestGoals) {
-        return createMatch(createTeam(team1, PlayingSystem.SYSTEM_4_4_2), createTeam(team2, PlayingSystem.SYSTEM_4_4_2), homeGoals, guestGoals);
+    public static Match createMatch(String teamNameHome, String teamNameGuest, int homeGoals, int guestGoals,
+                                    PlayingSystem homeSystem, PlayingSystem guestSystem) {
+        Team homeTeam = createTeam(teamNameHome, homeSystem);
+        Team guestTeam = createTeam(teamNameGuest, guestSystem);
+        return createMatch(homeTeam, guestTeam, homeGoals, guestGoals, homeSystem, guestSystem);
+    }
+    public static Match createFinishedMatch(String teamNameHome, String teamNameGuest, int homeGoals, int guestGoals,
+                                    PlayingSystem homeSystem, PlayingSystem guestSystem) {
+        Team homeTeam = createTeam(teamNameHome, homeSystem);
+        Team guestTeam = createTeam(teamNameGuest, guestSystem);
+        return createFinishedMatch(homeTeam, guestTeam, homeGoals, guestGoals, homeSystem, guestSystem);
+    }
+
+    public static Match createMatch(Team team1, Team team2, int homeGoals, int guestGoals,
+                                            PlayingSystem homeSystem, PlayingSystem guestSystem) {
+        Match match = createMatch(team1, team2, false, true, homeSystem, guestSystem);
+        match.setResult(new Result(homeGoals, guestGoals));
+        return match;
+    }
+
+    public static Match createFinishedMatch(Team team1, Team team2, int homeGoals, int guestGoals,
+                                            PlayingSystem homeSystem, PlayingSystem guestSystem) {
+        Match match = createMatch(team1, team2, true, true, homeSystem, guestSystem);
+        match.setResult(new Result(homeGoals, guestGoals));
+        return match;
     }
 
     public static Match createMatch(Team team1, Team team2, int homeGoals, int guestGoals) {
@@ -69,12 +95,18 @@ public class TestUtil {
         return match;
     }
 
-    public static Match createMatch(Team homeTeam, Team guestTeam, boolean isCreateFinishedMatch, boolean isMatchStarted) {
+    public static Match createMatch(Team homeTeam, Team guestTeam, boolean finished, boolean started) {
+        return createMatch(homeTeam, guestTeam, finished, started, PlayingSystem.SYSTEM_4_4_2,
+                PlayingSystem.SYSTEM_4_4_2);
+    }
+
+    public static Match createMatch(Team homeTeam, Team guestTeam, boolean isCreateFinishedMatch,
+                                    boolean isMatchStarted, PlayingSystem systemHome, PlayingSystem systemGuest) {
         Match match = new Match();
         match.setHomeTeam(homeTeam);
         match.setGuestTeam(guestTeam);
-        match.setPositionPlayerMapHomeTeam(createStartElevenMatchingGivenSystem(homeTeam, PlayingSystem.SYSTEM_4_4_2));
-        match.setPositionPlayerMapGuestTeam(createStartElevenMatchingGivenSystem(guestTeam, PlayingSystem.SYSTEM_4_4_2));
+        match.setPositionPlayerMapHomeTeam(createStartElevenMatchingGivenSystem(homeTeam, systemHome));
+        match.setPositionPlayerMapGuestTeam(createStartElevenMatchingGivenSystem(guestTeam, systemGuest));
         if (isMatchStarted) {
             match.start();
         }

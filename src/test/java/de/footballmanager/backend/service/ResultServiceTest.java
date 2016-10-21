@@ -207,8 +207,8 @@ public class ResultServiceTest {
 
         replay(strengthService);
         ReflectionTestUtils.setField(resultService, "strengthService", strengthService);
-        Team team1 = TestUtil.createTeam(TEAM_1, PlayingSystem.SYSTEM_4_4_2);
-        Team team2 = TestUtil.createTeam(TEAM_2, PlayingSystem.SYSTEM_4_4_2);
+        Team team1 = TestUtil.createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2);
+        Team team2 = TestUtil.createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2);
 
         List<Match> matches = Lists.newArrayList();
         IntStream.rangeClosed(1,10000).forEach(i -> {
