@@ -111,13 +111,13 @@ public class Match {
     public void changePlayer(Team team, Player in, Player out) {
         Preconditions.checkArgument(this.containsTeam(team), "cannot change player for not contained team: ", team);
         if (isHomeTeam(team)) {
-            changePlayerHome(in, out, positionPlayerMapHomeTeam, homeTeam, playerChangesHomeTeam);
+            changePlayer(in, out, positionPlayerMapHomeTeam, homeTeam, playerChangesHomeTeam);
         } else if (isGuestTeam(team)) {
-            changePlayerHome(in, out, positionPlayerMapGuestTeam, guestTeam, playerChangesGuestTeam);
+            changePlayer(in, out, positionPlayerMapGuestTeam, guestTeam, playerChangesGuestTeam);
         }
     }
 
-    private void changePlayerHome(Player in, Player out, Map<Position, Player> positionPlayerMap, Team team, List<PlayerChange> playerChanges) {
+    private void changePlayer(Player in, Player out, Map<Position, Player> positionPlayerMap, Team team, List<PlayerChange> playerChanges) {
         Preconditions.checkArgument(positionPlayerMap.values().contains(out), String.format("coming out player {%s} not member of current players", out));
         Preconditions.checkArgument(team.getPlayers().contains(in), String.format("coming in player {%s} not member of team", in));
         Preconditions.checkArgument(!positionPlayerMap.values().contains(in), String.format("coming in player {%s} already playing", in));

@@ -41,7 +41,7 @@ public class MatchTest {
         assertTrue(!currentEleven.contains(in));
 
         // when
-        match.changePlayer(in, out, isHomeTeam);
+        match.changePlayer(team, in, out);
 
         // then
         Map<Position, Player> positionPlayerMap = getPositionPlayerMap(match, isHomeTeam);
@@ -67,23 +67,23 @@ public class MatchTest {
     @Test(expected = IllegalArgumentException.class)
     public void changeInAPlayerNotMemberOfTheTeamShouldThrowExceptionHome() {
         Match runningMatch = createRunningMatch();
-        changeInPlayerNotMemberOfTeam(runningMatch, runningMatch.getPositionPlayerMapHomeTeam(), true);
+        changeInPlayerNotMemberOfTeam(runningMatch, runningMatch.getPositionPlayerMapHomeTeam());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void changeInAPlayerNotMemberOfTheTeamShouldThrowExceptionGuest() {
         Match runningMatch = createRunningMatch();
-        changeInPlayerNotMemberOfTeam(runningMatch, runningMatch.getPositionPlayerMapGuestTeam(), false);
+        changeInPlayerNotMemberOfTeam(runningMatch, runningMatch.getPositionPlayerMapGuestTeam());
     }
 
-    private void changeInPlayerNotMemberOfTeam(Match runningMatch, Map<Position, Player> positionPlayerMap, boolean isHomeTeamChange) {
+    private void changeInPlayerNotMemberOfTeam(Match runningMatch, Map<Position, Player> positionPlayerMap) {
         // given
         Collection<Player> players = positionPlayerMap.values();
 
         Player in1 = createPlayer("New", "Player1", LEFT_MIDFIELDER);
 
         // when
-        runningMatch.changePlayer(in1, players.iterator().next(), isHomeTeamChange);
+        runningMatch.changePlayer(runningMatch.getHomeTeam(), in1, players.iterator().next());
     }
 
 
@@ -91,61 +91,61 @@ public class MatchTest {
     public void changeOutNotPlayingPlayerShouldThrowExceptionHome() {
 
         Match runningMatch = createRunningMatch();
-        changeOutNotPlayingPlayer(runningMatch, runningMatch.getHomeTeam(), true);
+        changeOutNotPlayingPlayer(runningMatch, runningMatch.getHomeTeam());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void changeOutNotPlayingPlayerShouldThrowExceptionGuest() {
 
         Match runningMatch = createRunningMatch();
-        changeOutNotPlayingPlayer(runningMatch, runningMatch.getGuestTeam(), false);
+        changeOutNotPlayingPlayer(runningMatch, runningMatch.getGuestTeam());
     }
 
-    private void changeOutNotPlayingPlayer(Match runningMatch, Team team, boolean isHomeTeamChange) {
+    private void changeOutNotPlayingPlayer(Match runningMatch, Team team) {
         // given
         Player in = createPlayer("Player", "In", LEFT_MIDFIELDER);
         Player out = createPlayer("Player", "Out", LEFT_MIDFIELDER);
         team.getPlayers().add(in);
 
         // when
-        runningMatch.changePlayer(in, out, isHomeTeamChange);
+        runningMatch.changePlayer(team, in, out);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void changeInPlayerAlreadyPlayingShouldThrowExceptionHome() {
 
         Match runningMatch = createRunningMatch();
-        changeInPlayerAlreadyPlaying(runningMatch, runningMatch.getPositionPlayerMapHomeTeam(), true);
+        changeInPlayerAlreadyPlaying(runningMatch.getHomeTeam(), runningMatch, runningMatch.getPositionPlayerMapHomeTeam());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void changeInPlayerAlreadyPlayingShouldThrowExceptionGuest() {
 
         Match runningMatch = createRunningMatch();
-        changeInPlayerAlreadyPlaying(runningMatch, runningMatch.getPositionPlayerMapGuestTeam(), false);
+        changeInPlayerAlreadyPlaying(runningMatch.getGuestTeam(), runningMatch, runningMatch.getPositionPlayerMapGuestTeam());
     }
 
-    private void changeInPlayerAlreadyPlaying(Match runningMatch, Map<Position, Player> positionPlayerMap, boolean isHomeTeamChange) {
+    private void changeInPlayerAlreadyPlaying(Team team, Match runningMatch, Map<Position, Player> positionPlayerMap) {
         // given
         Collection<Player> players = positionPlayerMap.values();
 
         // when
-        runningMatch.changePlayer(players.iterator().next(), players.iterator().next(), isHomeTeamChange);
+        runningMatch.changePlayer(team, players.iterator().next(), players.iterator().next());
     }
 
     @Test(expected = IllegalStateException.class)
     public void changeFourPlayersShouldThrowExceptionHome() {
         Match runningMatch = createRunningMatch();
-        changeFourPlayers(runningMatch, runningMatch.getPositionPlayerMapHomeTeam(), runningMatch.getPlayerChangesHomeTeam(), runningMatch.getHomeTeam(), true);
+        changeFourPlayers(runningMatch, runningMatch.getPositionPlayerMapHomeTeam(), runningMatch.getPlayerChangesHomeTeam(), runningMatch.getHomeTeam());
     }
 
     @Test(expected = IllegalStateException.class)
     public void changeFourPlayersShouldThrowExceptionGuest() {
         Match runningMatch = createRunningMatch();
-        changeFourPlayers(runningMatch, runningMatch.getPositionPlayerMapGuestTeam(), runningMatch.getPlayerChangesGuestTeam(), runningMatch.getGuestTeam(), false);
+        changeFourPlayers(runningMatch, runningMatch.getPositionPlayerMapGuestTeam(), runningMatch.getPlayerChangesGuestTeam(), runningMatch.getGuestTeam());
     }
 
-    private void changeFourPlayers(Match runningMatch, Map<Position, Player> positionPlayerMap, List<Match.PlayerChange> playerChanges, Team team, boolean isHomeTeamChange) {
+    private void changeFourPlayers(Match runningMatch, Map<Position, Player> positionPlayerMap, List<Match.PlayerChange> playerChanges, Team team) {
         // given
         Collection<Player> players = positionPlayerMap.values();
 
@@ -157,16 +157,16 @@ public class MatchTest {
 
         // when
         Iterator<Player> iterator = players.iterator();
-        runningMatch.changePlayer(in1, iterator.next(), isHomeTeamChange);
+        runningMatch.changePlayer(team, in1, iterator.next());
         assertEquals(1, playerChanges.size());
 
-        runningMatch.changePlayer(in2, iterator.next(), isHomeTeamChange);
+        runningMatch.changePlayer(team, in2, iterator.next());
         assertEquals(2, playerChanges.size());
 
-        runningMatch.changePlayer(in3, iterator.next(), isHomeTeamChange);
+        runningMatch.changePlayer(team, in3, iterator.next());
         assertEquals(3, playerChanges.size());
 
-        runningMatch.changePlayer(in4, iterator.next(), isHomeTeamChange);
+        runningMatch.changePlayer(team, in4, iterator.next());
     }
 
     @Test
@@ -181,29 +181,31 @@ public class MatchTest {
         Player in4 = createPlayer("New", "Player4", LEFT_MIDFIELDER);
         Player in5 = createPlayer("New", "Player5", LEFT_MIDFIELDER);
         Player in6 = createPlayer("New", "Player6", LEFT_MIDFIELDER);
-        runningMatch.getHomeTeam().getPlayers().addAll(Lists.newArrayList(in1, in2, in3));
-        runningMatch.getGuestTeam().getPlayers().addAll(Lists.newArrayList(in4, in5, in6));
+        Team homeTeam = runningMatch.getHomeTeam();
+        homeTeam.getPlayers().addAll(Lists.newArrayList(in1, in2, in3));
+        Team guestTeam = runningMatch.getGuestTeam();
+        guestTeam.getPlayers().addAll(Lists.newArrayList(in4, in5, in6));
 
         // when
         Iterator<Player> homeIterator = playersHome.iterator();
         Iterator<Player> guestIterator = playersGuest.iterator();
 
-        runningMatch.changePlayer(in1, homeIterator.next(), true);
+        runningMatch.changePlayer(homeTeam, in1, homeIterator.next());
         assertEquals(1, runningMatch.getPlayerChangesHomeTeam().size());
 
-        runningMatch.changePlayer(in4, guestIterator.next(), false);
+        runningMatch.changePlayer(guestTeam, in4, guestIterator.next());
         assertEquals(1, runningMatch.getPlayerChangesGuestTeam().size());
 
-        runningMatch.changePlayer(in5, guestIterator.next(), false);
+        runningMatch.changePlayer(guestTeam, in5, guestIterator.next());
         assertEquals(2, runningMatch.getPlayerChangesGuestTeam().size());
 
-        runningMatch.changePlayer(in2, homeIterator.next(), true);
+        runningMatch.changePlayer(homeTeam, in2, homeIterator.next());
         assertEquals(2, runningMatch.getPlayerChangesHomeTeam().size());
 
-        runningMatch.changePlayer(in3, homeIterator.next(), true);
+        runningMatch.changePlayer(homeTeam, in3, homeIterator.next());
         assertEquals(3, runningMatch.getPlayerChangesHomeTeam().size());
 
-        runningMatch.changePlayer(in6, guestIterator.next(), false);
+        runningMatch.changePlayer(guestTeam, in6, guestIterator.next());
         assertEquals(3, runningMatch.getPlayerChangesGuestTeam().size());
 
     }

@@ -26,7 +26,7 @@ import static de.footballmanager.backend.enumeration.Position.GOALY;
 import static de.footballmanager.backend.enumeration.Position.LEFT_DEFENDER;
 import static org.junit.Assert.*;
 
-//@Ignore("go on here")
+@Ignore("go on here")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
 public class OneSeasonIT {
