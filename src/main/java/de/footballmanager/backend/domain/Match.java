@@ -42,12 +42,22 @@ public class Match {
         this.guestTeam = guestTeam;
     }
 
+    public boolean isHomeTeam(Team team) {
+        return homeTeam.equals(team);
+    }
+
+    public boolean isGuestTeam(Team team) {
+        return guestTeam.equals(team);
+    }
+
     private void validateIsMatchPrepared() {
         Preconditions.checkNotNull(homeTeam, "home team not set");
         Preconditions.checkNotNull(guestTeam, "guest team not set");
 
-        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 11, "start eleven of home team not set correctly");
-        Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 11, "start eleven of guest team not set correctly");
+        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 11,
+                "start eleven of home team not set correctly, size: ", positionPlayerMapHomeTeam.size());
+        Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 11,
+                "start eleven of guest team not set correctly, size: ", positionPlayerMapGuestTeam.size());
 
     }
 
@@ -98,10 +108,11 @@ public class Match {
         return areTeamsSet() && (homeTeam.equals(team) || guestTeam.equals(team));
     }
 
-    public void changePlayer(Player in, Player out, boolean isHomeTeamChange) {
-        if (isHomeTeamChange) {
+    public void changePlayer(Team team, Player in, Player out) {
+        Preconditions.checkArgument(this.containsTeam(team), "cannot change player for not contained team: ", team);
+        if (isHomeTeam(team)) {
             changePlayerHome(in, out, positionPlayerMapHomeTeam, homeTeam, playerChangesHomeTeam);
-        } else {
+        } else if (isGuestTeam(team)) {
             changePlayerHome(in, out, positionPlayerMapGuestTeam, guestTeam, playerChangesGuestTeam);
         }
     }
@@ -140,10 +151,13 @@ public class Match {
     public void setPositionPlayerMapHomeTeam(Map<Position, Player> positionPlayerMapHomeTeam) {
         Preconditions.checkState(!isStarted, "startEleven cannot be set if match already started");
         Preconditions.checkState(!isFinished, "startEleven cannot be set if match already finished");
-        Preconditions.checkArgument(positionPlayerMapHomeTeam.values().stream()
+        List<Player> playersNotPartOfTeam = positionPlayerMapHomeTeam.values().stream()
                 .filter(player -> !homeTeam.getPlayers().contains(player))
-                .collect(Collectors.toList())
-                .isEmpty(), "players must be part of the team");
+                .collect(Collectors.toList());
+        if (!playersNotPartOfTeam.isEmpty()) {
+            System.out.println(playersNotPartOfTeam);
+        }
+        Preconditions.checkArgument(playersNotPartOfTeam.isEmpty(), "players must be part of the team");
         Preconditions.checkArgument(Sets.newHashSet(positionPlayerMapHomeTeam.values()).size() == 11, "players must be different");
 
         this.positionPlayerMapHomeTeam = positionPlayerMapHomeTeam;

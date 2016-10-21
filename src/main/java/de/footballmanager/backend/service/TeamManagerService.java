@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class TeamManagerService {
@@ -32,15 +33,46 @@ public class TeamManagerService {
 
     public void setStartElevenIfComputerManaged(MatchDay matchDay) {
         matchDay.getMatches().forEach(match -> {
-            Team homeTeam = match.getHomeTeam();
-            Team guestTeam = match.getGuestTeam();
-            Lists.newArrayList(homeTeam, guestTeam).forEach(team -> {
-                if (isTeamMangedByComputer(team)) {
-                    Pair<PlayingSystem, Map<Position, Player>> pair = getBestPlayersForBestSystem(team);
-                    match.setPositionPlayerMapHomeTeam(pair.getSecond());
-                }
-            });
+            setPositionPlayerMapForKITeams(match, match.getHomeTeam(), true);
+            setPositionPlayerMapForKITeams(match, match.getGuestTeam(), false);
         });
+    }
+
+    public Map<Position, Player> getCurrentlyPlayingPlayers(Match match, Team team) {
+        Preconditions.checkArgument(match.containsTeam(team), "team not contained in match: ", team);
+        if (match.isHomeTeam(team)) {
+            return match.getPositionPlayerMapHomeTeam();
+        } else if (match.isGuestTeam(team)) {
+            return match.getPositionPlayerMapGuestTeam();
+        }
+        throw new IllegalStateException("team neither home nor guest team: " + team);
+    }
+
+    public List<Player> getSubstituteBench(Match match, Team team) {
+        Map<Position, Player> currentlyPlayingPlayers = getCurrentlyPlayingPlayers(match, team);
+        return team.getPlayers().stream().filter(currentlyPlayingPlayers::containsValue).collect(toList());
+    }
+
+    public void setStartEleven(Match match, Team team, Map<Position, Player> positionToPlayerMap) {
+        Preconditions.checkArgument(match.containsTeam(team), "team not contained in match: ", team);
+        if (match.isHomeTeam(team)) {
+            match.setPositionPlayerMapHomeTeam(positionToPlayerMap);
+        } else if (match.isGuestTeam(team)) {
+            match.setPositionPlayerMapGuestTeam(positionToPlayerMap);
+        } else {
+            throw new IllegalStateException("team neither home nor guest team: " + team);
+        }
+    }
+
+    private void setPositionPlayerMapForKITeams(Match match, Team team, boolean homeTeam) {
+        if (isKITeam(team)) {
+            Pair<PlayingSystem, Map<Position, Player>> pair = getBestPlayersForBestSystem(team);
+            if(homeTeam) {
+                match.setPositionPlayerMapHomeTeam(pair.getSecond());
+            } else {
+                match.setPositionPlayerMapGuestTeam(pair.getSecond());
+            }
+        }
     }
 
 
@@ -55,7 +87,7 @@ public class TeamManagerService {
     public List<PlayingSystem> getPossibleSystems(Team team) {
         return PlayingSystem.STANDARD_SYSTEMS.stream()
                 .filter(playingSystem -> hasPlayerForSystem(team, playingSystem))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public Map<Position, Player> setBestPlayersForSystem(Team team, PlayingSystem playingSystem) {
@@ -95,8 +127,6 @@ public class TeamManagerService {
     }
 
     private int getPlayerStrengthOnPosition(Position position, Player player) {
-        System.out.println("getPlayerStrengthOnPosition: " + player);
-        System.out.println("getPlayerStrengthOnPosition: " + position);
         return strengthService.getPlayerStrengthOnPosition(position, player);
     }
 
@@ -113,6 +143,9 @@ public class TeamManagerService {
                 .findFirst();
     }
 
+    public void changePlayer(Match match, Team team, Player in, Player out) {
+        match.changePlayer(team, in, out);
+    }
 
 
     // TODO: later if position not set find best matching player for missing position
@@ -174,7 +207,7 @@ public class TeamManagerService {
 //        team.getPlayers();
 //    }
 
-    private boolean isTeamMangedByComputer(Team team) {
+    private boolean isKITeam(Team team) {
         Preconditions.checkNotNull(team.getManager(), "no manager set for team {}", team.getName());
         return team.getManager().isComputerManaged();
     }
