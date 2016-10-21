@@ -4,7 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,7 +14,8 @@ import java.util.stream.Collectors;
 @Service
 public class TeamManagerService {
 
-    private Map<String, Team> userToTeam = Maps.newHashMap();
+    @Autowired
+    private StrengthService strengthService;
 
     private static final Comparator<Player> MAX_STRENGTH_COMPARATOR = new Comparator<Player>() {
         @Override
@@ -55,9 +58,48 @@ public class TeamManagerService {
                 .collect(Collectors.toList());
     }
 
-    public void setBestPlayersForSystem(Team team, PlayingSystem playingSystem) {
-//        playingSystem.getPositions().
+    public Map<Position, Player> setBestPlayersForSystem(Team team, PlayingSystem playingSystem) {
+        Preconditions.checkNotNull(playingSystem, "playingSystem must be set");
+        Preconditions.checkArgument(team.getPlayers().size() > 7, "team must have at least 8 players");
+        Map<Position, Player> positionPlayerMap = Maps.newHashMap();
+        List<Player> players = Lists.newArrayList(team.getPlayers());
+
+        // first fill in players with exact matching positions
+        ListMultimap<Position, Player> positionToPlayerMap = getPositionToPlayerMap(team);
+        playingSystem.getPositions().forEach(position -> {
+            List<Player> playersForPosition = positionToPlayerMap.get(position);
+            if (!playersForPosition.isEmpty()) {
+                Player playerForPosition = playersForPosition.stream().max(
+                        (p1, p2) -> getPlayerStrengthOnPosition(position, p1) > getPlayerStrengthOnPosition(position, p2) ? 1 : -1)
+                        .orElse(players.get(new Random().nextInt(players.size())));
+                positionPlayerMap.put(position, playerForPosition);
+                players.remove(playerForPosition);
+            }
+        });
+
+        // fill missing positions
+        playingSystem.getPositions().forEach(position -> {
+            if (!positionPlayerMap.containsKey(position)) {
+                Player bestPlayer = players.stream().max(
+                        (p1, p2) -> getPlayerStrengthOnPosition(position, p1) > getPlayerStrengthOnPosition(position, p2) ? 1 : -1)
+                        .orElse(players.get(new Random().nextInt(players.size())));
+                positionPlayerMap.put(position, bestPlayer);
+                players.remove(bestPlayer);
+            }
+        });
+        // post conditions
+        Assert.isTrue(positionPlayerMap.size() == team.getPlayers().size() || positionPlayerMap.size() == 11);
+        Assert.isTrue(!positionPlayerMap.values().contains(null));
+        return positionPlayerMap;
+
     }
+
+    private int getPlayerStrengthOnPosition(Position position, Player player) {
+        System.out.println("getPlayerStrengthOnPosition: " + player);
+        System.out.println("getPlayerStrengthOnPosition: " + position);
+        return strengthService.getPlayerStrengthOnPosition(position, player);
+    }
+
 
     public ListMultimap<Position, Player> getPositionToPlayerMap(Team team) {
         ListMultimap<Position, Player> positionToPlayers = ArrayListMultimap.create();
@@ -89,10 +131,21 @@ public class TeamManagerService {
         return positionPlayerMap;
     }
 
+    // TODO implement
+    public void getBestAlternative(Team team, List<PlayingSystem> playingSystems) {
+        List<Player> players = team.getPlayers();
+        Map<PlayingSystem, Integer> systemIntegerMap = Maps.newHashMap();
+        playingSystems.forEach(playingSystem -> {
+            Map<Position, Player> positionPlayerMap = setBestPlayersForSystem(team, playingSystem);
+
+        });
+    }
+
     public Pair<PlayingSystem, Map<Position, Player>> getBestPlayersForBestSystem(Team team) {
         List<PlayingSystem> possibleSystems = getPossibleSystems(team);
         if (possibleSystems.isEmpty()) {
-
+            Map<Position, Player> positionPlayerMap = setBestPlayersForSystem(team, PlayingSystem.SYSTEM_4_3_3);// TODO: best players for a list of systems, better coach -> more systems
+            return new Pair<>(PlayingSystem.SYSTEM_4_3_3, positionPlayerMap);
         }
         Map<PlayingSystem, Integer> systemStrengthMap = Maps.newHashMap();
         Map<PlayingSystem, Map<Position, Player>> systemToBestElevenMap = Maps.newHashMap();
@@ -108,7 +161,7 @@ public class TeamManagerService {
                     return entry1.getValue() > entry2.getValue() ? 1 : -1;
                 }).get()
                 .getKey();
-        return new Pair<PlayingSystem, Map<Position, Player>>(bestPlayingSystem, systemToBestElevenMap.get(bestPlayingSystem));
+        return new Pair<>(bestPlayingSystem, systemToBestElevenMap.get(bestPlayingSystem));
     }
 
     public int getTeamStrength(Collection<Player> players) {

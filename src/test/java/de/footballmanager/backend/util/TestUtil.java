@@ -1,5 +1,6 @@
 package de.footballmanager.backend.util;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
@@ -84,6 +85,7 @@ public class TestUtil {
     }
 
     public static Map<Position, Player> createStartElevenMatchingGivenSystem(Team team, PlayingSystem playingSystem) {
+        Preconditions.checkArgument(team.getPlayers().size() > 10, "at least 11 players needed in team");
         Map<Position, Player> positionPlayerMap = Maps.newHashMap();
         setPlayerPositions(team, playingSystem);
 
@@ -112,12 +114,12 @@ public class TestUtil {
         }
     }
 
-    public static Team createTeam(String name, PlayingSystem playingSystem) {
+    public static Team createTeam(String name, PlayingSystem playingSystem, int numberOfPlayers) {
         Team team = new Team(name);
         team.setManager(new Manager());
         team.setStrength(DEFAULT_STRENGTH);
         List<Player> players = Lists.newArrayList();
-        IntStream.range(0, 22).forEach(i -> {
+        IntStream.range(0, numberOfPlayers).forEach(i -> {
             Player player = createPlayer("Mr.", String.valueOf(i));
             player.setStrength(DEFAULT_STRENGTH);
             players.add(player);
@@ -128,12 +130,20 @@ public class TestUtil {
         return team;
     }
 
+    public static Team createTeam(String name, PlayingSystem playingSystem) {
+        return createTeam(name, playingSystem, 22);
+    }
+
     public static Player createPlayer(String firstName, String lastName) {
         return new Player.Builder(firstName, lastName).build();
     }
 
     public static Player createPlayer(String firstName, String lastName, Position position) {
         return new Player.Builder(firstName, lastName).setPosition(position).build();
+    }
+
+    public static Player createPlayer(String firstName, String lastName, Position position, int strength) {
+        return new Player.Builder(firstName, lastName).setPosition(position).setStrength(strength).build();
     }
 
     public static Player createPlayer(Position position, int strength) {

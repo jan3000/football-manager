@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@Ignore("go on here")
+//@Ignore("go on here")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
 public class OneSeasonIT {
@@ -31,8 +31,6 @@ public class OneSeasonIT {
     private TeamManagerService teamManagerService;
     @Autowired
     private ResultService resultService;
-    @Autowired
-    private PlayerParserService playerParserService;
     @Autowired
     private LeagueService leagueService;
 
