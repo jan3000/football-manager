@@ -24,6 +24,9 @@ public class ResultService {
     @Autowired
     private StrengthService strengthService;
 
+    /**
+     * Do not call directly. Use LeagueService instead.
+     */
     public void calculateNextMinute(List<Match> matches) {
         Preconditions.checkArgument(matches.stream().allMatch(Match::isStarted), "All matches must be started before running");
         matches.stream()

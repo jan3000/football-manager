@@ -165,7 +165,7 @@ public class TeamManagerService {
         } else if (match.isGuestTeam(team)) {
             Map<Position, Player> positionPlayerMap = match.getPositionPlayerMapGuestTeam();
             Collection<Player> players = positionPlayerMap.values();
-            Map<Position, Player> positionPlayerMapAfterChange = getBestPlayersForSystem(newSystem, Lists.newArrayList(players));
+            Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystem(newSystem, Lists.newArrayList(players));
             match.setPositionPlayerMapGuestTeam(positionPlayerMapAfterChange);
         } else {
             throw new IllegalStateException("team neither home nor guest team: " + team);
@@ -192,7 +192,12 @@ public class TeamManagerService {
     }
 
 
-    // TODO: later if position not set find best matching player for missing position
+    /**
+     * Note: Do not use directly. Use getBestPlayersForBestSystem instead.
+     * @param playingSystem
+     * @param players
+     * @return
+     */
     Map<Position, Player> getBestPlayersForSystem(PlayingSystem playingSystem, List<Player> players) {
         Preconditions.checkArgument(players.size() >= 11, "team must have at least 11 players");
         Preconditions.checkArgument(playingSystem != null, "playingSystem must be set");

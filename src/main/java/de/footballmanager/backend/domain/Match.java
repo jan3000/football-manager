@@ -62,7 +62,6 @@ public class Match {
     }
 
     public void start() {
-
         validateIsMatchPrepared();
         isStarted = true;
     }

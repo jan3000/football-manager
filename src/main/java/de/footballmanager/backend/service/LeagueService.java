@@ -70,6 +70,19 @@ public class LeagueService {
         return league.getTeams();
     }
 
+    /**
+     * Sets up next match day.
+     */
+    public void startNextMatchDay() {
+        MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
+        List<Match> matches = matchDay.getMatches();
+        matches.forEach(Match::start);
+    }
+
+    /**
+     * Call startNextMatchDay before.
+     * @return
+     */
     public MatchDay runNextMinute() {
         MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
         List<Match> matches = matchDay.getMatches();
@@ -114,7 +127,7 @@ public class LeagueService {
         if (matchDayToTable.containsKey(day)) {
             return matchDayToTable.get(day);
         } else {
-            return matchDayToTable.get(timeTable.getCurrentMatchDay());
+            return matchDayToTable.get(timeTable.getCurrentMatchDay() - 1);
         }
     }
 
