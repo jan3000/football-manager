@@ -65,9 +65,7 @@ public class HomeController implements FootballManagerFacade{
     public TeamStatistic getTeamStatistic(@PathParam("teamName") String teamName) {
         int currentMatchDay = leagueService.getCurrentMatchDay();
         TeamStatistic teamStatistics = statisticService.getGoalDistribution(leagueService.getTimeTable(), teamName,
-                leagueService.getTable(currentMatchDay - 1));
-        teamStatistics.setPlacementsInSeason(statisticService.getPlacementsInSeason(teamName, currentMatchDay,
-                leagueService.getMatchDayToTable()));
+                leagueService.getTable(currentMatchDay - 1), leagueService.getMatchDayToTable());
         return teamStatistics;
     }
 

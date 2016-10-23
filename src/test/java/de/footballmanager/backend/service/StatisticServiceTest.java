@@ -64,7 +64,8 @@ public class StatisticServiceTest {
         table.addEntry(tableEntry);
 
         // run
-        TeamStatistic teamStatistic = statisticService.getGoalDistribution(timeTable, team1.getName(), table);
+        TeamStatistic teamStatistic = statisticService.getGoalDistribution(timeTable, team1.getName(), table,
+                Maps.newHashMap());
 
         // assert
         assertThat(teamStatistic.getCurrentTableEntry()).isNotNull();

@@ -3,17 +3,22 @@ package de.footballmanager.backend.service;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import de.footballmanager.backend.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 public class StatisticService {
 
-    public TeamStatistic getGoalDistribution(TimeTable timeTable, String teamName, Table currentTable) {
+    public TeamStatistic getGoalDistribution(TimeTable timeTable, String teamName, Table currentTable, Map<Integer, Table> matchDayToTable) {
         TeamStatistic teamStatistic = new TeamStatistic(teamName);
         Integer[] homeGoals = teamStatistic.getHomeGoals();
         Integer[] awayGoals = teamStatistic.getAwayGoals();
@@ -21,19 +26,44 @@ public class StatisticService {
         Integer[] receivedHomeGoals = teamStatistic.getReceivedHomeGoals();
         Integer[] receivedAwayGoals = teamStatistic.getReceivedAwayGoals();
         Integer[] receivedTotalGoals = teamStatistic.getReceivedTotalGoals();
+
+        Set<Player> scorers = Sets.newHashSet();
         for (MatchDay matchDay : timeTable.getAllMatchDays()) {
             for (Match match : matchDay.getMatches()) {
-                if (match.getHomeTeam().getName().equals(teamName)) {
+
+                scorers.addAll(match.getGoals().stream()
+                        .filter(goal -> teamName.equals(goal.getTeam().getName()))
+                        .map(Goal::getScorer)
+                        .collect(toSet()));
+
+
+                if (isHomeTeam(teamName, match)) {
                     addGoalsToTimeline(teamName, homeGoals, totalGoals, receivedHomeGoals, receivedTotalGoals, match);
+
                 }
-                if (match.getGuestTeam().getName().equals(teamName)) {
+                if (isGuestTeam(teamName, match)) {
                     addGoalsToTimeline(teamName, awayGoals, totalGoals, receivedAwayGoals, receivedTotalGoals, match);
                 }
             }
         }
 
         teamStatistic.setCurrentTableEntry(currentTable.getEntryByTeamName(teamName));
+
+        teamStatistic.setPlacementsInSeason(getPlacementsInSeason(teamName, timeTable.getCurrentMatchDay(),
+                matchDayToTable));
+
+
+        teamStatistic.setScorers(scorers);
+
         return teamStatistic;
+    }
+
+    private boolean isGuestTeam(String teamName, Match match) {
+        return match.getGuestTeam().getName().equals(teamName);
+    }
+
+    private boolean isHomeTeam(String teamName, Match match) {
+        return match.getHomeTeam().getName().equals(teamName);
     }
 
     private void addGoalsToTimeline(String teamName, Integer[] goals, Integer[] totalGoals, Integer[] receivedGoals,
@@ -68,11 +98,11 @@ public class StatisticService {
             }
         }
 
-        return scorerStatistics.stream().sorted().collect(Collectors.toList());
+        return scorerStatistics.stream().sorted().collect(toList());
     }
 
 
-    public Map<Player, Integer> getScorers(String teamName, TimeTable timeTable) {
+    private Map<Player, Integer> getScorers(String teamName, TimeTable timeTable) {
         Map<Player, Integer> scorerToGoals = Maps.newHashMap();
         ImmutableList<MatchDay> allMatchDays = timeTable.getAllMatchDays();
         for (MatchDay matchDay : allMatchDays) {

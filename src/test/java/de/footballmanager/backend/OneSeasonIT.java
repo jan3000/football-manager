@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.enumeration.ResultType;
-import de.footballmanager.backend.service.LeagueService;
-import de.footballmanager.backend.service.ResultService;
-import de.footballmanager.backend.service.TeamManagerService;
-import de.footballmanager.backend.service.TimeTableService;
+import de.footballmanager.backend.service.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +30,8 @@ public class OneSeasonIT {
     private ResultService resultService;
     @Autowired
     private LeagueService leagueService;
+    @Autowired
+    private StatisticService statisticService;
 
     @Test
     public void test() throws Exception {
@@ -98,6 +97,7 @@ public class OneSeasonIT {
         assertEquals(2, tableEntries.size());
 
 
+        // check statistics
         Team homeTeam = match.getHomeTeam();
         Team guestTeam = match.getGuestTeam();
         if (resultMatch1.getHomeGoals() > resultMatch1.getGuestGoals()) {
@@ -112,5 +112,53 @@ public class OneSeasonIT {
             assertEquals(ResultType.DRAW, resultMatch1.getResultType());
             assertTrue(tableEntries.containsAll(Lists.newArrayList(homeTeam.getName(), guestTeam.getName())));
         }
+
+        // assert team statistics
+        assertTeamStatisticsHomeTeam(timeTable, resultMatch1, homeTeam);
+        assertTeamStatisticsGuestTeam(timeTable, resultMatch1, guestTeam);
+
+
+
+
+        // day 2
+
+    }
+
+    private void assertTeamStatisticsHomeTeam(TimeTable timeTable, Result resultMatch1, Team homeTeam) {
+        TeamStatistic teamStatistic = statisticService.getGoalDistribution(timeTable, homeTeam.getName(),
+                leagueService.getTable(1), leagueService.getMatchDayToTable());
+        assertNotNull(teamStatistic);
+        assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistic.getHomeGoals()));
+        assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistic.getTotalGoals()));
+        assertEquals(0, getSumOfGoals(teamStatistic.getAwayGoals()));
+        assertEquals(resultMatch1.getGuestGoals(), getSumOfGoals(teamStatistic.getReceivedHomeGoals()));
+        assertEquals(resultMatch1.getGuestGoals(), getSumOfGoals(teamStatistic.getReceivedTotalGoals()));
+        assertEquals(0, getSumOfGoals(teamStatistic.getReceivedAwayGoals()));
+
+        assertNotNull(teamStatistic.getPlacementsInSeason()[0]);
+        if (resultMatch1.getHomeGoals() > 0) {
+            assertTrue(teamStatistic.getScorers().size() > 0);
+        }
+    }
+
+    private void assertTeamStatisticsGuestTeam(TimeTable timeTable, Result resultMatch1, Team guestTeam) {
+        TeamStatistic teamStatistics = statisticService.getGoalDistribution(timeTable, guestTeam.getName(),
+                leagueService.getTable(1), leagueService.getMatchDayToTable());
+        assertNotNull(teamStatistics);
+        assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistics.getReceivedAwayGoals()));
+        assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistics.getReceivedTotalGoals()));
+        assertEquals(0, getSumOfGoals(teamStatistics.getReceivedHomeGoals()));
+        assertEquals(resultMatch1.getGuestGoals(), getSumOfGoals(teamStatistics.getAwayGoals()));
+        assertEquals(resultMatch1.getGuestGoals(), getSumOfGoals(teamStatistics.getTotalGoals()));
+        assertEquals(0, getSumOfGoals(teamStatistics.getHomeGoals()));
+
+        assertNotNull(teamStatistics.getPlacementsInSeason()[0]);
+        if (resultMatch1.getGuestGoals() > 0) {
+            assertTrue(teamStatistics.getScorers().size() > 0);
+        }
+    }
+
+    private int getSumOfGoals(Integer[] goals) {
+        return Lists.newArrayList(goals).stream().mapToInt(Integer::intValue).sum();
     }
 }
