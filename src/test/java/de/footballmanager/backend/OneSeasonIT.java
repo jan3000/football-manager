@@ -52,12 +52,14 @@ public class OneSeasonIT {
         int numberOfDays = timeTable.getAllMatchDays().size();
         assertEquals(2, numberOfDays);
 
-        // when: run match day 1
+        // ----------------------------------------
+        // when: run match1 day 1
+        // ----------------------------------------
         MatchDay matchDay = timeTable.getMatchDay(1);
-        Match match = matchDay.getMatches().get(0);
+        Match match1 = matchDay.getMatches().get(0);
         Pair<PlayingSystem, Map<Position, Player>> pair = teamManagerService.getBestPlayersForBestSystem(managedTeam);
         Map<Position, Player> startEleven = pair.getSecond();
-        teamManagerService.setStartEleven(match, managedTeam, startEleven);
+        teamManagerService.setStartEleven(match1, managedTeam, startEleven);
         teamManagerService.setStartElevenIfComputerManaged(matchDay);
         List<Match> matches = matchDay.getMatches();
         assertEquals(1, matches.size());
@@ -67,39 +69,98 @@ public class OneSeasonIT {
         // run first half
         leagueService.startNextMatchDay();
         IntStream.range(1, 45).forEach(i -> leagueService.runNextMinute());
-        assertTrue(match.isStarted());
-        assertFalse(match.isFinished());
-        assertNotNull(match.getHalfTimeResult());
-        assertEquals(45, match.getMinute());
+        assertTrue(match1.isStarted());
+        assertFalse(match1.isFinished());
+        assertNotNull(match1.getHalfTimeResult());
+        assertEquals(45, match1.getMinute());
 
         // make manual player change after 45 minutes
-        List<Player> substituteBench = teamManagerService.getSubstituteBench(match, managedTeam);
-        teamManagerService.changePlayer(match, managedTeam, substituteBench.get(2),
+        List<Player> substituteBench = teamManagerService.getSubstituteBench(match1, managedTeam);
+        teamManagerService.changePlayer(match1, managedTeam, substituteBench.get(2),
                 startEleven.get(Position.LEFT_DEFENDER));
         IntStream.range(45, 70).forEach(i -> leagueService.runNextMinute());
-        assertTrue(match.isStarted());
-        assertFalse(match.isFinished());
-        assertNotNull(match.getHalfTimeResult());
-        assertEquals(70, match.getMinute());
+        assertTrue(match1.isStarted());
+        assertFalse(match1.isFinished());
+        assertNotNull(match1.getHalfTimeResult());
+        assertEquals(70, match1.getMinute());
 
         // make manual system change after 70 minutes
-        teamManagerService.changePlayingSystem(match, managedTeam, PlayingSystem.SYSTEM_4_2_3_1);
+        teamManagerService.changePlayingSystem(match1, managedTeam, PlayingSystem.SYSTEM_4_2_3_1);
         IntStream.range(70, 90).forEach(i -> leagueService.runNextMinute());
 
-        matches.forEach(match1 -> assertTrue(match.isFinished()));
+        matches.forEach(match -> assertTrue(match1.isFinished()));
+        System.out.println(match1.printMatch());
 
-        Result resultMatch1 = match.getResult();
-        System.out.println(resultMatch1.print());
-
+        // then
+        Result resultMatch1 = match1.getResult();
         Table currentTable = leagueService.getTable(1);
         List<TableEntry> tableEntries = currentTable.getEntries();
         assertNotNull(tableEntries);
         assertEquals(2, tableEntries.size());
 
 
-        // check statistics
-        Team homeTeam = match.getHomeTeam();
-        Team guestTeam = match.getGuestTeam();
+        // assert statistics
+        Team homeTeam1 = match1.getHomeTeam();
+        Team guestTeam1 = match1.getGuestTeam();
+        assertTableEntries(resultMatch1, tableEntries, homeTeam1, guestTeam1);
+        assertTeamStatisticsHomeTeam(timeTable, resultMatch1, homeTeam1);
+        assertTeamStatisticsGuestTeam(timeTable, resultMatch1, guestTeam1);
+
+
+
+        // ----------------------------------------
+        // day 2
+        // ----------------------------------------
+        assertEquals(2, leagueService.getCurrentMatchDay());
+        MatchDay matchDay2 = leagueService.getTimeTableForMatchDay(leagueService.getCurrentMatchDay());
+        assertNotNull(matchDay2);
+        assertEquals(1, matchDay2.getNumberOfMatches());
+        Match match2 = matchDay2.getMatches().get(0);
+        assertNotNull(match2);
+
+        teamManagerService.setStartElevenIfComputerManaged(matchDay2);
+        Pair<PlayingSystem, Map<Position, Player>> bestPlayersForBestSystem = teamManagerService.getBestPlayersForBestSystem(managedTeam);
+        teamManagerService.setStartEleven(match2, managedTeam, bestPlayersForBestSystem.getSecond());
+
+        leagueService.startNextMatchDay();
+        IntStream.range(1,90).forEach(i -> leagueService.runNextMinute());
+
+        matches.forEach(match -> assertTrue(match2.isFinished()));
+        System.out.println(match2.printMatch());
+        Result resultMatch2 = match2.getResult();
+
+        Table currentTable2 = leagueService.getTable(2);
+        List<TableEntry> tableEntries2 = currentTable2.getEntries();
+        assertNotNull(tableEntries2);
+        assertEquals(2, tableEntries2.size());
+
+
+        // assert statistics
+        Team homeTeam2 = match2.getHomeTeam();
+        Team guestTeam2 = match2.getGuestTeam();
+        assertEquals(homeTeam1, guestTeam2);
+        assertEquals(homeTeam2, guestTeam1);
+        TeamStatistic teamStatisticHomeTeam1 = statisticService.getGoalDistribution(timeTable, homeTeam1.getName(), currentTable2,
+                leagueService.getMatchDayToTable());
+        TeamStatistic teamStatisticHomeTeam2 = statisticService.getGoalDistribution(timeTable, homeTeam2.getName(), currentTable2,
+                leagueService.getMatchDayToTable());
+        assertNotNull(teamStatisticHomeTeam1);
+        assertNotNull(teamStatisticHomeTeam1.getPlacementsInSeason()[0]);
+        assertNotNull(teamStatisticHomeTeam1.getPlacementsInSeason()[1]);
+        int goalsHomeTeam1 = match1.getResult().getHomeGoals() + match2.getResult().getGuestGoals();
+        int goalsGuestTeam1 = match1.getResult().getGuestGoals() + match2.getResult().getHomeGoals();
+        assertEquals(goalsHomeTeam1, getSumOfGoals(teamStatisticHomeTeam1.getTotalGoals()));
+        assertEquals(goalsGuestTeam1, getSumOfGoals(teamStatisticHomeTeam1.getReceivedTotalGoals()));
+
+        assertEquals(goalsGuestTeam1, getSumOfGoals(teamStatisticHomeTeam2.getTotalGoals()));
+        assertEquals(goalsHomeTeam1, getSumOfGoals(teamStatisticHomeTeam2.getReceivedTotalGoals()));
+
+
+        // assert league finished
+
+    }
+
+    private void assertTableEntries(Result resultMatch1, List<TableEntry> tableEntries, Team homeTeam, Team guestTeam) {
         if (resultMatch1.getHomeGoals() > resultMatch1.getGuestGoals()) {
             assertEquals(ResultType.HOME_WON, resultMatch1.getResultType());
             assertEquals(homeTeam.getName(), tableEntries.get(0).getTeam());
@@ -112,16 +173,6 @@ public class OneSeasonIT {
             assertEquals(ResultType.DRAW, resultMatch1.getResultType());
             assertTrue(tableEntries.containsAll(Lists.newArrayList(homeTeam.getName(), guestTeam.getName())));
         }
-
-        // assert team statistics
-        assertTeamStatisticsHomeTeam(timeTable, resultMatch1, homeTeam);
-        assertTeamStatisticsGuestTeam(timeTable, resultMatch1, guestTeam);
-
-
-
-
-        // day 2
-
     }
 
     private void assertTeamStatisticsHomeTeam(TimeTable timeTable, Result resultMatch1, Team homeTeam) {
