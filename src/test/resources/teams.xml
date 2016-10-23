@@ -1,12 +1,17 @@
-<league>
-    <teams>
-        <team>
-            <name>Hamburger SV</name>
-            <strength>88</strength>
-        </team>
-        <team>
-            <name>Borussia Dortmund 09</name>
-            <strength>89</strength>
-        </team>
-    </teams>
-</league>
+<leaguesWrapper>
+    <leagues>
+        <league>
+            <name>Bundesliga</name>
+            <teams>
+                <team>
+                    <name>Hamburger SV</name>
+                    <strength>88</strength>
+                </team>
+                <team>
+                    <name>Borussia Dortmund 09</name>
+                    <strength>89</strength>
+                </team>
+            </teams>
+        </league>
+    </leagues>
+</leaguesWrapper>

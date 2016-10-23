@@ -1,6 +1,6 @@
 package de.footballmanager.backend.parser;
 
-import de.footballmanager.backend.domain.League;
+import de.footballmanager.backend.domain.LeaguesWrapper;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBException;
@@ -13,8 +13,9 @@ public class LeagueParserTest {
     @Test
     public void parse() throws JAXBException, FileNotFoundException {
         LeagueParser leagueParser = new LeagueParser();
-        League league = leagueParser.parse("team.xml");
-        assertThat(league).isNotNull();
-        assertThat(league.getTeams().size()).isEqualTo(18);
+        LeaguesWrapper leaguesWrapper = leagueParser.parse("team.xml");
+        assertThat(leaguesWrapper).isNotNull();
+        assertThat(leaguesWrapper.getLeagues().size()).isEqualTo(1);
+        assertThat(leaguesWrapper.getLeagues().get(0).getTeams().size()).isEqualTo(18);
     }
 }

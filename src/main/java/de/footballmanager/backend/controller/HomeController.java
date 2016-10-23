@@ -34,7 +34,7 @@ public class HomeController implements FootballManagerFacade{
     @Produces(MediaType.APPLICATION_JSON)
     public List<Team> getTeams() throws JAXBException, FileNotFoundException {
         System.out.println("HomeController getTeams");
-        return leagueService.getTeams();
+        return leagueService.getLeague("Bundesliga").getTeams();
     }
 
     @GET
@@ -73,7 +73,8 @@ public class HomeController implements FootballManagerFacade{
     @Path("statistics/league")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ScorerStatistic> getLeagueStatictics() {
-        return statisticService.getScorerTable(leagueService.getTeams(), leagueService.getTimeTable());
+        return statisticService.getScorerTable(leagueService.getLeague("Bundesliga").getTeams(),
+                leagueService.getTimeTable());
     }
 
     @Override

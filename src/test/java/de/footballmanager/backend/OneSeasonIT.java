@@ -37,8 +37,10 @@ public class OneSeasonIT {
     public void test() throws Exception {
 
         // given: 1 KI team, 1 self managed team
-        leagueService.createLeague("teams.xml", "names.txt", "surnames.txt");
-        List<Team> teams = leagueService.getTeams();
+        leagueService.createLeagues("teams.xml", "names.txt", "surnames.txt");
+        League league = leagueService.getLeague("Bundesliga");
+        assertNotNull(league);
+        List<Team> teams = league.getTeams();
         Manager manager = new Manager();
         manager.setFirstName("Jan");
         manager.setLastName("Buck");
@@ -161,17 +163,20 @@ public class OneSeasonIT {
     }
 
     private void assertTableEntries(Result resultMatch1, List<TableEntry> tableEntries, Team homeTeam, Team guestTeam) {
+        String firstTeam = tableEntries.get(0).getTeam();
+        String secondTeam = tableEntries.get(1).getTeam();
         if (resultMatch1.getHomeGoals() > resultMatch1.getGuestGoals()) {
             assertEquals(ResultType.HOME_WON, resultMatch1.getResultType());
-            assertEquals(homeTeam.getName(), tableEntries.get(0).getTeam());
-            assertEquals(guestTeam.getName(), tableEntries.get(1).getTeam());
+            assertEquals(homeTeam.getName(), firstTeam);
+            assertEquals(guestTeam.getName(), secondTeam);
         } else if (resultMatch1.getHomeGoals() < resultMatch1.getGuestGoals()) {
             assertEquals(ResultType.GUEST_WON, resultMatch1.getResultType());
-            assertEquals(guestTeam.getName(), tableEntries.get(0).getTeam());
-            assertEquals(homeTeam.getName(), tableEntries.get(1).getTeam());
+            assertEquals(guestTeam.getName(), firstTeam);
+            assertEquals(homeTeam.getName(), secondTeam);
         } else {
             assertEquals(ResultType.DRAW, resultMatch1.getResultType());
-            assertTrue(tableEntries.containsAll(Lists.newArrayList(homeTeam.getName(), guestTeam.getName())));
+            assertTrue(Lists.newArrayList(firstTeam, secondTeam).containsAll(
+                    Lists.newArrayList(homeTeam.getName(), guestTeam.getName())));
         }
     }
 

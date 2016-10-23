@@ -1,6 +1,6 @@
 package de.footballmanager.backend.parser;
 
-import de.footballmanager.backend.domain.League;
+import de.footballmanager.backend.domain.LeaguesWrapper;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBContext;
@@ -13,10 +13,10 @@ import java.io.InputStreamReader;
 @Service
 public class LeagueParser {
 
-    public League parse(String teamsFilePath) throws JAXBException, FileNotFoundException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(League.class);
+    public LeaguesWrapper parse(String teamsFilePath) throws JAXBException, FileNotFoundException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(LeaguesWrapper.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        return (League) unmarshaller.unmarshal(new BufferedReader(new InputStreamReader(
+        return (LeaguesWrapper) unmarshaller.unmarshal(new BufferedReader(new InputStreamReader(
                 Thread.currentThread().getContextClassLoader().getResourceAsStream(teamsFilePath))));
     }
 }

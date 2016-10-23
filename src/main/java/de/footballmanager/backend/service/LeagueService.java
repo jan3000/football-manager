@@ -8,6 +8,7 @@ import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.parser.LeagueParser;
 import de.footballmanager.backend.parser.PlayerParserService;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,34 +25,64 @@ public class LeagueService {
     @Autowired
     private LeagueParser leagueParser;
     @Autowired
+    private DateService dateService;
+    @Autowired
     private PlayerParserService playerParserService;
     @Autowired
     private ResultService resultService;
     @Autowired
     private TrialAndErrorTimeTableService timeTableService;
 
-    private League league;
-    private TimeTable timeTable;
+    private Map<String, League> nameToLeague = Maps.newHashMap();
+    private TimeTable timeTable; // move to season object
     private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
 
     @PostConstruct
-    public void initLeague() {
+    public void initLeagues() {
         try {
-            if (league == null) {
-                createLeague("team.xml", "names.txt", "surnames.txt");
+            if (nameToLeague == null) {
+                createLeagues("team.xml", "names.txt", "surnames.txt");
             }
         } catch (JAXBException | FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    public void createLeague(String teamsFile, String firstNameFile, String lastNameFile)
+    public void createLeagues(String teamsFile, String firstNameFile, String lastNameFile)
             throws JAXBException, FileNotFoundException {
         System.out.println("INIT STARTED");
-        league = leagueParser.parse(teamsFile);
-        timeTable = timeTableService.createTimeTable(league.getTeams());
-        playerParserService.parsePlayerForLeague(league, firstNameFile, lastNameFile);
+        LeaguesWrapper leaguesWrapper = leagueParser.parse(teamsFile);
+        leaguesWrapper.getLeagues().forEach(league -> {
+            league.addSeason(new Season(dateService.getToday()));
+            nameToLeague.put(league.getName(), league);
+            timeTable = timeTableService.createTimeTable(league.getTeams());
+            playerParserService.parsePlayerForLeague(league, firstNameFile, lastNameFile);
+        });
         System.out.println("INIT FINISHED");
+    }
+
+    public League getLeague(String leagueName) {
+        return nameToLeague.get(leagueName);
+    }
+
+    public void addNewSeason(String leagueName) {
+        League league = getLeague(leagueName);
+        List<Season> seasons = league.getSeasons();
+        Preconditions.checkArgument(seasons.size() > 0, "at least one season must be set to get the next season");
+        Season lastSeason = seasons.get(seasons.size() - 1);
+        DateTime startDate = lastSeason.getEndDate().plusDays(1);
+        Season nextSeason = new Season(startDate);
+        league.addSeason(nextSeason);
+
+    }
+
+    public Season getCurrentSeason(String leagueName) {
+        League league = getLeague(leagueName);
+        DateTime today = dateService.getToday();
+        return league.getSeasons().stream()
+                .filter(season -> today.isAfter(season.getStartDate()) && today.isBefore(season.getEndDate()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("no season found for today: " + today));
     }
 
     public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
@@ -66,7 +97,7 @@ public class LeagueService {
         getMatch(matchDayNumber, teamName).setPositionPlayerMapGuestTeam(positionToStartEleven);
     }
 
-    public List<Team> getTeams() {
+    public List<Team> getTeams(League league) {
         return league.getTeams();
     }
 
@@ -109,7 +140,7 @@ public class LeagueService {
     }
 
     public MatchDay getTimeTableForMatchDay(int matchDay) {
-        initLeague();
+        initLeagues();
         System.out.println("return match day");
         return timeTable.getMatchDay(matchDay);
     }
