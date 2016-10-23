@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 @XmlRootElement(name = "league")
-@XmlType(propOrder = {"name", "teams", "timeTable", "seasons"})
+@XmlType(propOrder = {"name", "teams", "timeTable"})
 public class League {
 
     private String name;
