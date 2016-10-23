@@ -18,9 +18,11 @@ public class Season {
 
     public Season() {}
 
-    public Season(DateTime startDate) {
+    public Season(DateTime startDate, TimeTable timeTable, List<Team> teams) {
         this.startDate = startDate;
         this.endDate = startDate.plusYears(1);
+        this.teams = teams;
+        this.timeTable = timeTable;
     }
 
     public DateTime getStartDate() {

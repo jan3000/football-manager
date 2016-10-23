@@ -2,6 +2,7 @@ package de.footballmanager.backend.domain;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -15,7 +16,7 @@ public class League {
 
     private String name;
     private List<Team> teams;
-    private List<Season> seasons;
+    private List<Season> seasons = Lists.newArrayList();
     private TimeTable timeTable;
 
     public League() {

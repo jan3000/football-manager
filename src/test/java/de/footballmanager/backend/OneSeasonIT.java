@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 @ContextConfiguration(locations = "/applicationContext.xml")
 public class OneSeasonIT {
 
+    public static final String BUNDESLIGA = "Bundesliga";
     @Autowired
     private TimeTableService timeTableService;
     @Autowired
@@ -49,7 +50,7 @@ public class OneSeasonIT {
         Team computerTeam = teams.get(1);
         teamManagerService.setTeamManager(manager, managedTeam);
 
-        TimeTable timeTable = leagueService.getTimeTable();
+        TimeTable timeTable = leagueService.getTimeTable(BUNDESLIGA);
         assertNotNull(timeTable);
         int numberOfDays = timeTable.getAllMatchDays().size();
         assertEquals(2, numberOfDays);
@@ -69,8 +70,8 @@ public class OneSeasonIT {
         matches.forEach(Match::start);
 
         // run first half
-        leagueService.startNextMatchDay();
-        IntStream.range(1, 45).forEach(i -> leagueService.runNextMinute());
+        leagueService.startNextMatchDay(BUNDESLIGA);
+        IntStream.range(1, 45).forEach(i -> leagueService.runNextMinute(BUNDESLIGA));
         assertTrue(match1.isStarted());
         assertFalse(match1.isFinished());
         assertNotNull(match1.getHalfTimeResult());
@@ -80,7 +81,7 @@ public class OneSeasonIT {
         List<Player> substituteBench = teamManagerService.getSubstituteBench(match1, managedTeam);
         teamManagerService.changePlayer(match1, managedTeam, substituteBench.get(2),
                 startEleven.get(Position.LEFT_DEFENDER));
-        IntStream.range(45, 70).forEach(i -> leagueService.runNextMinute());
+        IntStream.range(45, 70).forEach(i -> leagueService.runNextMinute(BUNDESLIGA));
         assertTrue(match1.isStarted());
         assertFalse(match1.isFinished());
         assertNotNull(match1.getHalfTimeResult());
@@ -88,14 +89,14 @@ public class OneSeasonIT {
 
         // make manual system change after 70 minutes
         teamManagerService.changePlayingSystem(match1, managedTeam, PlayingSystem.SYSTEM_4_2_3_1);
-        IntStream.range(70, 90).forEach(i -> leagueService.runNextMinute());
+        IntStream.range(70, 90).forEach(i -> leagueService.runNextMinute(BUNDESLIGA));
 
         matches.forEach(match -> assertTrue(match1.isFinished()));
         System.out.println(match1.printMatch());
 
         // then
         Result resultMatch1 = match1.getResult();
-        Table currentTable = leagueService.getTable(1);
+        Table currentTable = leagueService.getTable(BUNDESLIGA, 1);
         List<TableEntry> tableEntries = currentTable.getEntries();
         assertNotNull(tableEntries);
         assertEquals(2, tableEntries.size());
@@ -113,25 +114,27 @@ public class OneSeasonIT {
         // ----------------------------------------
         // day 2
         // ----------------------------------------
-        assertEquals(2, leagueService.getCurrentMatchDay());
-        MatchDay matchDay2 = leagueService.getTimeTableForMatchDay(leagueService.getCurrentMatchDay());
+        assertEquals(2, leagueService.getCurrentMatchDay(BUNDESLIGA));
+        MatchDay matchDay2 = leagueService.getTimeTableForMatchDay(BUNDESLIGA,
+                leagueService.getCurrentMatchDay(BUNDESLIGA));
         assertNotNull(matchDay2);
         assertEquals(1, matchDay2.getNumberOfMatches());
         Match match2 = matchDay2.getMatches().get(0);
         assertNotNull(match2);
 
         teamManagerService.setStartElevenIfComputerManaged(matchDay2);
-        Pair<PlayingSystem, Map<Position, Player>> bestPlayersForBestSystem = teamManagerService.getBestPlayersForBestSystem(managedTeam);
+        Pair<PlayingSystem, Map<Position, Player>> bestPlayersForBestSystem =
+                teamManagerService.getBestPlayersForBestSystem(managedTeam);
         teamManagerService.setStartEleven(match2, managedTeam, bestPlayersForBestSystem.getSecond());
 
-        leagueService.startNextMatchDay();
-        IntStream.range(1,90).forEach(i -> leagueService.runNextMinute());
+        leagueService.startNextMatchDay(BUNDESLIGA);
+        IntStream.range(1,90).forEach(i -> leagueService.runNextMinute(BUNDESLIGA));
 
         matches.forEach(match -> assertTrue(match2.isFinished()));
         System.out.println(match2.printMatch());
         Result resultMatch2 = match2.getResult();
 
-        Table currentTable2 = leagueService.getTable(2);
+        Table currentTable2 = leagueService.getTable(BUNDESLIGA, 2);
         List<TableEntry> tableEntries2 = currentTable2.getEntries();
         assertNotNull(tableEntries2);
         assertEquals(2, tableEntries2.size());
@@ -182,7 +185,7 @@ public class OneSeasonIT {
 
     private void assertTeamStatisticsHomeTeam(TimeTable timeTable, Result resultMatch1, Team homeTeam) {
         TeamStatistic teamStatistic = statisticService.getGoalDistribution(timeTable, homeTeam.getName(),
-                leagueService.getTable(1), leagueService.getMatchDayToTable());
+                leagueService.getTable(BUNDESLIGA, 1), leagueService.getMatchDayToTable());
         assertNotNull(teamStatistic);
         assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistic.getHomeGoals()));
         assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistic.getTotalGoals()));
@@ -199,7 +202,7 @@ public class OneSeasonIT {
 
     private void assertTeamStatisticsGuestTeam(TimeTable timeTable, Result resultMatch1, Team guestTeam) {
         TeamStatistic teamStatistics = statisticService.getGoalDistribution(timeTable, guestTeam.getName(),
-                leagueService.getTable(1), leagueService.getMatchDayToTable());
+                leagueService.getTable(BUNDESLIGA, 1), leagueService.getMatchDayToTable());
         assertNotNull(teamStatistics);
         assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistics.getReceivedAwayGoals()));
         assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistics.getReceivedTotalGoals()));

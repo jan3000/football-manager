@@ -4,25 +4,31 @@ package de.footballmanager.backend.service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static de.footballmanager.backend.util.TestUtil.*;
+import static java.util.stream.Collectors.toList;
 import static org.easymock.EasyMock.*;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class LeagueServiceTest {
 
+    public static final String BUNDESLIGA = "Bundesliga"; // TODO make enum
 
     private LeagueService leagueService;
 
     @Before
     public void setUp() {
         leagueService = new LeagueService();
+        ReflectionTestUtils.setField(leagueService, "nameToLeague", Maps.newHashMap());
     }
 
     @Test
@@ -34,11 +40,11 @@ public class LeagueServiceTest {
         ResultService resultService = setUpResultService(matchDay);
 
         // run
-        MatchDay returnedMatchDay = leagueService.runNextMinute();
+        MatchDay returnedMatchDay = leagueService.runNextMinute(BUNDESLIGA);
 
         // assert
         assertThat(returnedMatchDay).isNotNull();
-        assertThat(leagueService.getCurrentMatchDay()).isEqualTo(1);
+        assertThat(leagueService.getCurrentMatchDay(BUNDESLIGA)).isEqualTo(1);
 
         verify(resultService);
     }
@@ -47,15 +53,17 @@ public class LeagueServiceTest {
     public void runNextMinuteAllMatchesFinished() {
         // prepare
         MatchDay matchDay = new MatchDay();
-        Match match = createMatch(createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2), createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2), true, true);
+        Team team1 = createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2);
+        Team team2 = createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2);
+        Match match = createMatch(team1, team2, true, true);
         matchDay.getMatches().add(match);
         ResultService resultService = setUpResultService(matchDay);
 
         // run
-        leagueService.runNextMinute();
+        leagueService.runNextMinute(BUNDESLIGA);
 
         // assert
-        assertThat(leagueService.getCurrentMatchDay()).isEqualTo(2);
+        assertThat(leagueService.getCurrentMatchDay(BUNDESLIGA)).isEqualTo(2);
 
         verify(resultService);
     }
@@ -80,7 +88,7 @@ public class LeagueServiceTest {
         setUpTimeTable();
 
         // run
-        Table currentTable = leagueService.getCurrentTable();
+        Table currentTable = leagueService.getCurrentTable(BUNDESLIGA);
 
         // assert
         assertThat(currentTable).isNotNull();
@@ -114,7 +122,7 @@ public class LeagueServiceTest {
         setUpTimeTable();
 
         // run
-        Table currentTable = leagueService.getTable(1);
+        Table currentTable = leagueService.getTable(BUNDESLIGA, 1);
 
         // assert
         assertThat(currentTable).isNotNull();
@@ -145,17 +153,19 @@ public class LeagueServiceTest {
         MatchDay matchDay6 = new MatchDay(Lists.newArrayList(createFinishedMatch(TEAM_NAME_2, TEAM_NAME_1, 4, 1, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2)));
         timeTable.addMatchDays(Lists.newArrayList(matchDay1, matchDay2, matchDay3, matchDay4, matchDay5, matchDay6));
         timeTable.setCurrentMatchDay(6);
-        ReflectionTestUtils.setField(leagueService, "timeTable", timeTable);
+        List<Team> teams = Lists.newArrayList(matchDay1.getMatches().stream().map(Match::getHomeTeam).collect(toList()));
+        teams.addAll(Lists.newArrayList(matchDay1.getMatches().stream().map(Match::getGuestTeam).collect(toList())));
+        new Season(new DateTime(), timeTable, teams);
 
         Map<Integer, Table> matchDayToTable = Maps.newHashMap();
         ReflectionTestUtils.setField(leagueService, "matchDayToTable", matchDayToTable);
 
-        leagueService.generateChart(1);
-        leagueService.generateChart(2);
-        leagueService.generateChart(3);
-        leagueService.generateChart(4);
-        leagueService.generateChart(5);
-        leagueService.generateChart(6);
+        leagueService.generateChart(BUNDESLIGA, 1);
+        leagueService.generateChart(BUNDESLIGA, 2);
+        leagueService.generateChart(BUNDESLIGA, 3);
+        leagueService.generateChart(BUNDESLIGA, 4);
+        leagueService.generateChart(BUNDESLIGA, 5);
+        leagueService.generateChart(BUNDESLIGA, 6);
     }
 
 

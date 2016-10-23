@@ -34,7 +34,6 @@ public class LeagueService {
     private TrialAndErrorTimeTableService timeTableService;
 
     private Map<String, League> nameToLeague = Maps.newHashMap();
-    private TimeTable timeTable; // move to season object
     private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
 
     @PostConstruct
@@ -53,25 +52,31 @@ public class LeagueService {
         System.out.println("INIT STARTED");
         LeaguesWrapper leaguesWrapper = leagueParser.parse(teamsFile);
         leaguesWrapper.getLeagues().forEach(league -> {
-            league.addSeason(new Season(dateService.getToday()));
+            List<Team> teams = league.getTeams();
+            TimeTable timeTable = timeTableService.createTimeTable(teams);
+            league.addSeason(new Season(dateService.getToday(), timeTable, teams));
             nameToLeague.put(league.getName(), league);
-            timeTable = timeTableService.createTimeTable(league.getTeams());
             playerParserService.parsePlayerForLeague(league, firstNameFile, lastNameFile);
         });
         System.out.println("INIT FINISHED");
     }
 
     public League getLeague(String leagueName) {
-        return nameToLeague.get(leagueName);
+        League league = nameToLeague.get(leagueName);
+        Preconditions.checkNotNull(league, "no league found for ", leagueName);
+        return league;
     }
 
-    public void addNewSeason(String leagueName) {
+    public void addNewSeason(String leagueName, List<Team> teams) {
         League league = getLeague(leagueName);
         List<Season> seasons = league.getSeasons();
         Preconditions.checkArgument(seasons.size() > 0, "at least one season must be set to get the next season");
         Season lastSeason = seasons.get(seasons.size() - 1);
         DateTime startDate = lastSeason.getEndDate().plusDays(1);
-        Season nextSeason = new Season(startDate);
+        // go on here
+
+        TimeTable timeTable = timeTableService.createTimeTable(teams);
+        Season nextSeason = new Season(startDate, timeTable, teams);
         league.addSeason(nextSeason);
 
     }
@@ -82,20 +87,25 @@ public class LeagueService {
         return league.getSeasons().stream()
                 .filter(season -> today.isAfter(season.getStartDate()) && today.isBefore(season.getEndDate()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("no season found for today: " + today));
+                .orElseThrow(() -> new IllegalStateException(
+                        "no season found for league: " + leagueName + ", today: " + today));
     }
 
-    public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
-        getMatch(matchDayNumber, teamName).setPositionPlayerMapHomeTeam(positionToStartEleven);
+//    public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
+//        getMatch(matchDayNumber, teamName).setPositionPlayerMapHomeTeam(positionToStartEleven);
+//    }
+
+    private Match getMatch(String leagueName, int matchDayNumber, String teamName) {
+        League league = getLeague(leagueName);
+        Preconditions.checkNotNull(league, "no league found for leagueName: ", leagueName);
+        TimeTable timeTable = getCurrentSeason(leagueName).getTimeTable();
+        Preconditions.checkNotNull(timeTable, "no timeTable found for leagueName: ", leagueName);
+        return  timeTable.getMatch(matchDayNumber, teamName);
     }
 
-    private Match getMatch(int matchDayNumber, String teamName) {
-        return timeTable.getMatch(matchDayNumber, teamName);
-    }
-
-    public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
-        getMatch(matchDayNumber, teamName).setPositionPlayerMapGuestTeam(positionToStartEleven);
-    }
+//    public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
+//        getMatch(matchDayNumber, teamName).setPositionPlayerMapGuestTeam(positionToStartEleven);
+//    }
 
     public List<Team> getTeams(League league) {
         return league.getTeams();
@@ -104,7 +114,8 @@ public class LeagueService {
     /**
      * Sets up next match day.
      */
-    public void startNextMatchDay() {
+    public void startNextMatchDay(String leagueName) {
+        TimeTable timeTable = getTimeTable(leagueName);
         MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
         List<Match> matches = matchDay.getMatches();
         matches.forEach(Match::start);
@@ -114,13 +125,14 @@ public class LeagueService {
      * Call startNextMatchDay before.
      * @return
      */
-    public MatchDay runNextMinute() {
+    public MatchDay runNextMinute(String leagueName) {
+        TimeTable timeTable = getTimeTable(leagueName);
         MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
         List<Match> matches = matchDay.getMatches();
         resultService.calculateNextMinute(matches);
 
         if (haveAllMatchesEnded(matches)) {
-            generateChart(timeTable.getCurrentMatchDay());
+            generateChart(leagueName, timeTable.getCurrentMatchDay());
             timeTable.incrementCurrentMatchDay();
         }
 
@@ -131,42 +143,52 @@ public class LeagueService {
         return Collections2.filter(matches, Match::isFinished).size() == matches.size();
     }
 
-    public TimeTable getTimeTable() {
-        return timeTable;
+    public TimeTable getTimeTable(String leagueName) {
+        Season currentSeason = getCurrentSeason(leagueName);
+        Preconditions.checkNotNull(currentSeason, "no currentSeason found for ", leagueName);
+        return currentSeason.getTimeTable();
     }
 
-    public int getCurrentMatchDay() {
+    public int getCurrentMatchDay(String leagueName) {
+        TimeTable timeTable = getTimeTable(leagueName);
+        Preconditions.checkNotNull(timeTable, "no timeTable found for ", leagueName);
         return timeTable.getCurrentMatchDay();
     }
 
-    public MatchDay getTimeTableForMatchDay(int matchDay) {
-        initLeagues();
+    public MatchDay getTimeTableForMatchDay(String leagueName, int matchDay) {
+//        initLeagues();
         System.out.println("return match day");
+        TimeTable timeTable = getTimeTable(leagueName);
         return timeTable.getMatchDay(matchDay);
     }
 
-    public Table getCurrentTable() {
+    public Table getCurrentTable(String leagueName) {
+        TimeTable timeTable = getTimeTable(leagueName);
         Preconditions.checkArgument(timeTable != null, "timeTable must not be null");
-        return getTable(timeTable.getCurrentMatchDay());
+        return getTable(leagueName, timeTable.getCurrentMatchDay());
     }
 
     public Map<Integer, Table> getMatchDayToTable() {
         return matchDayToTable;
     }
 
-    public Table getTable(int day) {
+    public Table getTable(String leagueName, int day) {
         if (matchDayToTable.containsKey(day)) {
             return matchDayToTable.get(day);
         } else {
+            TimeTable timeTable = getTimeTable(leagueName);
+            Preconditions.checkNotNull(timeTable, "no timeTable found for ", leagueName);
             return matchDayToTable.get(timeTable.getCurrentMatchDay() - 1);
         }
     }
 
-    protected Table generateChart(int day) {
+    protected Table generateChart(String leagueName, int day) {
         System.out.println("GENERATE CHART FOR DAY: " + day);
         Map<Team, Integer> teamToPointsMap = Maps.newHashMap();
         Map<Team, TableEntry> teamToTableEntryMap = Maps.newHashMap();
 
+        TimeTable timeTable = getTimeTable(leagueName);
+        Preconditions.checkNotNull(timeTable, "no timeTable found for ", leagueName);
         for (MatchDay matchDay : timeTable.getAllMatchDays().asList().subList(0, day)) {
             for (Match match : matchDay.getMatches()) {
                 if (match.isFinished()) {
