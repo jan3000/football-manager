@@ -7,6 +7,7 @@ import de.footballmanager.backend.enumeration.Position;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -92,7 +93,21 @@ public class TeamManagerService {
                 .collect(toList());
     }
 
-    public Map<Position, Player> setBestPlayersForSystem(PlayingSystem playingSystem, List<Player> playerList) {
+    public Map<Position, Player> setBestPlayersForSystems(List<PlayingSystem> playingSystems, List<Player> playerList) {
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(playingSystems), "playingSystems must be set");
+        Preconditions.checkArgument(playerList.size() > 7, "team must have at least 8 players");
+        Map<Integer, Map<Position, Player>> strengthToPositionPlayerMap = Maps.newHashMap();
+        playingSystems.forEach(playingSystem -> {
+            Map<Position, Player> positionPlayerMap = setBestPlayersForSystems(playingSystem, playerList);
+            int strength = strengthService.getStrength(positionPlayerMap);
+            strengthToPositionPlayerMap.put(strength, positionPlayerMap);
+        });
+        List<Integer> strengths = Lists.newArrayList(strengthToPositionPlayerMap.keySet());
+        strengths.sort((o1, o2) -> o1 < o2 ? 1 : -1);
+        return strengthToPositionPlayerMap.get(strengths.get(0));
+    }
+
+        public Map<Position, Player> setBestPlayersForSystems(PlayingSystem playingSystem, List<Player> playerList) {
         Preconditions.checkNotNull(playingSystem, "playingSystem must be set");
         Preconditions.checkArgument(playerList.size() > 7, "team must have at least 8 players");
         Map<Position, Player> positionPlayerMap = Maps.newHashMap();
@@ -160,12 +175,12 @@ public class TeamManagerService {
         if (match.isHomeTeam(team)) {
             Map<Position, Player> positionPlayerMap = match.getPositionPlayerMapHomeTeam();
             Collection<Player> players = positionPlayerMap.values();
-            Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystem(newSystem, Lists.newArrayList(players));
+            Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystems(newSystem, Lists.newArrayList(players));
             match.setPositionPlayerMapHomeTeam(positionPlayerMapAfterChange);
         } else if (match.isGuestTeam(team)) {
             Map<Position, Player> positionPlayerMap = match.getPositionPlayerMapGuestTeam();
             Collection<Player> players = positionPlayerMap.values();
-            Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystem(newSystem, Lists.newArrayList(players));
+            Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystems(newSystem, Lists.newArrayList(players));
             match.setPositionPlayerMapGuestTeam(positionPlayerMapAfterChange);
         } else {
             throw new IllegalStateException("team neither home nor guest team: " + team);
@@ -218,7 +233,7 @@ public class TeamManagerService {
         List<Player> players = team.getPlayers();
         Map<PlayingSystem, Integer> systemIntegerMap = Maps.newHashMap();
         playingSystems.forEach(playingSystem -> {
-            Map<Position, Player> positionPlayerMap = setBestPlayersForSystem(playingSystem, team.getPlayers());
+            Map<Position, Player> positionPlayerMap = setBestPlayersForSystems(playingSystem, team.getPlayers());
 
         });
     }
@@ -226,7 +241,7 @@ public class TeamManagerService {
     public Pair<PlayingSystem, Map<Position, Player>> getBestPlayersForBestSystem(Team team) {
         List<PlayingSystem> possibleSystems = getPossibleSystems(team);
         if (possibleSystems.isEmpty()) {
-            Map<Position, Player> positionPlayerMap = setBestPlayersForSystem(PlayingSystem.SYSTEM_4_3_3, team.getPlayers());// TODO: best players for a list of systems, better coach -> more systems
+            Map<Position, Player> positionPlayerMap = setBestPlayersForSystems(PlayingSystem.SYSTEM_4_3_3, team.getPlayers());// TODO: best players for a list of systems, better coach -> more systems
             return new Pair<>(PlayingSystem.SYSTEM_4_3_3, positionPlayerMap);
         }
         Map<PlayingSystem, Integer> systemStrengthMap = Maps.newHashMap();
@@ -250,11 +265,6 @@ public class TeamManagerService {
         Preconditions.checkArgument(players.size() < 12, "number of players must be not more than 11");
         return new Double(Math.floor(players.stream().mapToInt(Player::getStrength).sum() / players.size())).intValue();
     }
-
-
-//    Map<Position, Player> getPositionPlayerMap(Team team) {
-//        team.getPlayers();
-//    }
 
     private boolean isKITeam(Team team) {
         Preconditions.checkNotNull(team.getManager(), "no manager set for team {}", team.getName());
