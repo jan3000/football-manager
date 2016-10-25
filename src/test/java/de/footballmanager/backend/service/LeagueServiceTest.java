@@ -30,6 +30,7 @@ public class LeagueServiceTest {
     private LeagueService leagueService;
     private TimeTable timeTable;
     private List<Team> teams;
+    private DateTime today;
 
     @Before
     public void setUp() {
@@ -44,17 +45,13 @@ public class LeagueServiceTest {
         MatchDay matchDay4 = createMatchDay(createFinishedMatch(TEAM_NAME_3, TEAM_NAME_2, 0, 2, SYSTEM_442, SYSTEM_442));
         MatchDay matchDay5 = createMatchDay(createFinishedMatch(TEAM_NAME_1, TEAM_NAME_3, 1, 2, SYSTEM_442, SYSTEM_442));
         MatchDay matchDay6 = createMatchDay(createMatch(TEAM_NAME_2, TEAM_NAME_1, 4, 1, SYSTEM_442, SYSTEM_442));
-        timeTable = new TimeTable();
-        timeTable.addMatchDays(Lists.newArrayList(matchDay1, matchDay2, matchDay3, matchDay4, matchDay5, matchDay6));
-        timeTable.setCurrentMatchDay(6);
+        timeTable = new TimeTable(Lists.newArrayList(matchDay1, matchDay2, matchDay3, matchDay4, matchDay5, matchDay6));
+        IntStream.range(1, 5).forEach(i -> timeTable.incrementCurrentMatchDay());
 
-        DateTime today = new DateTime();
+        today = new DateTime();
         Season season = new Season(today, timeTable, teams);
 
-        Map<String, League> nameToLeague = Maps.newHashMap();
-        League league = new League();
-        league.addSeason(season);
-        nameToLeague.put(BUNDESLIGA, league);
+        Map<String, League> nameToLeague = createLeagueMap(season);
         ReflectionTestUtils.setField(leagueService, "nameToLeague", nameToLeague);
 
         DateService dateService = createMock(DateService.class);
@@ -86,7 +83,13 @@ public class LeagueServiceTest {
 
     @Test
     public void runNextMinute() {
-        // prepare
+        // given
+        MatchDay matchDay1 = createMatchDay(createMatch(TEAM_NAME_1, TEAM_NAME_3, 1, 2, SYSTEM_442, SYSTEM_442));
+        MatchDay matchDay2 = createMatchDay(createMatch(TEAM_NAME_2, TEAM_NAME_1, 4, 1, SYSTEM_442, SYSTEM_442));
+        TimeTable timeTable = new TimeTable(Lists.newArrayList(matchDay1, matchDay2));
+        Season season = new Season(today, timeTable, teams);
+        ReflectionTestUtils.setField(leagueService, "nameToLeague", createLeagueMap(season));
+
         int currentMatchDay = timeTable.getCurrentMatchDay();
         assertFalse(timeTable.getMatchDay(currentMatchDay).isFinished());
         ResultService resultService = setUpResultService(timeTable.getMatchDay(currentMatchDay));
@@ -103,7 +106,18 @@ public class LeagueServiceTest {
 
     @Test
     public void runNextMinuteAllMatchesFinished() {
-        // prepare
+        // given
+        MatchDay matchDay1 = createMatchDay(createMatch(TEAM_NAME_1, TEAM_NAME_3, 1, 2, SYSTEM_442, SYSTEM_442));
+        MatchDay matchDay2 = createMatchDay(createMatch(TEAM_NAME_2, TEAM_NAME_1, 4, 1, SYSTEM_442, SYSTEM_442));
+        TimeTable timeTable = new TimeTable(Lists.newArrayList(matchDay1, matchDay2));
+        Season season = new Season(today, timeTable, teams);
+        ReflectionTestUtils.setField(leagueService, "nameToLeague", createLeagueMap(season));
+
+        TimeTableService timeTableService = createMock(TrialAndErrorTimeTableService.class);
+        expect(timeTableService.isTimeTableFinished(anyObject())).andReturn(false).once();
+        replay(timeTableService);
+        ReflectionTestUtils.setField(leagueService, "timeTableService", timeTableService);
+
         int currentMatchDay = timeTable.getCurrentMatchDay();
         MatchDay matchDay = timeTable.getMatchDay(currentMatchDay);
         Match match = matchDay.getMatches().get(0);
@@ -116,8 +130,37 @@ public class LeagueServiceTest {
 
         // assert
         assertThat(leagueService.getCurrentMatchDay(BUNDESLIGA)).isEqualTo(currentMatchDay + 1);
+        assertFalse(timeTable.isClosed());
 
-        verify(resultService);
+        verify(resultService, timeTableService);
+    }
+
+    @Test
+    public void runNextMinuteTimeTableShouldBeClosed() {
+        // given
+        MatchDay matchDay1 = createMatchDay(createFinishedMatch(TEAM_NAME_1, TEAM_NAME_3, 1, 2, SYSTEM_442, SYSTEM_442));
+        MatchDay matchDay2 = createMatchDay(createFinishedMatch(TEAM_NAME_2, TEAM_NAME_1, 4, 1, SYSTEM_442, SYSTEM_442));
+        TimeTable timeTable = new TimeTable(Lists.newArrayList(matchDay1, matchDay2));
+        Season season = new Season(today, timeTable, teams);
+        ReflectionTestUtils.setField(leagueService, "nameToLeague", createLeagueMap(season));
+
+        TimeTableService timeTableService = createMock(TrialAndErrorTimeTableService.class);
+        expect(timeTableService.isTimeTableFinished(timeTable)).andReturn(true).once();
+        replay(timeTableService);
+        ReflectionTestUtils.setField(leagueService, "timeTableService", timeTableService);
+
+        timeTable.incrementCurrentMatchDay();
+        int currentMatchDay = timeTable.getCurrentMatchDay();
+        ResultService resultService = setUpResultService(matchDay2);
+
+        // run
+        leagueService.runNextMinute(BUNDESLIGA);
+
+        // assert
+        assertThat(leagueService.getCurrentMatchDay(BUNDESLIGA)).isEqualTo(currentMatchDay);
+        assertThat(timeTable.isClosed());
+
+        verify(resultService, timeTableService);
     }
 
     @Test
@@ -147,6 +190,7 @@ public class LeagueServiceTest {
     @Test
     public void getCurrentTableForThreeTeams() {
         // when finish last unfinished match
+        timeTable.incrementCurrentMatchDay();
         Match unfinishedMatch = leagueService.getTimeTable(BUNDESLIGA).getMatchDay(leagueService.getCurrentMatchDay(BUNDESLIGA)).getMatches().get(0);
         finishMatch(unfinishedMatch);
         leagueService.generateChart(BUNDESLIGA, 6);
@@ -178,6 +222,14 @@ public class LeagueServiceTest {
         assertHomeStatistics(tableEntry3, 1, 0, 1);
         assertAwayStatistics(tableEntry3, 1, 0, 1);
         assertTotalStatistics(tableEntry3, 2, 0, 2);
+    }
+
+    private Map<String, League> createLeagueMap(Season season) {
+        Map<String, League> nameToLeague = Maps.newHashMap();
+        League league = new League();
+        league.addSeason(season);
+        nameToLeague.put(BUNDESLIGA, league);
+        return nameToLeague;
     }
 
     private void assertHomeStatistics(TableEntry tableEntry, int won, int draw, int lost) {

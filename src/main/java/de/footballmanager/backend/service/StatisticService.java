@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -18,7 +17,7 @@ import static java.util.stream.Collectors.toSet;
 @Service
 public class StatisticService {
 
-    public TeamStatistic getGoalDistribution(TimeTable timeTable, String teamName, Table currentTable, Map<Integer, Table> matchDayToTable) {
+    public TeamStatistic getTeamStatistics(TimeTable timeTable, String teamName, Table currentTable, Map<Integer, Table> matchDayToTable) {
         TeamStatistic teamStatistic = new TeamStatistic(teamName);
         Integer[] homeGoals = teamStatistic.getHomeGoals();
         Integer[] awayGoals = teamStatistic.getAwayGoals();
@@ -49,8 +48,7 @@ public class StatisticService {
 
         teamStatistic.setCurrentTableEntry(currentTable.getEntryByTeamName(teamName));
 
-        teamStatistic.setPlacementsInSeason(getPlacementsInSeason(teamName, timeTable.getCurrentMatchDay(),
-                matchDayToTable));
+        teamStatistic.setPlacementsInSeason(getPlacementsInSeason(teamName, matchDayToTable, timeTable));
 
 
         teamStatistic.setScorers(scorers);
@@ -79,9 +77,15 @@ public class StatisticService {
         }
     }
 
-    public Integer[] getPlacementsInSeason(String teamName, int currentMatchDay, Map<Integer, Table> matchDayToTable) {
-        Integer[] placements = new Integer[34];
-        for (int i = 0; i < currentMatchDay - 1; i++) {
+    public Integer[] getPlacementsInSeason(String teamName, Map<Integer, Table> matchDayToTable, TimeTable timeTable) {
+        int numberOfMatchDays = timeTable.getAllMatchDays().size();
+        Integer[] placements = new Integer[numberOfMatchDays];
+        int currentMatchDay = timeTable.getCurrentMatchDay();
+        int limit = currentMatchDay - 1;
+        if (timeTable.isClosed()) {
+            limit = currentMatchDay;
+        }
+        for (int i = 0; i < limit; i++) {
             placements[i] = matchDayToTable.get(i + 1).getEntryByTeamName(teamName).getPlace();
         }
         return placements;

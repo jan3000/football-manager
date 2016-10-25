@@ -20,7 +20,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 @Service
-public class TrialAndErrorTimeTableService implements TimeTableService {
+public class TrialAndErrorTimeTableService extends TimeTableService {
 
     private List<DateTime> getMatchDates() {
         final DateTime startDate = new DateTime("2015-08-15");
@@ -46,9 +46,7 @@ public class TrialAndErrorTimeTableService implements TimeTableService {
         allMatchDays.forEach(match -> {
             match.setDate(matchDates.remove(0));
         });
-        TimeTable timeTable = new TimeTable();
-        timeTable.addMatchDays(allMatchDays);
-        return timeTable;
+        return new TimeTable(allMatchDays);
     }
 
     List<MatchDay> getSecondRoundMatches(final List<MatchDay> firstRoundMatches) {

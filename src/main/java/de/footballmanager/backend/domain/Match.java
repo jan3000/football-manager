@@ -86,7 +86,7 @@ public class Match {
 
     private void validateMatchIsRunning() {
         Preconditions.checkArgument(isStarted, "match not started yet");
-        Preconditions.checkArgument(!isFinished(), "match already isFinished");
+        Preconditions.checkArgument(!isFinished(), "match is already finished");
     }
 
     public void increaseGoalsGuestTeam(final Goal goal) {

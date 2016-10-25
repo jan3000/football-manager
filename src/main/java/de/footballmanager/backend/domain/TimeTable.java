@@ -7,12 +7,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import java.util.List;
+import java.util.Objects;
 
 public class TimeTable {
 
-    private DateTime startDateOfSeason;
+    private boolean closed = false;
     private int currentMatchDay = 1;
-    private final List<MatchDay> matchDays = Lists.newArrayList();
+    private final List<MatchDay> matchDays;
+
+    public TimeTable(List<MatchDay> allMatchDays) {
+        this.matchDays = allMatchDays;
+    }
+
+    public int getNumberOfMatchDays() {
+        return matchDays.size();
+    }
 
     public ImmutableList<MatchDay> getAllMatchDays() {
         return ImmutableList.copyOf(matchDays);
@@ -34,17 +43,18 @@ public class TimeTable {
         return currentMatchDay;
     }
 
-    public void setCurrentMatchDay(int currentMatchDay) {
-        this.currentMatchDay = currentMatchDay;
-    }
-
     public void incrementCurrentMatchDay() {
+        Preconditions.checkArgument(currentMatchDay < matchDays.size(),
+                "current match day cannot be higher than number of matchDays");
         currentMatchDay++;
     }
 
+    public boolean isClosed() {
+        return closed;
+    }
 
-    public void addMatchDays(final List<MatchDay> matchDays) {
-        this.matchDays.addAll(matchDays);
+    public void setClosed() {
+        this.closed = true;
     }
 
     public String print() {
@@ -58,5 +68,29 @@ public class TimeTable {
             }
         }
         return buildi.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TimeTable timeTable = (TimeTable) o;
+        return closed == timeTable.closed &&
+                currentMatchDay == timeTable.currentMatchDay &&
+                Objects.equals(matchDays, timeTable.matchDays);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(closed, currentMatchDay, matchDays);
+    }
+
+    @Override
+    public String toString() {
+        return "TimeTable{" +
+                ", closed=" + closed +
+                ", currentMatchDay=" + currentMatchDay +
+                ", matchDays=" + matchDays +
+                '}';
     }
 }

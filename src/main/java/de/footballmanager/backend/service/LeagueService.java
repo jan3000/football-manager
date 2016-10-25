@@ -136,7 +136,11 @@ public class LeagueService {
 
         if (haveAllMatchesEnded(matches)) {
             generateChart(leagueName, timeTable.getCurrentMatchDay());
-            timeTable.incrementCurrentMatchDay();
+            if (timeTableService.isTimeTableFinished(timeTable)) {
+                timeTable.setClosed();
+            } else {
+                timeTable.incrementCurrentMatchDay();
+            }
         }
 
         return matchDay;
@@ -145,6 +149,7 @@ public class LeagueService {
     private boolean haveAllMatchesEnded(List<Match> matches) {
         return Collections2.filter(matches, Match::isFinished).size() == matches.size();
     }
+
 
     public TimeTable getTimeTable(String leagueName) {
         Season currentSeason = getCurrentSeason(leagueName);

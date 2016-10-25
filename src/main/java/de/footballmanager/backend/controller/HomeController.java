@@ -65,7 +65,7 @@ public class HomeController implements FootballManagerFacade{
     @Produces(MediaType.APPLICATION_JSON)
     public TeamStatistic getTeamStatistic(@PathParam("teamName") String teamName) {
         int currentMatchDay = leagueService.getCurrentMatchDay(BUNDESLIGA);
-        TeamStatistic teamStatistics = statisticService.getGoalDistribution(
+        TeamStatistic teamStatistics = statisticService.getTeamStatistics(
                 leagueService.getTimeTable(BUNDESLIGA), teamName,
                 leagueService.getTable(BUNDESLIGA, currentMatchDay - 1), leagueService.getMatchDayToTable());
         return teamStatistics;

@@ -37,7 +37,6 @@ public class StatisticServiceTest {
 
         team1 = new Team(TEAM_NAME_1);
         team2 = new Team(TEAM_NAME_2);
-        timeTable = new TimeTable();
         Match match1 = createFinishedMatch(TEAM_NAME_1, TEAM_NAME_2, 2, 2, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2);
         scorer1 = buildPlayer("John", "Dumbo");
         scorer2 = buildPlayer("Jeff", "Patterns");
@@ -54,7 +53,8 @@ public class StatisticServiceTest {
         match2.addGoal(new Goal(54, team2, scorer2, KindOfGoal.HEAD, new Result(3, 1)));
         match2.addGoal(new Goal(58, team2, scorer2, KindOfGoal.HEAD, new Result(4, 1)));
         MatchDay matchDay2 = new MatchDay(Lists.newArrayList(match2));
-        timeTable.addMatchDays(Lists.newArrayList(matchDay1, matchDay2));
+
+        timeTable = new TimeTable(Lists.newArrayList(matchDay1, matchDay2));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class StatisticServiceTest {
         table.addEntry(tableEntry);
 
         // run
-        TeamStatistic teamStatistic = statisticService.getGoalDistribution(timeTable, team1.getName(), table,
+        TeamStatistic teamStatistic = statisticService.getTeamStatistics(timeTable, team1.getName(), table,
                 Maps.newHashMap());
 
         // assert
@@ -121,15 +121,15 @@ public class StatisticServiceTest {
         Map<Integer, Table> matchDayToTable = Maps.newHashMap();
         matchDayToTable.put(1, table);
         matchDayToTable.put(2, table);
+        timeTable.incrementCurrentMatchDay();
+        timeTable.setClosed();
 
-        Integer[] placementsInSeason = statisticService.getPlacementsInSeason(team1.getName(), 3, matchDayToTable);
+        Integer[] placementsInSeason = statisticService.getPlacementsInSeason(team1.getName(), matchDayToTable, timeTable);
 
-        assertThat(placementsInSeason.length).isEqualTo(34);
+        int numberOfMatchDays = timeTable.getNumberOfMatchDays();
+        assertThat(placementsInSeason.length).isEqualTo(numberOfMatchDays);
         assertThat(placementsInSeason[0]).isEqualTo(3);
         assertThat(placementsInSeason[1]).isEqualTo(3);
-        for (int i = 2; i < 34; i++) {
-            assertThat(placementsInSeason[i]).isNull();
-        }
     }
 
     @Test
