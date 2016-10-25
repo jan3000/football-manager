@@ -5,12 +5,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -99,7 +97,7 @@ public class LeagueServiceTest {
 
         // assert
         assertThat(returnedMatchDay).isNotNull();
-        assertThat(leagueService.getCurrentMatchDay(BUNDESLIGA)).isEqualTo(currentMatchDay);
+        assertThat(leagueService.getCurrentMatchDayNumber(BUNDESLIGA)).isEqualTo(currentMatchDay);
 
         verify(resultService);
     }
@@ -129,7 +127,7 @@ public class LeagueServiceTest {
         leagueService.runNextMinute(BUNDESLIGA);
 
         // assert
-        assertThat(leagueService.getCurrentMatchDay(BUNDESLIGA)).isEqualTo(currentMatchDay + 1);
+        assertThat(leagueService.getCurrentMatchDayNumber(BUNDESLIGA)).isEqualTo(currentMatchDay + 1);
         assertFalse(timeTable.isClosed());
 
         verify(resultService, timeTableService);
@@ -157,7 +155,7 @@ public class LeagueServiceTest {
         leagueService.runNextMinute(BUNDESLIGA);
 
         // assert
-        assertThat(leagueService.getCurrentMatchDay(BUNDESLIGA)).isEqualTo(currentMatchDay);
+        assertThat(leagueService.getCurrentMatchDayNumber(BUNDESLIGA)).isEqualTo(currentMatchDay);
         assertThat(timeTable.isClosed());
 
         verify(resultService, timeTableService);
@@ -191,7 +189,7 @@ public class LeagueServiceTest {
     public void getCurrentTableForThreeTeams() {
         // when finish last unfinished match
         timeTable.incrementCurrentMatchDay();
-        Match unfinishedMatch = leagueService.getTimeTable(BUNDESLIGA).getMatchDay(leagueService.getCurrentMatchDay(BUNDESLIGA)).getMatches().get(0);
+        Match unfinishedMatch = leagueService.getTimeTable(BUNDESLIGA).getMatchDay(leagueService.getCurrentMatchDayNumber(BUNDESLIGA)).getMatches().get(0);
         finishMatch(unfinishedMatch);
         leagueService.generateChart(BUNDESLIGA, 6);
 

@@ -111,7 +111,9 @@ public class LeagueService {
 //        getMatch(matchDayNumber, teamName).setPositionPlayerMapGuestTeam(positionToStartEleven);
 //    }
 
-    public List<Team> getTeams(League league) {
+    public List<Team> getTeams(String leagueName) {
+        League league = getLeague(leagueName);
+        Preconditions.checkNotNull(league, "no league found with name: ", leagueName);
         return league.getTeams();
     }
 
@@ -157,6 +159,7 @@ public class LeagueService {
         resultService.calculateNextMinute(matches);
 
         if (haveAllMatchesEnded(matches)) {
+
             generateChart(leagueName, timeTable.getCurrentMatchDay());
             if (timeTableService.isTimeTableFinished(timeTable)) {
                 timeTable.setClosed();
@@ -179,10 +182,16 @@ public class LeagueService {
         return currentSeason.getTimeTable();
     }
 
-    public int getCurrentMatchDay(String leagueName) {
+    public int getCurrentMatchDayNumber(String leagueName) {
         TimeTable timeTable = getTimeTable(leagueName);
         Preconditions.checkNotNull(timeTable, "no timeTable found for ", leagueName);
         return timeTable.getCurrentMatchDay();
+    }
+
+    public MatchDay getCurrentMatchDay(String leagueName) {
+        TimeTable timeTable = getTimeTable(leagueName);
+        Preconditions.checkNotNull(timeTable, "no timeTable found for ", leagueName);
+        return timeTable.getMatchDay(getCurrentMatchDayNumber(leagueName));
     }
 
     public MatchDay getTimeTableForMatchDay(String leagueName, int matchDay) {
