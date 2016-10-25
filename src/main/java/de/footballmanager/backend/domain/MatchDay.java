@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 public class MatchDay {
 
-
     private DateTime date;
     private int matchDayNumber;
     private List<Match> matches = Lists.newArrayList();

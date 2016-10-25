@@ -24,6 +24,7 @@ import java.util.Map;
 @Component
 public class HomeController implements FootballManagerFacade{
 
+    public static final String BUNDESLIGA = "Bundesliga";
     @Autowired
     private LeagueService leagueService;
     @Autowired
@@ -34,7 +35,7 @@ public class HomeController implements FootballManagerFacade{
     @Produces(MediaType.APPLICATION_JSON)
     public List<Team> getTeams() throws JAXBException, FileNotFoundException {
         System.out.println("HomeController getTeams");
-        return leagueService.getTeams();
+        return leagueService.getLeague(BUNDESLIGA).getTeams();
     }
 
     @GET
@@ -42,32 +43,31 @@ public class HomeController implements FootballManagerFacade{
     @Produces(MediaType.APPLICATION_JSON)
     public MatchDay getTimeTableForMatchDay(@PathParam("matchDay") int matchDay) {
         System.out.println("HomeController getTimeTableForMatchDay: " + matchDay);
-        return leagueService.getTimeTableForMatchDay(matchDay);
+        return leagueService.getTimeTableForMatchDay(BUNDESLIGA, matchDay);
     }
 
     @GET
     @Path("runNextMatchDayMinute")
     @Produces(MediaType.APPLICATION_JSON)
     public MatchDay runNextMatchDayMinute() {
-        return leagueService.runNextMinute();
+        return leagueService.runNextMinute(BUNDESLIGA);
     }
 
     @GET
     @Path("table/{day}")
     @Produces(MediaType.APPLICATION_JSON)
     public Table getTable(@PathParam("day") int day) {
-        return leagueService.getTable(day);
+        return leagueService.getTable(BUNDESLIGA, day);
     }
 
     @GET
     @Path("statistic/{teamName}")
     @Produces(MediaType.APPLICATION_JSON)
     public TeamStatistic getTeamStatistic(@PathParam("teamName") String teamName) {
-        int currentMatchDay = leagueService.getCurrentMatchDay();
-        TeamStatistic teamStatistics = statisticService.getGoalDistribution(leagueService.getTimeTable(), teamName,
-                leagueService.getTable(currentMatchDay - 1));
-        teamStatistics.setPlacementsInSeason(statisticService.getPlacementsInSeason(teamName, currentMatchDay,
-                leagueService.getMatchDayToTable()));
+        int currentMatchDay = leagueService.getCurrentMatchDayNumber(BUNDESLIGA);
+        TeamStatistic teamStatistics = statisticService.getTeamStatistics(
+                leagueService.getTimeTable(BUNDESLIGA), teamName,
+                leagueService.getTable(BUNDESLIGA, currentMatchDay - 1), leagueService.getMatchDayToTable());
         return teamStatistics;
     }
 
@@ -75,7 +75,8 @@ public class HomeController implements FootballManagerFacade{
     @Path("statistics/league")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ScorerStatistic> getLeagueStatictics() {
-        return statisticService.getScorerTable(leagueService.getTeams(), leagueService.getTimeTable());
+        return statisticService.getScorerTable(leagueService.getLeague("Bundesliga").getTeams(),
+                leagueService.getTimeTable(BUNDESLIGA));
     }
 
     @Override
@@ -85,12 +86,12 @@ public class HomeController implements FootballManagerFacade{
 
     @Override
     public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
-        leagueService.setStartElevenHome(matchDayNumber, teamName, positionToStartEleven);
+//        leagueService.setStartElevenHome(matchDayNumber, teamName, positionToStartEleven);
     }
 
     @Override
     public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
-        leagueService.setStartElevenGuest(matchDayNumber, teamName, positionToStartEleven);
+//        leagueService.setStartElevenGuest(matchDayNumber, teamName, positionToStartEleven);
     }
 
     @Override

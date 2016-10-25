@@ -2,21 +2,26 @@ package de.footballmanager.backend.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.Match;
-import de.footballmanager.backend.domain.MatchDay;
-import de.footballmanager.backend.domain.Team;
-import de.footballmanager.backend.domain.TimeTable;
+import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.TestUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.easymock.EasyMock;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import static de.footballmanager.backend.domain.PlayingSystem.SYSTEM_4_3_3;
 import static de.footballmanager.backend.util.TestUtil.*;
+import static java.util.stream.Collectors.toList;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 public class TimeTableServiceTest {
@@ -64,37 +69,37 @@ public class TimeTableServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void isTeamNotInMatchDayMatchDayNull() throws Exception {
-        timeTableService.isTeamNotInMatchDay(null, new Team(TestUtil.TEAM_1));
+        timeTableService.isTeamNotInMatchDay(null, new Team(TestUtil.TEAM_NAME_1));
     }
 
     @Test
     public void isTeamNotInMatchDayMatchNull() throws Exception {
         MatchDay matchDay = new MatchDay();
-        assertTrue(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_1)));
+        assertTrue(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_NAME_1)));
     }
 
     @Test
     public void isTeamNotInMatchDayHappyCase() throws Exception {
         MatchDay matchDay = new MatchDay();
-        Match match = new Match(new Team(TEAM_1), new Team(TEAM_2));
+        Match match = new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2));
         matchDay.addMatch(match);
-        assertTrue(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_3)));
+        assertTrue(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_NAME_3)));
     }
 
     @Test
     public void isTeamNotInMatchDayFalseBecauseOfHomeTeam() throws Exception {
         MatchDay matchDay = new MatchDay();
-        Match match = new Match(new Team(TEAM_1), new Team(TEAM_2));
+        Match match = new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2));
         matchDay.addMatch(match);
-        assertFalse(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_1)));
+        assertFalse(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_NAME_1)));
     }
 
     @Test
     public void isTeamNotInMatchDayFalseBecauseOfGuestTeam() throws Exception {
         MatchDay matchDay = new MatchDay();
-        Match match = new Match(new Team(TEAM_1), new Team(TEAM_2));
+        Match match = new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2));
         matchDay.addMatch(match);
-        assertFalse(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_2)));
+        assertFalse(timeTableService.isTeamNotInMatchDay(matchDay, new Team(TEAM_NAME_2)));
     }
 
     // -------------------------------------------------------------
@@ -104,7 +109,7 @@ public class TimeTableServiceTest {
     @Test(expected = NullPointerException.class)
     public void addMatchIfNotContainedAlreadyMatchDayIsNull() throws Exception {
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        matchesWithMinimalScore.add(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(null, matchesWithMinimalScore);
     }
 
@@ -125,7 +130,7 @@ public class TimeTableServiceTest {
     public void addMatchIfNotContainedAlreadyEmptyMatchDay() throws Exception {
         MatchDay matchDay = new MatchDay();
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        matchesWithMinimalScore.add(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(1, matchDay.getNumberOfMatches());
     }
@@ -133,9 +138,9 @@ public class TimeTableServiceTest {
     @Test
     public void addMatchIfNotContainedAlreadyNotEmptyMatchDay() throws Exception {
         MatchDay matchDay = new MatchDay();
-        matchDay.addMatch(new Match(new Team(TEAM_3), new Team(TEAM_4)));
+        matchDay.addMatch(new Match(new Team(TEAM_NAME_3), new Team(TEAM_4)));
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        matchesWithMinimalScore.add(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(2, matchDay.getNumberOfMatches());
     }
@@ -143,9 +148,9 @@ public class TimeTableServiceTest {
     @Test
     public void addMatchIfNotContainedAlreadyMatchContained() throws Exception {
         MatchDay matchDay = new MatchDay();
-        matchDay.addMatch(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchDay.addMatch(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        matchesWithMinimalScore.add(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(1, matchDay.getNumberOfMatches());
     }
@@ -153,9 +158,9 @@ public class TimeTableServiceTest {
     @Test
     public void addMatchIfNotContainedAlreadySwitchedMatchContained() throws Exception {
         MatchDay matchDay = new MatchDay();
-        matchDay.addMatch(new Match(new Team(TEAM_2), new Team(TEAM_1)));
+        matchDay.addMatch(new Match(new Team(TEAM_NAME_2), new Team(TEAM_NAME_1)));
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
-        matchesWithMinimalScore.add(new Match(new Team(TEAM_1), new Team(TEAM_2)));
+        matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
         assertEquals(1, matchDay.getNumberOfMatches());
     }
@@ -168,17 +173,17 @@ public class TimeTableServiceTest {
     public void getMatchesWithSameScore() throws Exception {
 
         Map<Match, Integer> matchToScore = Maps.newHashMap();
-        Match match1Against2 = new Match(new Team(TEAM_1), new Team(TEAM_2));
+        Match match1Against2 = new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2));
         matchToScore.put(match1Against2, 0);
-        Match match3Against2 = new Match(new Team(TEAM_3), new Team(TEAM_2));
+        Match match3Against2 = new Match(new Team(TEAM_NAME_3), new Team(TEAM_NAME_2));
         matchToScore.put(match3Against2, 0);
-        Match match1Against3 = new Match(new Team(TEAM_1), new Team(TEAM_3));
+        Match match1Against3 = new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_3));
         matchToScore.put(match1Against3, 1);
-        Match match2Against3 = new Match(new Team(TEAM_2), new Team(TEAM_3));
+        Match match2Against3 = new Match(new Team(TEAM_NAME_2), new Team(TEAM_NAME_3));
         matchToScore.put(match2Against3, 1);
-        Match match2Against4 = new Match(new Team(TEAM_2), new Team(TEAM_4));
+        Match match2Against4 = new Match(new Team(TEAM_NAME_2), new Team(TEAM_4));
         matchToScore.put(match2Against4, 2);
-        Match match3Against4 = new Match(new Team(TEAM_3), new Team(TEAM_4));
+        Match match3Against4 = new Match(new Team(TEAM_NAME_3), new Team(TEAM_4));
         matchToScore.put(match3Against4, 3);
         List<Match> matchesWithScore0 = timeTableService.getMatchesWithSameScore(matchToScore, 0);
         assertEquals(2, matchesWithScore0.size());
@@ -295,18 +300,30 @@ public class TimeTableServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createTimeTableTeamsIsNull() {
-        timeTableService.createTimeTable(null);
+        timeTableService.createTimeTable(null, new DateTime());
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void createTimeTableTeamsIsEmpty() {
-        timeTableService.createTimeTable(Collections.EMPTY_LIST);
+        timeTableService.createTimeTable(Collections.EMPTY_LIST, new DateTime());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void createTimeTableStartDateIsNull() {
+        timeTableService.createTimeTable(Lists.newArrayList(TestUtil.createTeam("team", SYSTEM_4_3_3)), null);
     }
 
     @Test
     public void createTimeTable() {
-        TimeTable timeTable = timeTableService.createTimeTable(teams);
+        DateTime startDate = new DateTime();
+
+        DateService dateService = createMock(DateService.class);
+        expect(dateService.setDayTime(startDate, 15, 30)).andReturn(startDate);
+        replay(dateService);
+        ReflectionTestUtils.setField(timeTableService, "dateService", dateService);
+
+        TimeTable timeTable = timeTableService.createTimeTable(teams, startDate);
 
         assertNotNull(timeTable);
         List<MatchDay> matchDays = timeTable.getAllMatchDays();
@@ -316,7 +333,15 @@ public class TimeTableServiceTest {
 
         assertAppearanceOfTeamsInMatchDays(matchDays);
         assertAllTeamsHaveSameSumOfMatches2(matchDays, NUMBER_OF_MATCH_DAYS);
+        assertDatesAreSet(matchDays);
         System.out.println(timeTable.print());
+        verify(dateService);
+    }
+
+    private void assertDatesAreSet(List<MatchDay> matchDays) {
+        assertTrue(CollectionUtils.isEmpty(matchDays.stream()
+                .filter(matchDay -> matchDay.getDate() == null)
+                .collect(toList())));
     }
 
     private void assertAllTeamsHaveSameSumOfMatches(final List<Match> matches) {

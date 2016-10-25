@@ -1,6 +1,8 @@
 package de.footballmanager.backend.domain;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -9,11 +11,12 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 @XmlRootElement(name = "league")
-@XmlType(propOrder = {"teams", "timeTable"})
+@XmlType(propOrder = {"name", "teams"})
 public class League {
 
+    private String name;
     private List<Team> teams;
-    private TimeTable timeTable;
+    private List<Season> seasons = Lists.newArrayList();
 
     public League() {
         super();
@@ -25,12 +28,13 @@ public class League {
         this.teams = teams;
     }
 
-    public TimeTable getTimeTable() {
-        return timeTable;
+    @XmlElement(name = "name")
+    public String getName() {
+        return name;
     }
 
-    public void setTimeTable(final TimeTable timeTable) {
-        this.timeTable = timeTable;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @XmlElementWrapper(name = "teams")
@@ -47,5 +51,11 @@ public class League {
         return teams.size();
     }
 
+    public List<Season> getSeasons() {
+        return ImmutableList.copyOf(seasons);
+    }
 
+    public void addSeason(Season season) {
+        seasons.add(season);
+    }
 }

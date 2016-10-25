@@ -35,10 +35,9 @@ public class StatisticServiceTest {
         statisticService = new StatisticService();
         table = new Table();
 
-        team1 = new Team(TEAM_1);
-        team2 = new Team(TEAM_2);
-        timeTable = new TimeTable();
-        Match match1 = createMatch(TEAM_1, TEAM_2, 2, 2);
+        team1 = new Team(TEAM_NAME_1);
+        team2 = new Team(TEAM_NAME_2);
+        Match match1 = createFinishedMatch(TEAM_NAME_1, TEAM_NAME_2, 2, 2, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2);
         scorer1 = buildPlayer("John", "Dumbo");
         scorer2 = buildPlayer("Jeff", "Patterns");
         scorer3 = buildPlayer("Jordy", "Madrid");
@@ -47,14 +46,15 @@ public class StatisticServiceTest {
         match1.addGoal(new Goal(44, team2, scorer2, KindOfGoal.HEAD, new Result(1, 2)));
         match1.addGoal(new Goal(90, team1, scorer1, KindOfGoal.HEAD, new Result(2, 2)));
         MatchDay matchDay1 = new MatchDay(Lists.newArrayList(match1));
-        Match match2 = createMatch(TEAM_2, TEAM_1, 4, 1);
+        Match match2 = createFinishedMatch(TEAM_NAME_2, TEAM_NAME_1, 4, 1, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2);
         match2.addGoal(new Goal(8, team2, scorer2, KindOfGoal.HEAD, new Result(1, 0)));
         match2.addGoal(new Goal(12, team1, scorer1, KindOfGoal.HEAD, new Result(1, 1)));
         match2.addGoal(new Goal(33, team2, scorer3, KindOfGoal.HEAD, new Result(2, 1)));
         match2.addGoal(new Goal(54, team2, scorer2, KindOfGoal.HEAD, new Result(3, 1)));
         match2.addGoal(new Goal(58, team2, scorer2, KindOfGoal.HEAD, new Result(4, 1)));
         MatchDay matchDay2 = new MatchDay(Lists.newArrayList(match2));
-        timeTable.addMatchDays(Lists.newArrayList(matchDay1, matchDay2));
+
+        timeTable = new TimeTable(Lists.newArrayList(matchDay1, matchDay2));
     }
 
     @Test
@@ -64,7 +64,8 @@ public class StatisticServiceTest {
         table.addEntry(tableEntry);
 
         // run
-        TeamStatistic teamStatistic = statisticService.getGoalDistribution(timeTable, team1.getName(), table);
+        TeamStatistic teamStatistic = statisticService.getTeamStatistics(timeTable, team1.getName(), table,
+                Maps.newHashMap());
 
         // assert
         assertThat(teamStatistic.getCurrentTableEntry()).isNotNull();
@@ -120,15 +121,15 @@ public class StatisticServiceTest {
         Map<Integer, Table> matchDayToTable = Maps.newHashMap();
         matchDayToTable.put(1, table);
         matchDayToTable.put(2, table);
+        timeTable.incrementCurrentMatchDay();
+        timeTable.setClosed();
 
-        Integer[] placementsInSeason = statisticService.getPlacementsInSeason(team1.getName(), 3, matchDayToTable);
+        Integer[] placementsInSeason = statisticService.getPlacementsInSeason(team1.getName(), matchDayToTable, timeTable);
 
-        assertThat(placementsInSeason.length).isEqualTo(34);
+        int numberOfMatchDays = timeTable.getNumberOfMatchDays();
+        assertThat(placementsInSeason.length).isEqualTo(numberOfMatchDays);
         assertThat(placementsInSeason[0]).isEqualTo(3);
         assertThat(placementsInSeason[1]).isEqualTo(3);
-        for (int i = 2; i < 34; i++) {
-            assertThat(placementsInSeason[i]).isNull();
-        }
     }
 
     @Test

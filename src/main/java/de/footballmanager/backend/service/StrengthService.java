@@ -2,11 +2,14 @@ package de.footballmanager.backend.service;
 
 import de.footballmanager.backend.domain.Player;
 import de.footballmanager.backend.enumeration.Position;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 import static de.footballmanager.backend.enumeration.Position.GOALY;
 
+@Service
 public class StrengthService {
 
     static final int COEFFICIENT_WRONG_GOALY = 90;

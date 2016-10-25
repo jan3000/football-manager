@@ -6,18 +6,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.enumeration.ResultType;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Match {
 
-
     private static final int MINUTES_OF_GAME = 90;
-    public static final int MINUTES_HALF_TIME = 45;
+    private static final int MINUTES_HALF_TIME = 45;
     private Team homeTeam;
     private Team guestTeam;
 
@@ -32,7 +30,7 @@ public class Match {
     private List<PlayerChange> playerChangesGuestTeam = Lists.newArrayListWithCapacity(3);
 
     private final List<Goal> goals = Lists.newArrayList();
-    private final Result halfTime = new Result(0, 0);
+    private final Result halfTimeResult = new Result(0, 0);
     private Result result = new Result(0, 0);
     private boolean isFinished = false;
     private boolean isStarted = false;
@@ -45,17 +43,27 @@ public class Match {
         this.guestTeam = guestTeam;
     }
 
-    private void validateMatchPrepared() {
+    public boolean isHomeTeam(Team team) {
+        return homeTeam.equals(team);
+    }
+
+    public boolean isGuestTeam(Team team) {
+        return guestTeam.equals(team);
+    }
+
+    private void validateIsMatchPrepared() {
         Preconditions.checkNotNull(homeTeam, "home team not set");
         Preconditions.checkNotNull(guestTeam, "guest team not set");
 
-        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 11, "start eleven of home not set correctly");
-        Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 11, "start eleven of guest not set correctly");
+        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 11,
+                "start eleven of home team not set correctly, size: ", positionPlayerMapHomeTeam.size());
+        Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 11,
+                "start eleven of guest team not set correctly, size: ", positionPlayerMapGuestTeam.size());
 
     }
 
     public void start() {
-        validateMatchPrepared();
+        validateIsMatchPrepared();
         isStarted = true;
     }
 
@@ -70,7 +78,7 @@ public class Match {
     public void increaseGoalsHomeTeam(final Goal goal) {
         validateMatchIsRunning();
         if (goal.getMinute() <= MINUTES_HALF_TIME) {
-            halfTime.increaseHomeGoal();
+            halfTimeResult.increaseHomeGoal();
         }
         result.increaseHomeGoal();
         addGoal(goal);
@@ -78,13 +86,13 @@ public class Match {
 
     private void validateMatchIsRunning() {
         Preconditions.checkArgument(isStarted, "match not started yet");
-        Preconditions.checkArgument(!isFinished(), "match already isFinished");
+        Preconditions.checkArgument(!isFinished(), "match is already finished");
     }
 
     public void increaseGoalsGuestTeam(final Goal goal) {
         validateMatchIsRunning();
         if (goal.getMinute() <= MINUTES_HALF_TIME) {
-            halfTime.increaseGuestGoal();
+            halfTimeResult.increaseGuestGoal();
         }
         result.increaseGuestGoal();
         addGoal(goal);
@@ -100,15 +108,19 @@ public class Match {
         return areTeamsSet() && (homeTeam.equals(team) || guestTeam.equals(team));
     }
 
-    public void changePlayer(Player in, Player out, boolean isHomeTeamChange) {
-        if (isHomeTeamChange) {
-            changePlayerHome(in, out, positionPlayerMapHomeTeam, homeTeam, playerChangesHomeTeam);
-        } else {
-            changePlayerHome(in, out, positionPlayerMapGuestTeam, guestTeam, playerChangesGuestTeam);
+    /**
+     * Position is kept
+     */
+    public void changePlayer(Team team, Player in, Player out) {
+        Preconditions.checkArgument(this.containsTeam(team), "cannot change player for not contained team: ", team);
+        if (isHomeTeam(team)) {
+            changePlayer(in, out, positionPlayerMapHomeTeam, homeTeam, playerChangesHomeTeam);
+        } else if (isGuestTeam(team)) {
+            changePlayer(in, out, positionPlayerMapGuestTeam, guestTeam, playerChangesGuestTeam);
         }
     }
 
-    private void changePlayerHome(Player in, Player out, Map<Position, Player> positionPlayerMap, Team team, List<PlayerChange> playerChanges) {
+    private void changePlayer(Player in, Player out, Map<Position, Player> positionPlayerMap, Team team, List<PlayerChange> playerChanges) {
         Preconditions.checkArgument(positionPlayerMap.values().contains(out), String.format("coming out player {%s} not member of current players", out));
         Preconditions.checkArgument(team.getPlayers().contains(in), String.format("coming in player {%s} not member of team", in));
         Preconditions.checkArgument(!positionPlayerMap.values().contains(in), String.format("coming in player {%s} already playing", in));
@@ -140,12 +152,12 @@ public class Match {
     }
 
     public void setPositionPlayerMapHomeTeam(Map<Position, Player> positionPlayerMapHomeTeam) {
-        Preconditions.checkState(!isStarted, "startEleven cannot be set if match already started");
+//        Preconditions.checkState(!isStarted, "startEleven cannot be set if match already started");
         Preconditions.checkState(!isFinished, "startEleven cannot be set if match already finished");
-        Preconditions.checkArgument(positionPlayerMapHomeTeam.values().stream()
+        List<Player> playersNotPartOfTeam = positionPlayerMapHomeTeam.values().stream()
                 .filter(player -> !homeTeam.getPlayers().contains(player))
-                .collect(Collectors.toList())
-                .isEmpty(), "players must be part of the team");
+                .collect(Collectors.toList());
+        Preconditions.checkArgument(playersNotPartOfTeam.isEmpty(), "players must be part of the team");
         Preconditions.checkArgument(Sets.newHashSet(positionPlayerMapHomeTeam.values()).size() == 11, "players must be different");
 
         this.positionPlayerMapHomeTeam = positionPlayerMapHomeTeam;
@@ -183,6 +195,8 @@ public class Match {
     }
 
     public void setHomeTeam(final Team homeTeam) {
+        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 0,
+                "home team cannot be changed if start eleven is set already");
         this.homeTeam = homeTeam;
     }
 
@@ -191,6 +205,8 @@ public class Match {
     }
 
     public void setGuestTeam(final Team guestTeam) {
+        Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 0,
+                "guest team cannot be changed if start eleven is set already");
         this.guestTeam = guestTeam;
     }
 
@@ -230,8 +246,8 @@ public class Match {
         this.result = result;
     }
 
-    public Result getHalfTime() {
-        return halfTime;
+    public Result getHalfTimeResult() {
+        return halfTimeResult;
     }
 
     public boolean isFinished() {
@@ -242,7 +258,7 @@ public class Match {
     public String printMatch() {
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("%s \t- \t%s \t%s : %s  (%s)", homeTeam.getName(), guestTeam.getName(),
-                result.getHomeGoals(), result.getGuestGoals(), halfTime.print()));
+                result.getHomeGoals(), result.getGuestGoals(), halfTimeResult.print()));
         for (Goal goal : goals) {
             builder.append(String.format("\n%s. Minute\t%s", goal.getMinute(), goal.getNewResult().print()));
         }
@@ -251,42 +267,30 @@ public class Match {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((guestTeam == null) ? 0 : guestTeam.hashCode());
-        result = prime * result + ((homeTeam == null) ? 0 : homeTeam.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Match match = (Match) o;
+        return minute == match.minute &&
+                additionalTime == match.additionalTime &&
+                isFinished == match.isFinished &&
+                isStarted == match.isStarted &&
+                Objects.equals(homeTeam, match.homeTeam) &&
+                Objects.equals(guestTeam, match.guestTeam) &&
+                Objects.equals(positionPlayerMapHomeTeam, match.positionPlayerMapHomeTeam) &&
+                Objects.equals(positionPlayerMapGuestTeam, match.positionPlayerMapGuestTeam) &&
+                Objects.equals(yellowCards, match.yellowCards) &&
+                Objects.equals(redCards, match.redCards) &&
+                Objects.equals(playerChangesHomeTeam, match.playerChangesHomeTeam) &&
+                Objects.equals(playerChangesGuestTeam, match.playerChangesGuestTeam) &&
+                Objects.equals(goals, match.goals) &&
+                Objects.equals(halfTimeResult, match.halfTimeResult) &&
+                Objects.equals(result, match.result);
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Match other = (Match) obj;
-
-        if (guestTeam == null) {
-            if (other.guestTeam != null) {
-                return false;
-            }
-        } else if (!guestTeam.equals(other.guestTeam)) {
-            return false;
-        }
-        if (homeTeam == null) {
-            if (other.homeTeam != null) {
-                return false;
-            }
-        } else if (!homeTeam.equals(other.homeTeam)) {
-            return false;
-        }
-        return true;
+    public int hashCode() {
+        return Objects.hash(homeTeam, guestTeam, positionPlayerMapHomeTeam, positionPlayerMapGuestTeam, minute, additionalTime, yellowCards, redCards, playerChangesHomeTeam, playerChangesGuestTeam, goals, halfTimeResult, result, isFinished, isStarted);
     }
 
     @Override
