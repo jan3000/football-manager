@@ -8,6 +8,7 @@ import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.parser.LeagueParser;
 import de.footballmanager.backend.parser.PlayerParserService;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +23,15 @@ import java.util.TreeMap;
 public class LeagueService {
 
     @Autowired
-    private LeagueParser leagueParser;
-    @Autowired
-    private DateService dateService;
+    private TrialAndErrorTimeTableService timeTableService;
     @Autowired
     private PlayerParserService playerParserService;
     @Autowired
     private ResultService resultService;
     @Autowired
-    private TrialAndErrorTimeTableService timeTableService;
+    private LeagueParser leagueParser;
+    @Autowired
+    private DateService dateService;
 
     private Map<String, League> nameToLeague = Maps.newHashMap();
     private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
@@ -52,7 +53,7 @@ public class LeagueService {
         LeaguesWrapper leaguesWrapper = leagueParser.parse(teamsFile);
         leaguesWrapper.getLeagues().forEach(league -> {
             List<Team> teams = league.getTeams();
-            TimeTable timeTable = timeTableService.createTimeTable(teams);
+            TimeTable timeTable = timeTableService.createTimeTable(teams, dateService.getToday());
             league.addSeason(new Season(dateService.getToday(), timeTable, teams));
             nameToLeague.put(league.getName(), league);
             playerParserService.parsePlayerForLeague(league, firstNameFile, lastNameFile);
@@ -74,7 +75,7 @@ public class LeagueService {
         DateTime startDate = lastSeason.getEndDate().plusDays(1);
         // go on here
 
-        TimeTable timeTable = timeTableService.createTimeTable(teams);
+        TimeTable timeTable = timeTableService.createTimeTable(teams, startDate);
         Season nextSeason = new Season(startDate, timeTable, teams);
         league.addSeason(nextSeason);
 
@@ -122,6 +123,27 @@ public class LeagueService {
         MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
         List<Match> matches = matchDay.getMatches();
         matches.forEach(Match::start);
+    }
+
+    public void finishDay() {
+        dateService.addDays(1);
+    }
+
+    public void finishDaysUntilNextMatchDay(String leagueName) {
+        TimeTable timeTable = getTimeTable(leagueName);
+        MatchDay currentMatchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
+        dateService.finishDaysUntil(currentMatchDay.getDate());
+    }
+
+    public void finishDaysUntilNextSeason(String leagueName) {
+        Season currentSeason = getCurrentSeason(leagueName);
+        League league = getLeague(leagueName);
+        List<Season> seasons = league.getSeasons();
+        int indexOfCurrentSeason = seasons.indexOf(currentSeason);
+        if (indexOfCurrentSeason +1 < seasons.size()) {
+            Season nextSeason = seasons.get(indexOfCurrentSeason + 1);
+            dateService.finishDaysUntil(nextSeason.getStartDate());
+        };
     }
 
     /**

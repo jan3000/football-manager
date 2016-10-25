@@ -11,13 +11,12 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 @XmlRootElement(name = "league")
-@XmlType(propOrder = {"name", "teams", "timeTable"})
+@XmlType(propOrder = {"name", "teams"})
 public class League {
 
     private String name;
     private List<Team> teams;
     private List<Season> seasons = Lists.newArrayList();
-    private TimeTable timeTable;
 
     public League() {
         super();
@@ -36,14 +35,6 @@ public class League {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public TimeTable getTimeTable() {
-        return timeTable;
-    }
-
-    public void setTimeTable(final TimeTable timeTable) {
-        this.timeTable = timeTable;
     }
 
     @XmlElementWrapper(name = "teams")

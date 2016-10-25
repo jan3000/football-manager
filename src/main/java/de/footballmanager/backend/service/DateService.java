@@ -1,6 +1,8 @@
 package de.footballmanager.backend.service;
 
+import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +20,17 @@ public class DateService {
 
     public void addOneWeek() {
         today = today.plusWeeks(1);
+    }
+
+    public void finishDaysUntil(DateTime newDate) {
+        Preconditions.checkArgument(newDate.isAfter(today), "new date must be in the future: ", today);
+        Duration duration = new Duration(today, newDate);
+        Long standardDays = duration.getStandardDays();
+        addDays(Math.toIntExact(standardDays));
+    }
+
+    public DateTime setDayTime(DateTime date, int hour, int minute) {
+        return date.withHourOfDay(hour).withMinuteOfHour(minute).withSecondOfMinute(0).withMillisOfSecond(0);
     }
 
     @Override

@@ -8,6 +8,7 @@ import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.TestUtil;
 import jersey.repackaged.com.google.common.collect.Sets;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -176,9 +177,8 @@ public class ResultServiceTest {
 
         Map<Result, Integer> resultToCountMap = Maps.newHashMap();
         for (int i = 0; i < 10; i++) {
-            TimeTable timeTable = timeTableService.createTimeTable(teams);
+            TimeTable timeTable = timeTableService.createTimeTable(teams, new DateTime());
             League league = new League(teams);
-            league.setTimeTable(timeTable);
             for (MatchDay matchDay : timeTable.getAllMatchDays()) {
                 for (Match match : matchDay.getMatches()) {
                     resultService.calculateResult(match);

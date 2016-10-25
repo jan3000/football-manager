@@ -5,13 +5,19 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
+import de.footballmanager.backend.service.DateService;
 import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
 import org.joda.time.DateTime;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 
 public class TestUtil {
 
@@ -27,13 +33,17 @@ public class TestUtil {
         List<Team> teams = Lists.newArrayList();
         IntStream.range(1, 10).forEach(i -> teams.add(createTeam("Team" + i, PlayingSystem.SYSTEM_4_4_2)));
         league.setTeams(teams);
-        league.setTimeTable(createTimeTable(teams));
         return league;
     }
 
     public static TimeTable createTimeTable(List<Team> teams) {
+        DateTime now = DateTime.now();
         TrialAndErrorTimeTableService timeTableService = new TrialAndErrorTimeTableService();
-        return timeTableService.createTimeTable(teams);
+        DateService dateService = createMock(DateService.class);
+        expect(dateService.setDayTime(now, 15, 30)).andReturn(now);
+        replay(dateService);
+        ReflectionTestUtils.setField(timeTableService, "dateService", dateService);
+        return timeTableService.createTimeTable(teams, now);
     }
 
     public static MatchDay createMatchDay() {

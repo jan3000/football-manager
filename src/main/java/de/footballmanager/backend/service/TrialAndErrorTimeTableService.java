@@ -9,6 +9,7 @@ import de.footballmanager.backend.domain.Team;
 import de.footballmanager.backend.domain.TimeTable;
 import de.footballmanager.backend.exception.TimeTableCreationStuckException;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -22,19 +23,27 @@ import java.util.stream.IntStream;
 @Service
 public class TrialAndErrorTimeTableService extends TimeTableService {
 
-    private List<DateTime> getMatchDates() {
-        final DateTime startDate = new DateTime("2015-08-15");
-        List<DateTime> dates = Lists.newArrayListWithCapacity(34);
-        IntStream.range(0, 17).forEach(i -> dates.add(startDate.plusWeeks(i)));
-        final DateTime startDateSecondHalf = startDate.plusWeeks(17).plusWeeks(6);
-        IntStream.range(0, 17).forEach(i -> dates.add(startDateSecondHalf.plusWeeks(i)));
+    @Autowired
+    private DateService dateService;
+
+    private static final int DURATION_WINTER_BREAK = 6;
+
+    private List<DateTime> getMatchDates(DateTime startDate, int numberOfTeams) {
+
+        int numberOfMatchDays = numberOfTeams - 1;
+        List<DateTime> dates = Lists.newArrayListWithCapacity(numberOfMatchDays * 2);
+        IntStream.range(0, numberOfMatchDays).forEach(i -> dates.add(startDate.plusWeeks(i)));
+        final DateTime startDateSecondHalf = startDate.plusWeeks(numberOfMatchDays).plusWeeks(DURATION_WINTER_BREAK);
+        IntStream.range(0, numberOfMatchDays).forEach(i -> dates.add(startDateSecondHalf.plusWeeks(i)));
         return dates;
     }
 
     @Override
-    public TimeTable createTimeTable(final List<Team> teams) {
+    public TimeTable createTimeTable(final List<Team> teams, DateTime startDate) {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(teams),
                 "if you like to create a timeTable, please pass some teams");
+        Preconditions.checkNotNull(startDate, "startDate must be set for time table creation");
+        startDate = dateService.setDayTime(startDate, 15, 30);
 
         List<Match> allFirstRoundMatches = buildAllMatchesOfFirstRound(teams);
         List<MatchDay> firstRoundMatchDays = buildAllPossibleMatchDayPermutationsRetry(teams, allFirstRoundMatches);
@@ -42,12 +51,15 @@ public class TrialAndErrorTimeTableService extends TimeTableService {
 
         List<MatchDay> allMatchDays = Lists.newArrayList(firstRoundMatchDays);
         allMatchDays.addAll(secondRoundMatchDays);
-        List<DateTime> matchDates = getMatchDates();
+        List<DateTime> matchDates = getMatchDates(startDate, teams.size());
         allMatchDays.forEach(match -> {
-            match.setDate(matchDates.remove(0));
+            DateTime remove = matchDates.remove(0);
+            match.setDate(remove);
         });
         return new TimeTable(allMatchDays);
     }
+
+
 
     List<MatchDay> getSecondRoundMatches(final List<MatchDay> firstRoundMatches) {
         Preconditions.checkNotNull(firstRoundMatches, "firstRoundMatches must be set to add secondRoundMatches");

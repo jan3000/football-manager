@@ -2,21 +2,26 @@ package de.footballmanager.backend.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.Match;
-import de.footballmanager.backend.domain.MatchDay;
-import de.footballmanager.backend.domain.Team;
-import de.footballmanager.backend.domain.TimeTable;
+import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.TestUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.easymock.EasyMock;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import static de.footballmanager.backend.domain.PlayingSystem.SYSTEM_4_3_3;
 import static de.footballmanager.backend.util.TestUtil.*;
+import static java.util.stream.Collectors.toList;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 public class TimeTableServiceTest {
@@ -295,18 +300,30 @@ public class TimeTableServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createTimeTableTeamsIsNull() {
-        timeTableService.createTimeTable(null);
+        timeTableService.createTimeTable(null, new DateTime());
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void createTimeTableTeamsIsEmpty() {
-        timeTableService.createTimeTable(Collections.EMPTY_LIST);
+        timeTableService.createTimeTable(Collections.EMPTY_LIST, new DateTime());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void createTimeTableStartDateIsNull() {
+        timeTableService.createTimeTable(Lists.newArrayList(TestUtil.createTeam("team", SYSTEM_4_3_3)), null);
     }
 
     @Test
     public void createTimeTable() {
-        TimeTable timeTable = timeTableService.createTimeTable(teams);
+        DateTime startDate = new DateTime();
+
+        DateService dateService = createMock(DateService.class);
+        expect(dateService.setDayTime(startDate, 15, 30)).andReturn(startDate);
+        replay(dateService);
+        ReflectionTestUtils.setField(timeTableService, "dateService", dateService);
+
+        TimeTable timeTable = timeTableService.createTimeTable(teams, startDate);
 
         assertNotNull(timeTable);
         List<MatchDay> matchDays = timeTable.getAllMatchDays();
@@ -316,7 +333,15 @@ public class TimeTableServiceTest {
 
         assertAppearanceOfTeamsInMatchDays(matchDays);
         assertAllTeamsHaveSameSumOfMatches2(matchDays, NUMBER_OF_MATCH_DAYS);
+        assertDatesAreSet(matchDays);
         System.out.println(timeTable.print());
+        verify(dateService);
+    }
+
+    private void assertDatesAreSet(List<MatchDay> matchDays) {
+        assertTrue(CollectionUtils.isEmpty(matchDays.stream()
+                .filter(matchDay -> matchDay.getDate() == null)
+                .collect(toList())));
     }
 
     private void assertAllTeamsHaveSameSumOfMatches(final List<Match> matches) {

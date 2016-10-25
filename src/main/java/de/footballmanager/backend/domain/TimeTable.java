@@ -62,7 +62,7 @@ public class TimeTable {
         buildi.append("TimeTable\n");
         for (MatchDay matchDay : matchDays) {
             buildi.append(String.format("%s\n", StringUtils.repeat("-", 50)));
-            buildi.append(String.format("MatchDay %s:\n", matchDay.getMatchDayNumber()));
+            buildi.append(String.format("MatchDay %s (%s):\n", matchDay.getMatchDayNumber(), matchDay.getDate()));
             for (Match match : matchDay.getMatches()) {
                 buildi.append(String.format("%s", match.printMatch()));
             }

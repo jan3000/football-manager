@@ -156,9 +156,15 @@ public class OneSeasonIT {
 
 
         // assert league finished
+        assertTrue(timeTable.isClosed());
+
 
         // assert new timeTable for season 2 set up
+        leagueService.addNewSeason(BUNDESLIGA, teams);
 
+        leagueService.finishDaysUntilNextSeason(BUNDESLIGA);
+        assertEquals(2, league.getSeasons().size());
+        assertEquals(league.getSeasons().get(1), leagueService.getCurrentSeason(BUNDESLIGA));
     }
 
     private void assertTableEntries(Result resultMatch1, List<TableEntry> tableEntries, Team homeTeam, Team guestTeam) {

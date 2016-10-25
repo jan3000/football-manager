@@ -3,12 +3,13 @@ package de.footballmanager.backend.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.jvnet.hk2.config.DataType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class DateTimeService {
+public class DateServiceTest {
 
     private DateService dateService;
     private DateTime initialToday;
@@ -47,6 +48,21 @@ public class DateTimeService {
         assertNotNull(initialToday);
         dateService.addOneWeek();
         assertEquals(initialToday.plusDays(7), dateService.getToday());
+    }
+
+    @Test
+    public void finishDaysUntil() {
+        DateTime inTenDays = new DateTime().plusDays(10);
+        inTenDays = dateService.setDayTime(inTenDays, 0, 0);
+        dateService.finishDaysUntil(inTenDays);
+        assertNotNull(dateService.getToday());
+        assertEquals(inTenDays, dateService.getToday());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void finishDaysUntilPastDay() {
+        DateTime pastDay = initialToday.minusDays(10);
+        dateService.finishDaysUntil(pastDay);
     }
 
 }
