@@ -5,7 +5,6 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.comparator.TeamValueComparator;
 import de.footballmanager.backend.domain.*;
-import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.parser.LeagueParser;
 import de.footballmanager.backend.parser.PlayerParserService;
 import org.joda.time.DateTime;
@@ -85,10 +84,14 @@ public class LeagueService {
         League league = getLeague(leagueName);
         DateTime today = dateService.getToday();
         return league.getSeasons().stream()
-                .filter(season -> today.isAfter(season.getStartDate()) && today.isBefore(season.getEndDate()))
+                .filter(season -> isEqualOrAfter(today, season) && today.isBefore(season.getEndDate()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
                         "no season found for league: " + leagueName + ", today: " + today));
+    }
+
+    private boolean isEqualOrAfter(DateTime today, Season season) {
+        return today.isEqual(season.getStartDate()) || today.isAfter(season.getStartDate());
     }
 
 //    public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {

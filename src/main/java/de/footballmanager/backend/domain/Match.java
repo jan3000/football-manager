@@ -9,6 +9,7 @@ import de.footballmanager.backend.enumeration.ResultType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Match {
@@ -266,42 +267,30 @@ public class Match {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((guestTeam == null) ? 0 : guestTeam.hashCode());
-        result = prime * result + ((homeTeam == null) ? 0 : homeTeam.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Match match = (Match) o;
+        return minute == match.minute &&
+                additionalTime == match.additionalTime &&
+                isFinished == match.isFinished &&
+                isStarted == match.isStarted &&
+                Objects.equals(homeTeam, match.homeTeam) &&
+                Objects.equals(guestTeam, match.guestTeam) &&
+                Objects.equals(positionPlayerMapHomeTeam, match.positionPlayerMapHomeTeam) &&
+                Objects.equals(positionPlayerMapGuestTeam, match.positionPlayerMapGuestTeam) &&
+                Objects.equals(yellowCards, match.yellowCards) &&
+                Objects.equals(redCards, match.redCards) &&
+                Objects.equals(playerChangesHomeTeam, match.playerChangesHomeTeam) &&
+                Objects.equals(playerChangesGuestTeam, match.playerChangesGuestTeam) &&
+                Objects.equals(goals, match.goals) &&
+                Objects.equals(halfTimeResult, match.halfTimeResult) &&
+                Objects.equals(result, match.result);
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Match other = (Match) obj;
-
-        if (guestTeam == null) {
-            if (other.guestTeam != null) {
-                return false;
-            }
-        } else if (!guestTeam.equals(other.guestTeam)) {
-            return false;
-        }
-        if (homeTeam == null) {
-            if (other.homeTeam != null) {
-                return false;
-            }
-        } else if (!homeTeam.equals(other.homeTeam)) {
-            return false;
-        }
-        return true;
+    public int hashCode() {
+        return Objects.hash(homeTeam, guestTeam, positionPlayerMapHomeTeam, positionPlayerMapGuestTeam, minute, additionalTime, yellowCards, redCards, playerChangesHomeTeam, playerChangesGuestTeam, goals, halfTimeResult, result, isFinished, isStarted);
     }
 
     @Override

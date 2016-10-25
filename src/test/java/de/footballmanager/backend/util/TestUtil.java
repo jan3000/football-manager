@@ -18,7 +18,7 @@ public class TestUtil {
 
     public static final String TEAM_NAME_1 = "team1";
     public static final String TEAM_NAME_2 = "team2";
-    public static final String TEAM_3 = "team3";
+    public static final String TEAM_NAME_3 = "team3";
     public static final String TEAM_4 = "team4";
     public static final int DEFAULT_STRENGTH = 88;
 
@@ -40,7 +40,7 @@ public class TestUtil {
         MatchDay matchDay = new MatchDay();
         Team team1 = createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2);
         Team team2 = createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2);
-        Team team3 = createTeam(TEAM_3, PlayingSystem.SYSTEM_4_4_2);
+        Team team3 = createTeam(TEAM_NAME_3, PlayingSystem.SYSTEM_4_4_2);
         Team team4 = createTeam(TEAM_4, PlayingSystem.SYSTEM_4_4_2);
         Match match1 = createMatch(team1, team2, false, false);
         matchDay.addMatch(match1);
@@ -49,6 +49,13 @@ public class TestUtil {
         matchDay.setDate(new DateTime());
         matchDay.setMatchDayNumber(1);
         return matchDay;
+    }
+
+
+    public static void finishMatch(Match match) {
+        IntStream.range(1, 90).forEach(i -> {
+            match.increaseMinute();
+        });
     }
 
     public static Match createRunningMatch() {
@@ -111,7 +118,7 @@ public class TestUtil {
             match.start();
         }
         if (isCreateFinishedMatch) {
-            IntStream.range(1, 90).forEach(i -> match.increaseMinute());
+            finishMatch(match);
         }
         return match;
     }
