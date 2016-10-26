@@ -1,8 +1,7 @@
 package de.footballmanager.backend.service;
 
-import de.footballmanager.backend.domain.Player;
+import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.Position;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

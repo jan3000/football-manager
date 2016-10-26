@@ -1,19 +1,18 @@
 package de.footballmanager.backend.domain;
 
 import com.google.common.collect.Lists;
-import de.footballmanager.backend.service.DateService;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.Season;
+import de.footballmanager.backend.domain.league.TimeTable;
+import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.util.TestUtil;
-import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

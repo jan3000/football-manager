@@ -1,10 +1,8 @@
-package de.footballmanager.backend.domain;
+package de.footballmanager.backend.domain.league;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 
 import java.util.List;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package de.footballmanager.backend.domain;
+package de.footballmanager.backend.domain.util;
 
 public class Pair<First, Second> {
 

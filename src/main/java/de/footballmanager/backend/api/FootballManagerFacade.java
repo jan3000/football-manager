@@ -1,12 +1,10 @@
 package de.footballmanager.backend.api;
 
 
-import de.footballmanager.backend.domain.Match;
-import de.footballmanager.backend.domain.Player;
-import de.footballmanager.backend.domain.Team;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.enumeration.Position;
 
-import java.util.List;
 import java.util.Map;
 
 public abstract interface FootballManagerFacade {

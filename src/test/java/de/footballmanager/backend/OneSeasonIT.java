@@ -1,7 +1,13 @@
 package de.footballmanager.backend;
 
 import com.google.common.collect.Lists;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.*;
+import de.footballmanager.backend.domain.persons.Manager;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.domain.statistics.TeamStatistic;
+import de.footballmanager.backend.domain.util.Pair;
+import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.enumeration.ResultType;
 import de.footballmanager.backend.service.*;

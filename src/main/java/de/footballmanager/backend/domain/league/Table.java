@@ -1,4 +1,4 @@
-package de.footballmanager.backend.domain;
+package de.footballmanager.backend.domain.league;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

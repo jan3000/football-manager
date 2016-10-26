@@ -2,7 +2,13 @@ package de.footballmanager.backend.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.Match;
+import de.footballmanager.backend.domain.league.MatchDay;
+import de.footballmanager.backend.domain.persons.Manager;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.domain.util.Pair;
+import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.enumeration.Position;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -147,6 +153,9 @@ public class TeamManagerService {
         return strengthService.getPlayerStrengthOnPosition(position, player);
     }
 
+    public List<Player> getPlayerByPosition(List<Player> players, Position position) {
+        return getPositionToPlayerMap(players).get(position);
+    }
 
     public ListMultimap<Position, Player> getPositionToPlayerMap(List<Player> players) {
         ListMultimap<Position, Player> positionToPlayers = ArrayListMultimap.create();
@@ -156,7 +165,7 @@ public class TeamManagerService {
 
     public Optional<Player> getPlayerByName(Team team, String firstName, String lastName) {
         return team.getPlayers().stream()
-                .filter(player -> player.getFirstname().equals(firstName) && player.getLastname().equals(lastName))
+                .filter(player -> player.getFirstName().equals(firstName) && player.getLastName().equals(lastName))
                 .findFirst();
     }
 

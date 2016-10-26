@@ -1,4 +1,7 @@
-package de.footballmanager.backend.domain;
+package de.footballmanager.backend.domain.statistics;
+
+import de.footballmanager.backend.domain.league.TableEntry;
+import de.footballmanager.backend.domain.persons.Player;
 
 import java.util.Set;
 

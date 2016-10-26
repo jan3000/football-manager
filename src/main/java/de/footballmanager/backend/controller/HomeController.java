@@ -1,7 +1,12 @@
 package de.footballmanager.backend.controller;
 
 import de.footballmanager.backend.api.FootballManagerFacade;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.MatchDay;
+import de.footballmanager.backend.domain.league.Table;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.domain.statistics.ScorerStatistic;
+import de.footballmanager.backend.domain.statistics.TeamStatistic;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.service.LeagueService;
 import de.footballmanager.backend.service.StatisticService;

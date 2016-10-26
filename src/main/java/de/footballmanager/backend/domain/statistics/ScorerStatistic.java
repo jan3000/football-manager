@@ -1,4 +1,4 @@
-package de.footballmanager.backend.domain;
+package de.footballmanager.backend.domain.statistics;
 
 import com.google.common.base.Preconditions;
 

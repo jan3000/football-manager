@@ -3,7 +3,11 @@ package de.footballmanager.backend.util;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.*;
+import de.footballmanager.backend.domain.persons.Manager;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.service.DateService;
 import de.footballmanager.backend.service.TrialAndErrorTimeTableService;
@@ -95,7 +99,7 @@ public class TestUtil {
     public static Match createMatch(Team team1, Team team2, int homeGoals, int guestGoals,
                                             PlayingSystem homeSystem, PlayingSystem guestSystem) {
         Match match = createMatch(team1, team2, false, true, homeSystem, guestSystem);
-        match.setResult(new Result(homeGoals, guestGoals));
+        match.setResult(new Result (homeGoals, guestGoals));
         return match;
     }
 

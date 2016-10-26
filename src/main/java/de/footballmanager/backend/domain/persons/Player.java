@@ -1,27 +1,25 @@
-package de.footballmanager.backend.domain;
+package de.footballmanager.backend.domain.persons;
 
 import com.neovisionaries.i18n.CountryCode;
+import de.footballmanager.backend.domain.statistics.PlayerStatistics;
 import de.footballmanager.backend.enumeration.Position;
+import de.footballmanager.backend.enumeration.Talent;
 import org.joda.time.DateTime;
 import org.joda.time.Years;
 
 import java.util.Objects;
 
-public class Player {
+public class Player extends Person {
 
-    private final String lastname;
-    private final String firstname;
     private Position position;
-    private DateTime dateOfBirth;
-    private CountryCode homeCountry;
     private int strength;
     private PlayerStatistics playerStatistics;
-//    private Team team;
+    private Talent talent;
 
 
     private Player(Builder builder) {
-        this.firstname = builder.firstName;
-        this.lastname = builder.lastName;
+        super.setFirstName(builder.firstName);
+        super.setLastName(builder.lastName);
         this.position = builder.position;
         this.strength = builder.strength;
 
@@ -55,32 +53,12 @@ public class Player {
         }
     }
 
-    public String getLastname() {
-        return lastname;
-    }
-
-    public String getFullname() {
-        return getFirstname() + " " + getLastname();
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
     public Position getPosition() {
         return position;
     }
 
     public void setPosition(Position position) {
         this.position = position;
-    }
-
-    public DateTime getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(final DateTime dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
     }
 
     public int getStrength() {
@@ -99,15 +77,6 @@ public class Player {
 //        this.team = team;
 //    }
 
-
-    public CountryCode getHomeCountry() {
-        return homeCountry;
-    }
-
-    public void setHomeCountry(CountryCode homeCountry) {
-        this.homeCountry = homeCountry;
-    }
-
     public int getAge() {
         return Years.yearsBetween(getDateOfBirth(), new DateTime()).getYears();
     }
@@ -116,43 +85,30 @@ public class Player {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Player player = (Player) o;
         return strength == player.strength &&
-                Objects.equals(lastname, player.lastname) &&
-                Objects.equals(firstname, player.firstname) &&
                 position == player.position &&
-                Objects.equals(dateOfBirth, player.dateOfBirth) &&
-                homeCountry == player.homeCountry &&
                 Objects.equals(playerStatistics, player.playerStatistics);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lastname, firstname, position, dateOfBirth, homeCountry, strength, playerStatistics);
+        return Objects.hash(super.hashCode(), position, strength, playerStatistics);
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Player [lastname=");
-        builder.append(lastname);
-        builder.append(", firstname=");
-        builder.append(firstname);
-        builder.append(", position=");
-        builder.append(position);
-        builder.append(", dateOfBirth=");
-        builder.append(dateOfBirth);
-        builder.append(", strength=");
-        builder.append(strength);
-//        builder.append(", team=");
-//        builder.append(team);
-        builder.append("]");
-        return builder.toString();
+        return "Player{" +
+                "position=" + position +
+                ", strength=" + strength +
+                ", playerStatistics=" + playerStatistics +
+                '}';
     }
 
     public String print() {
         StringBuilder builder = new StringBuilder();
-        builder.append(firstname).append(" ").append(lastname);
+        builder.append(super.getFirstName()).append(" ").append(super.getLastName());
         builder.append(", ");
         builder.append(getAge());
         builder.append(", ");

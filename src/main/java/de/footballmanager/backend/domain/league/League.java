@@ -1,8 +1,9 @@
-package de.footballmanager.backend.domain;
+package de.footballmanager.backend.domain.league;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import de.footballmanager.backend.domain.club.Team;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;

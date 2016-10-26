@@ -1,5 +1,7 @@
-package de.footballmanager.backend.domain;
+package de.footballmanager.backend.domain.league;
 
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.KindOfGoal;
 
 public class Goal {

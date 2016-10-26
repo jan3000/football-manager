@@ -1,7 +1,12 @@
 package de.footballmanager.backend.service;
 
 import com.google.common.collect.*;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.Match;
+import de.footballmanager.backend.domain.league.MatchDay;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.domain.util.Pair;
+import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.TestUtil;
 import junitparams.JUnitParamsRunner;
@@ -13,7 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
-import static de.footballmanager.backend.domain.PlayingSystem.*;
+import static de.footballmanager.backend.enumeration.PlayingSystem.*;
 import static de.footballmanager.backend.enumeration.Position.*;
 import static de.footballmanager.backend.util.TestUtil.*;
 import static java.util.stream.Collectors.toList;
@@ -205,6 +210,8 @@ public class TeamManagerServiceTest {
         // given
         Team team = createTeamForFourSystems();
         List<Player> players = team.getPlayers();
+        Player leftMidfielder = teamManagerService.getPlayerByPosition(players, LEFT_MIDFIELDER).get(0);
+        leftMidfielder.setStrength(99);
         setPositionAndStrength(players.get(15), LEFT_WINGER, 99);
         setPositionAndStrength(players.get(0), GOALY, 29);
 
@@ -403,8 +410,8 @@ public class TeamManagerServiceTest {
         Team team = createTeam("Team1", SYSTEM_4_4_2_DIAMOND);
         Optional<Player> maybePlayer = teamManagerService.getPlayerByName(team, "Mr.", "5");
         assertTrue(maybePlayer.isPresent());
-        assertEquals(maybePlayer.get().getFirstname(), "Mr.");
-        assertEquals(maybePlayer.get().getLastname(), "5");
+        assertEquals(maybePlayer.get().getFirstName(), "Mr.");
+        assertEquals(maybePlayer.get().getLastName(), "5");
     }
 
     private void shufflePlayers(Team team) {
@@ -446,10 +453,11 @@ public class TeamManagerServiceTest {
         Team team = createTeamForFourSystems();
         List<PlayingSystem> possibleSystems = teamManagerService.getPossibleSystems(team);
         assertNotNull(possibleSystems);
-        assertEquals(4, possibleSystems.size());
+        assertEquals(5, possibleSystems.size());
         assertTrue(possibleSystems.contains(PlayingSystem.SYSTEM_4_4_2));
         assertTrue(possibleSystems.contains(SYSTEM_4_2_3_1));
         assertTrue(possibleSystems.contains(SYSTEM_4_3_3));
+        assertTrue(possibleSystems.contains(SYSTEM_4_2_4));
         assertTrue(possibleSystems.contains(SYSTEM_4_4_2_DIAMOND));
     }
 

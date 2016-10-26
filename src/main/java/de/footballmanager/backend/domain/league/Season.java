@@ -1,5 +1,6 @@
-package de.footballmanager.backend.domain;
+package de.footballmanager.backend.domain.league;
 
+import de.footballmanager.backend.domain.club.Team;
 import org.joda.time.DateTime;
 
 import javax.xml.bind.annotation.XmlElement;

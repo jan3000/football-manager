@@ -3,7 +3,9 @@ package de.footballmanager.backend.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.*;
+import de.footballmanager.backend.enumeration.PlayingSystem;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;

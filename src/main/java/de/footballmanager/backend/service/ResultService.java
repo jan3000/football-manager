@@ -2,7 +2,11 @@ package de.footballmanager.backend.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.Goal;
+import de.footballmanager.backend.domain.league.Match;
+import de.footballmanager.backend.domain.league.Result;
+import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.Position;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;

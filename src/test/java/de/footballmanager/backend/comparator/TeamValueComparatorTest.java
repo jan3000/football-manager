@@ -1,8 +1,8 @@
 package de.footballmanager.backend.comparator;
 
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.TableEntry;
-import de.footballmanager.backend.domain.Team;
+import de.footballmanager.backend.domain.league.TableEntry;
+import de.footballmanager.backend.domain.club.Team;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;

@@ -2,11 +2,13 @@ package de.footballmanager.backend.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.Match;
+import de.footballmanager.backend.domain.league.MatchDay;
+import de.footballmanager.backend.domain.league.TimeTable;
 import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.TestUtil;
 import org.apache.commons.collections4.CollectionUtils;
-import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
-import static de.footballmanager.backend.domain.PlayingSystem.SYSTEM_4_3_3;
+import static de.footballmanager.backend.enumeration.PlayingSystem.SYSTEM_4_3_3;
 import static de.footballmanager.backend.util.TestUtil.*;
 import static java.util.stream.Collectors.toList;
 import static org.easymock.EasyMock.*;

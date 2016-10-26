@@ -1,6 +1,8 @@
-package de.footballmanager.backend.domain;
+package de.footballmanager.backend.domain.club;
 
 import com.google.common.collect.Lists;
+import de.footballmanager.backend.domain.persons.Manager;
+import de.footballmanager.backend.domain.persons.Player;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -81,7 +83,7 @@ public class Team {
     @Override
     public String toString() {
         return "Team{" +
-                "manager=" + manager +
+//                "manager=" + manager +
                 ", name='" + name + '\'' +
                 ", strength=" + strength +
                 ", players=" + players +

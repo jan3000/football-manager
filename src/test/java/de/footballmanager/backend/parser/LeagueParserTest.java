@@ -1,6 +1,6 @@
 package de.footballmanager.backend.parser;
 
-import de.footballmanager.backend.domain.LeaguesWrapper;
+import de.footballmanager.backend.domain.league.LeaguesWrapper;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBException;
