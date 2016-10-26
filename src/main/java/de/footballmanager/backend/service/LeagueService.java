@@ -7,14 +7,11 @@ import de.footballmanager.backend.comparator.TeamValueComparator;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.*;
 import de.footballmanager.backend.parser.LeagueParser;
-import de.footballmanager.backend.parser.PlayerParserService;
+import de.footballmanager.backend.parser.PersonParserService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,7 +22,7 @@ public class LeagueService {
     @Autowired
     private TrialAndErrorTimeTableService timeTableService;
     @Autowired
-    private PlayerParserService playerParserService;
+    private PersonParserService personParserService;
     @Autowired
     private ResultService resultService;
     @Autowired
@@ -36,29 +33,8 @@ public class LeagueService {
     private Map<String, League> nameToLeague = Maps.newHashMap();
     private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
 
-    @PostConstruct
-    public void initLeagues() {
-        try {
-            if (nameToLeague == null) {
-                createLeagues("team.xml", "names.txt", "surnames.txt");
-            }
-        } catch (JAXBException | FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void createLeagues(String teamsFile, String firstNameFile, String lastNameFile)
-            throws JAXBException, FileNotFoundException {
-        System.out.println("INIT STARTED");
-        LeaguesWrapper leaguesWrapper = leagueParser.parse(teamsFile);
-        leaguesWrapper.getLeagues().forEach(league -> {
-            List<Team> teams = league.getTeams();
-            TimeTable timeTable = timeTableService.createTimeTable(teams, dateService.getToday());
-            league.addSeason(new Season(dateService.getToday(), timeTable, teams));
-            nameToLeague.put(league.getName(), league);
-            playerParserService.parsePlayerForLeague(league, firstNameFile, lastNameFile);
-        });
-        System.out.println("INIT FINISHED");
+    public void setNameToLeague(Map<String, League> nameToLeague) {
+        this.nameToLeague = nameToLeague;
     }
 
     public League getLeague(String leagueName) {

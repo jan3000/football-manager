@@ -226,7 +226,7 @@ public class LeagueServiceTest {
 
     private Map<String, League> createLeagueMap(Season season) {
         Map<String, League> nameToLeague = Maps.newHashMap();
-        League league = new League();
+        League league = new League("Bundesliga", Lists.newArrayList());
         league.addSeason(season);
         nameToLeague.put(BUNDESLIGA, league);
         return nameToLeague;

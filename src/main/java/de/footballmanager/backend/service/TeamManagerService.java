@@ -24,6 +24,8 @@ public class TeamManagerService {
 
     @Autowired
     private StrengthService strengthService;
+    @Autowired
+    private ClubService clubService;
 
     private static final Comparator<Player> MAX_STRENGTH_COMPARATOR = new Comparator<Player>() {
         @Override
@@ -35,7 +37,7 @@ public class TeamManagerService {
     public void setTeamManager(Manager manager, Team team) {
         Preconditions.checkNotNull(manager, "manager must be set");
         Preconditions.checkNotNull(team, "team must be set");
-        team.setManager(manager);
+        clubService.setManager(team.getName(), manager);
     }
 
     public void setStartElevenIfComputerManaged(MatchDay matchDay) {
@@ -74,7 +76,7 @@ public class TeamManagerService {
     }
 
     private void setPositionPlayerMapForKITeams(Match match, Team team, boolean homeTeam) {
-        if (isKITeam(team)) {
+        if (clubService.isKIManged(team.getName())) {
             Pair<PlayingSystem, Map<Position, Player>> pair = getBestPlayersForBestSystem(team);
             if(homeTeam) {
                 match.setPositionPlayerMapHomeTeam(pair.getSecond());
@@ -273,11 +275,6 @@ public class TeamManagerService {
     public int getTeamStrength(Collection<Player> players) {
         Preconditions.checkArgument(players.size() < 12, "number of players must be not more than 11");
         return new Double(Math.floor(players.stream().mapToInt(Player::getStrength).sum() / players.size())).intValue();
-    }
-
-    private boolean isKITeam(Team team) {
-        Preconditions.checkNotNull(team.getManager(), "no manager set for team {}", team.getName());
-        return team.getManager().isComputerManaged();
     }
 
 }

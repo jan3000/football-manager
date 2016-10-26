@@ -24,6 +24,7 @@ import static de.footballmanager.backend.util.TestUtil.*;
 import static java.util.stream.Collectors.toList;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @RunWith(JUnitParamsRunner.class)
 public class TeamManagerServiceTest {
@@ -64,7 +65,7 @@ public class TeamManagerServiceTest {
         List<Player> players = team.getPlayers();
 
         StrengthService strengthService = createMock(StrengthService.class);
-        ReflectionTestUtils.setField(teamManagerService, "strengthService", strengthService);
+        setField(teamManagerService, "strengthService", strengthService);
         replay(strengthService);
 
         // when
@@ -105,7 +106,7 @@ public class TeamManagerServiceTest {
         expect(strengthService.getPlayerStrengthOnPosition(RIGHT_MIDFIELDER, alternativePlayer1)).andReturn(80).times(1);
         expect(strengthService.getPlayerStrengthOnPosition(RIGHT_MIDFIELDER, alternativePlayer2)).andReturn(50).times(1);
 
-        ReflectionTestUtils.setField(teamManagerService, "strengthService", strengthService);
+        setField(teamManagerService, "strengthService", strengthService);
         replay(strengthService);
 
         // when
@@ -148,7 +149,7 @@ public class TeamManagerServiceTest {
         expect(strengthService.getPlayerStrengthOnPosition(LEFT_MIDFIELDER, alternativePlayer3)).andReturn(60).times(1);
         expect(strengthService.getPlayerStrengthOnPosition(LEFT_MIDFIELDER, alternativePlayer4)).andReturn(60).times(1);
 
-        ReflectionTestUtils.setField(teamManagerService, "strengthService", strengthService);
+        setField(teamManagerService, "strengthService", strengthService);
         replay(strengthService);
 
         // when
@@ -286,7 +287,7 @@ public class TeamManagerServiceTest {
         StrengthService strengthService = createMock(StrengthService.class);
         expect(strengthService.getPlayerStrengthOnPosition(anyObject(), anyObject())).andReturn(80).anyTimes();
         replay(strengthService);
-        ReflectionTestUtils.setField(teamManagerService, "strengthService", strengthService);
+        setField(teamManagerService, "strengthService", strengthService);
 
         PlayingSystem startSystem = teamManagerService.getPlayingSystem(match, homeTeam);
 
@@ -303,10 +304,21 @@ public class TeamManagerServiceTest {
     @Test
     public void setStartEleven() {
         MatchDay matchDay = createMatchDay();
-        teamManagerService.setStartElevenIfComputerManaged(matchDay);
-        assertNotNull(matchDay);
+
         Match match1 = matchDay.getMatches().get(0);
         Match match2 = matchDay.getMatches().get(1);
+
+        ClubService clubService = createMock(ClubService.class);
+        expect(clubService.isKIManged(match1.getHomeTeam().getName())).andReturn(true).once();
+        expect(clubService.isKIManged(match1.getGuestTeam().getName())).andReturn(true).once();
+        expect(clubService.isKIManged(match2.getHomeTeam().getName())).andReturn(true).once();
+        expect(clubService.isKIManged(match2.getGuestTeam().getName())).andReturn(true).once();
+        setField(teamManagerService, "clubService", clubService);
+        replay(clubService);
+
+
+        teamManagerService.setStartElevenIfComputerManaged(matchDay);
+        assertNotNull(matchDay);
         assertNotNull(match1.getPositionPlayerMapHomeTeam());
         assertEquals(11, match1.getPositionPlayerMapHomeTeam().size());
         assertNotNull(match1.getPositionPlayerMapGuestTeam());
@@ -315,6 +327,8 @@ public class TeamManagerServiceTest {
         assertEquals(11, match1.getPositionPlayerMapHomeTeam().size());
         assertNotNull(match2.getPositionPlayerMapGuestTeam());
         assertEquals(11, match1.getPositionPlayerMapGuestTeam().size());
+
+        verify(clubService);
     }
 
 
@@ -496,7 +510,7 @@ public class TeamManagerServiceTest {
     @Test
     public void setBestPlayersForSystems() {
         StrengthService strengthService = new StrengthService();
-        ReflectionTestUtils.setField(teamManagerService, "strengthService", strengthService);
+        setField(teamManagerService, "strengthService", strengthService);
 
         PlayingSystem expectedSystem = SYSTEM_3_4_3;
         List<PlayingSystem> playingSystems = Lists.newArrayList(PlayingSystem.SYSTEM_4_4_2,
@@ -514,7 +528,7 @@ public class TeamManagerServiceTest {
     @Test
     public void setBestPlayersForSystemsTheMoreTheBetter() {
         StrengthService strengthService = new StrengthService();
-        ReflectionTestUtils.setField(teamManagerService, "strengthService", strengthService);
+        setField(teamManagerService, "strengthService", strengthService);
 
         List<PlayingSystem> playingSystemsTrainer1 = Lists.newArrayList(SYSTEM_4_2_3_1);
         List<PlayingSystem> playingSystemsTrainer2 = Lists.newArrayList(SYSTEM_4_2_3_1, SYSTEM_3_4_3, SYSTEM_4_3_3,

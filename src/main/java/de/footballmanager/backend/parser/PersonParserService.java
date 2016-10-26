@@ -8,7 +8,10 @@ import de.footballmanager.backend.domain.persons.Manager;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.enumeration.Position;
+import de.footballmanager.backend.service.ClubService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,7 +24,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class PlayerParserService {
+public class PersonParserService {
+
 
     private static final Position[] ALL_POSITIONS =Position.values();
     static final int MINIMAL_NUMBER_OF_PLAYERS = 20;
@@ -34,17 +38,13 @@ public class PlayerParserService {
 
     public void parsePlayerForLeague(League league, String firstNameFilePath, String lastNameFilePath) {
         Preconditions.checkArgument(league != null);
-        Preconditions.checkArgument(!league.getTeams().isEmpty());
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(league.getTeams()), "teams must be set in league");
         List<String> names = normalizeNames(readInNames(firstNameFilePath));
         List<String> surnames = normalizeNames(readInNames(lastNameFilePath));
 
         for (Team team : league.getTeams()) {
             int numberOfPlayers = getNumberOfPlayers();
             setPositionsOfPlayers(numberOfPlayers);
-            Manager manager = new Manager();
-            manager.setFirstName(getRandomName(names));
-            manager.setFirstName(getRandomName(surnames));
-            team.setManager(manager);
 
             for (int i = 0; i < numberOfPlayers; i++) {
                 String firstName = getRandomName(names);
@@ -58,6 +58,11 @@ public class PlayerParserService {
                 team.getPlayers().add(player);
             }
         }
+    }
+
+    public String getName(String nameFilePath) {
+        List<String> names = normalizeNames(readInNames(nameFilePath));
+        return getRandomName(names);
     }
 
     private String getRandomName(List<String> names) {

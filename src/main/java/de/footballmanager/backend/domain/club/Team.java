@@ -14,7 +14,7 @@ import java.util.Objects;
 @XmlType(propOrder = {"name", "strength", "players", "manager"})
 public class Team {
 
-    private Manager manager;
+//    private Manager manager;
     private String name;
     private int strength;
     private List<Player> players = Lists.newArrayList();
@@ -59,13 +59,13 @@ public class Team {
         this.strength = strength;
     }
 
-    public Manager getManager() {
-        return manager;
-    }
-
-    public void setManager(Manager manager) {
-        this.manager = manager;
-    }
+//    public Manager getManager() {
+//        return manager;
+//    }
+//
+//    public void setManager(Manager manager) {
+//        this.manager = manager;
+//    }
 
     @Override
     public boolean equals(Object o) {

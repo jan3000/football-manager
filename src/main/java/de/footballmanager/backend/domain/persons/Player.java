@@ -18,8 +18,7 @@ public class Player extends Person {
 
 
     private Player(Builder builder) {
-        super.setFirstName(builder.firstName);
-        super.setLastName(builder.lastName);
+        super(builder.firstName, builder.lastName);
         this.position = builder.position;
         this.strength = builder.strength;
 

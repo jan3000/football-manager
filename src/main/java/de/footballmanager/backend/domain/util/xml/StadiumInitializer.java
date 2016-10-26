@@ -1,16 +1,26 @@
-package de.footballmanager.backend.domain.infrastructure;
+package de.footballmanager.backend.domain.util.xml;
 
-public class Stadium {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name = "stadium")
+public class StadiumInitializer {
+
+    private String stadiumName;
     private int stance;
     private int roofedStance;
     private int seats;
     private int roofedSeats;
 
-    public int getCapacity() {
-        return stance + seats;
+    @XmlElement(name = "name")
+    public String getStadiumName() {
+        return stadiumName;
     }
 
+    public void setStadiumName(String stadiumName) {
+        this.stadiumName = stadiumName;
+    }
+    @XmlElement(name = "stance")
     public int getStance() {
         return stance;
     }
@@ -18,7 +28,7 @@ public class Stadium {
     public void setStance(int stance) {
         this.stance = stance;
     }
-
+    @XmlElement(name = "roofedStance")
     public int getRoofedStance() {
         return roofedStance;
     }
@@ -26,7 +36,7 @@ public class Stadium {
     public void setRoofedStance(int roofedStance) {
         this.roofedStance = roofedStance;
     }
-
+    @XmlElement(name = "seats")
     public int getSeats() {
         return seats;
     }
@@ -34,7 +44,7 @@ public class Stadium {
     public void setSeats(int seats) {
         this.seats = seats;
     }
-
+    @XmlElement(name = "roofedSeats")
     public int getRoofedSeats() {
         return roofedSeats;
     }

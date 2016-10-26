@@ -37,6 +37,8 @@ public class OneSeasonIT {
     private LeagueService leagueService;
     @Autowired
     private StatisticService statisticService;
+    @Autowired
+    private InitializationService initializationService;
 
     @Test
     public void runSeasonWithKiAndManagedTeam() throws Exception {
@@ -44,9 +46,7 @@ public class OneSeasonIT {
         // given: 1 KI team, 1 self managed team
         League league = createLeague();
         List<Team> teams = league.getTeams();
-        Manager manager = new Manager();
-        manager.setFirstName("Jan");
-        manager.setLastName("Buck");
+        Manager manager = new Manager("Jan", "Buck");
         manager.setComputerManaged(false);
         Team managedTeam = teams.get(0);
         teamManagerService.setTeamManager(manager, managedTeam);
@@ -223,9 +223,10 @@ public class OneSeasonIT {
     }
 
     private League createLeague() throws JAXBException, FileNotFoundException {
-        leagueService.createLeagues("teams.xml", "names.txt", "surnames.txt");
+        initializationService.createLeagues("club.xml", "names.txt", "surnames.txt");
         League league = leagueService.getLeague("Bundesliga");
         assertNotNull(league);
+
         return league;
     }
 

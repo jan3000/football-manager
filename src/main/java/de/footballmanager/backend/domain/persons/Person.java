@@ -1,6 +1,7 @@
 package de.footballmanager.backend.domain.persons;
 
 import com.neovisionaries.i18n.CountryCode;
+import de.footballmanager.backend.domain.statistics.Career;
 import org.joda.time.DateTime;
 
 import java.util.Objects;
@@ -11,6 +12,12 @@ public abstract class Person {
     private String lastName;
     private DateTime dateOfBirth;
     private CountryCode homeCountry;
+    private Career career;
+
+    public Person(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
     public String getFullname() {
         return firstName + ' ' + lastName;

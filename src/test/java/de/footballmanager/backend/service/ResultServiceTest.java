@@ -181,7 +181,7 @@ public class ResultServiceTest {
         Map<Result, Integer> resultToCountMap = Maps.newHashMap();
         for (int i = 0; i < 10; i++) {
             TimeTable timeTable = timeTableService.createTimeTable(teams, new DateTime());
-            League league = new League(teams);
+            League league = new League("Bundesliga", teams);
             for (MatchDay matchDay : timeTable.getAllMatchDays()) {
                 for (Match match : matchDay.getMatches()) {
                     resultService.calculateResult(match);

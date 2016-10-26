@@ -33,11 +33,9 @@ public class TestUtil {
     public static final int DEFAULT_STRENGTH = 88;
 
     public static League createLeague() {
-        League league = new League();
         List<Team> teams = Lists.newArrayList();
         IntStream.range(1, 10).forEach(i -> teams.add(createTeam("Team" + i, PlayingSystem.SYSTEM_4_4_2)));
-        league.setTeams(teams);
-        return league;
+        return new League("league", teams);
     }
 
     public static TimeTable createTimeTable(List<Team> teams) {
@@ -169,7 +167,7 @@ public class TestUtil {
 
     public static Team createTeam(String name, PlayingSystem playingSystem, int numberOfPlayers) {
         Team team = new Team(name);
-        team.setManager(new Manager());
+//        team.setManager(new Manager());
         team.setStrength(DEFAULT_STRENGTH);
         List<Player> players = Lists.newArrayList();
         IntStream.range(0, numberOfPlayers).forEach(i -> {
