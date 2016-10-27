@@ -139,7 +139,7 @@ public class TimeTableServiceTest {
     @Test
     public void addMatchIfNotContainedAlreadyNotEmptyMatchDay() throws Exception {
         MatchDay matchDay = new MatchDay();
-        matchDay.addMatch(new Match(new Team(TEAM_NAME_3), new Team(TEAM_4)));
+        matchDay.addMatch(new Match(new Team(TEAM_NAME_3), new Team(TEAM_NAME_4)));
         List<Match> matchesWithMinimalScore = Lists.newArrayList();
         matchesWithMinimalScore.add(new Match(new Team(TEAM_NAME_1), new Team(TEAM_NAME_2)));
         timeTableService.addMatchesToMatchDayIfNotContainedAlready(matchDay, matchesWithMinimalScore);
@@ -182,9 +182,9 @@ public class TimeTableServiceTest {
         matchToScore.put(match1Against3, 1);
         Match match2Against3 = new Match(new Team(TEAM_NAME_2), new Team(TEAM_NAME_3));
         matchToScore.put(match2Against3, 1);
-        Match match2Against4 = new Match(new Team(TEAM_NAME_2), new Team(TEAM_4));
+        Match match2Against4 = new Match(new Team(TEAM_NAME_2), new Team(TEAM_NAME_4));
         matchToScore.put(match2Against4, 2);
-        Match match3Against4 = new Match(new Team(TEAM_NAME_3), new Team(TEAM_4));
+        Match match3Against4 = new Match(new Team(TEAM_NAME_3), new Team(TEAM_NAME_4));
         matchToScore.put(match3Against4, 3);
         List<Match> matchesWithScore0 = timeTableService.getMatchesWithSameScore(matchToScore, 0);
         assertEquals(2, matchesWithScore0.size());

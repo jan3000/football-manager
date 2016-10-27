@@ -3,6 +3,7 @@ package de.footballmanager.backend.util;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import de.footballmanager.backend.domain.club.Club;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.*;
 import de.footballmanager.backend.domain.persons.Manager;
@@ -29,7 +30,7 @@ public class TestUtil {
     public static final String TEAM_NAME_1 = "team1";
     public static final String TEAM_NAME_2 = "team2";
     public static final String TEAM_NAME_3 = "team3";
-    public static final String TEAM_4 = "team4";
+    public static final String TEAM_NAME_4 = "team4";
     public static final int DEFAULT_STRENGTH = 88;
 
     public static League createLeague() {
@@ -49,11 +50,28 @@ public class TestUtil {
     }
 
     public static MatchDay createMatchDay() {
+        return createMatchDay(true);
+    }
+
+    public static Club createClub(String name, boolean computerManaged) {
+        Club club = new Club("name");
+        Manager manager = createManager(computerManaged);
+        club.setManager(manager);
+        return club;
+    }
+
+    public static Manager createManager(boolean computerManaged) {
+        Manager manager = new Manager("Joe", "McGeiz");
+        manager.setComputerManaged(computerManaged);
+        return manager;
+    }
+
+    public static MatchDay createMatchDay(boolean setStartEleven) {
         MatchDay matchDay = new MatchDay();
-        Team team1 = createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2);
-        Team team2 = createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2);
-        Team team3 = createTeam(TEAM_NAME_3, PlayingSystem.SYSTEM_4_4_2);
-        Team team4 = createTeam(TEAM_4, PlayingSystem.SYSTEM_4_4_2);
+        Team team1 = createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2, setStartEleven);
+        Team team2 = createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2, setStartEleven);
+        Team team3 = createTeam(TEAM_NAME_3, PlayingSystem.SYSTEM_4_4_2, setStartEleven);
+        Team team4 = createTeam(TEAM_NAME_4, PlayingSystem.SYSTEM_4_4_2, setStartEleven);
         Match match1 = createMatch(team1, team2, false, false);
         matchDay.addMatch(match1);
         Match match2 = createMatch(team3, team4, false, false);
@@ -166,8 +184,12 @@ public class TestUtil {
     }
 
     public static Team createTeam(String name, PlayingSystem playingSystem, int numberOfPlayers) {
+        return createTeam(name, playingSystem, numberOfPlayers, true);
+    }
+
+
+    public static Team createTeam(String name, PlayingSystem playingSystem, int numberOfPlayers, boolean setStartEleven) {
         Team team = new Team(name);
-//        team.setManager(new Manager());
         team.setStrength(DEFAULT_STRENGTH);
         List<Player> players = Lists.newArrayList();
         IntStream.range(0, numberOfPlayers).forEach(i -> {
@@ -177,12 +199,18 @@ public class TestUtil {
         });
         team.setPlayers(players);
         team.setName(name);
-        createStartElevenMatchingGivenSystem(team, playingSystem);
+        if (setStartEleven) {
+            createStartElevenMatchingGivenSystem(team, playingSystem);
+        }
         return team;
     }
 
     public static Team createTeam(String name, PlayingSystem playingSystem) {
-        return createTeam(name, playingSystem, 22);
+        return createTeam(name, playingSystem, 22, true);
+    }
+
+    public static Team createTeam(String name, PlayingSystem playingSystem, boolean setStartEleven) {
+        return createTeam(name, playingSystem, 22, setStartEleven);
     }
 
     public static Player createPlayer(String firstName, String lastName) {

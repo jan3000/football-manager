@@ -59,8 +59,8 @@ public class InitializationService {
         System.out.println("INIT STARTED");
         LeaguesWrapper leaguesWrapper = leagueParser.parse(teamsFile);
         List<LeagueInitializer> leagueInitializers = leaguesWrapper.getLeagues();
-        List<Team> teams = Lists.newArrayList();
         leagueInitializers.forEach(leagueInitializer -> {
+            List<Team> teams = Lists.newArrayList();
             leagueInitializer.getClubInitializerList().forEach(data -> {
                 String clubName = data.getName();
                 Club club = new Club(clubName);

@@ -40,12 +40,6 @@ public class ClubService {
         return getClub(clubName).getTrainer();
     }
 
-    public boolean isKIManged(String clubName) {
-        Manager manager = getClub(clubName).getManager();
-        Preconditions.checkNotNull(manager, "no manager set for team {}", clubName);
-        return manager.isComputerManaged();
-    }
-
     public void setTrainer(String clubName, Trainer trainer) {
         Trainer currentTrainer = getTrainer(clubName);
         Club club = getClub(clubName);

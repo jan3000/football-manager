@@ -155,8 +155,8 @@ public class Match {
     }
 
     public void setPositionPlayerMapHomeTeam(Map<Position, Player> positionPlayerMapHomeTeam) {
-//        Preconditions.checkState(!isStarted, "startEleven cannot be set if match already started");
         Preconditions.checkState(!isFinished, "startEleven cannot be set if match already finished");
+        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 11, "11 players must be set");
         List<Player> playersNotPartOfTeam = positionPlayerMapHomeTeam.values().stream()
                 .filter(player -> !homeTeam.getPlayers().contains(player))
                 .collect(Collectors.toList());

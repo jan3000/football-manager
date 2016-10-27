@@ -40,12 +40,6 @@ public class TeamManagerService {
         clubService.setManager(team.getName(), manager);
     }
 
-    public void setStartElevenIfComputerManaged(MatchDay matchDay) {
-        matchDay.getMatches().forEach(match -> {
-            setPositionPlayerMapForKITeams(match, match.getHomeTeam(), true);
-            setPositionPlayerMapForKITeams(match, match.getGuestTeam(), false);
-        });
-    }
 
     public Map<Position, Player> getCurrentlyPlayingPlayers(Match match, Team team) {
         Preconditions.checkArgument(match.containsTeam(team), "team not contained in match: ", team);
@@ -75,16 +69,6 @@ public class TeamManagerService {
         }
     }
 
-    private void setPositionPlayerMapForKITeams(Match match, Team team, boolean homeTeam) {
-        if (clubService.isKIManged(team.getName())) {
-            Pair<PlayingSystem, Map<Position, Player>> pair = getBestPlayersForBestSystem(team);
-            if(homeTeam) {
-                match.setPositionPlayerMapHomeTeam(pair.getSecond());
-            } else {
-                match.setPositionPlayerMapGuestTeam(pair.getSecond());
-            }
-        }
-    }
 
 
     public boolean hasPlayerForSystem(Team team, PlayingSystem system) {

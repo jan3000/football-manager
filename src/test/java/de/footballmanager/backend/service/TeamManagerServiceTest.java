@@ -12,6 +12,7 @@ import de.footballmanager.backend.util.TestUtil;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -301,35 +302,6 @@ public class TeamManagerServiceTest {
         assertEquals(expectedSystem, teamManagerService.getPlayingSystem(match, homeTeam));
     }
 
-    @Test
-    public void setStartEleven() {
-        MatchDay matchDay = createMatchDay();
-
-        Match match1 = matchDay.getMatches().get(0);
-        Match match2 = matchDay.getMatches().get(1);
-
-        ClubService clubService = createMock(ClubService.class);
-        expect(clubService.isKIManged(match1.getHomeTeam().getName())).andReturn(true).once();
-        expect(clubService.isKIManged(match1.getGuestTeam().getName())).andReturn(true).once();
-        expect(clubService.isKIManged(match2.getHomeTeam().getName())).andReturn(true).once();
-        expect(clubService.isKIManged(match2.getGuestTeam().getName())).andReturn(true).once();
-        setField(teamManagerService, "clubService", clubService);
-        replay(clubService);
-
-
-        teamManagerService.setStartElevenIfComputerManaged(matchDay);
-        assertNotNull(matchDay);
-        assertNotNull(match1.getPositionPlayerMapHomeTeam());
-        assertEquals(11, match1.getPositionPlayerMapHomeTeam().size());
-        assertNotNull(match1.getPositionPlayerMapGuestTeam());
-        assertEquals(11, match1.getPositionPlayerMapGuestTeam().size());
-        assertNotNull(match2.getPositionPlayerMapHomeTeam());
-        assertEquals(11, match1.getPositionPlayerMapHomeTeam().size());
-        assertNotNull(match2.getPositionPlayerMapGuestTeam());
-        assertEquals(11, match1.getPositionPlayerMapGuestTeam().size());
-
-        verify(clubService);
-    }
 
 
     @Test

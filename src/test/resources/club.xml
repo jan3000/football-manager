@@ -29,5 +29,34 @@
                 </club>
             </clubs>
         </league>
+        <league>
+            <name>2. Bundesliga</name>
+            <clubs>
+                <club>
+                    <name>Fc St.Pauli</name>
+                    <strength>48</strength>
+                    <capital>300000</capital>
+                    <stadium>
+                        <name>Millerntorstadion</name>
+                        <stance>11953</stance>
+                        <roofedStance>11953</roofedStance>
+                        <seats>20000</seats>
+                        <roofedSeats>20000</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Hannover 96</name>
+                    <strength>49</strength>
+                    <capital>300000</capital>
+                    <stadium>
+                        <name>HDI-Arena</name>
+                        <stance>28000</stance>
+                        <roofedStance>28000</roofedStance>
+                        <seats>25000</seats>
+                        <roofedSeats>25000</roofedSeats>
+                    </stadium>
+                </club>
+            </clubs>
+        </league>
     </leagues>
 </leaguesWrapper>
