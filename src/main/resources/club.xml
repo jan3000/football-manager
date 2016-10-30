@@ -2,6 +2,8 @@
     <leagues>
         <league>
             <name>Bundesliga</name>
+            <promotions>0</promotions>
+            <relegations>3</relegations>
             <clubs>
                 <club>
                     <name>Hamburger SV</name>

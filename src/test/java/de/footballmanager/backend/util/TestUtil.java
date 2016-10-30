@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static de.footballmanager.backend.enumeration.PlayingSystem.SYSTEM_4_4_2;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -33,10 +34,20 @@ public class TestUtil {
     public static final String TEAM_NAME_4 = "team4";
     public static final int DEFAULT_STRENGTH = 88;
 
-    public static League createLeague() {
+    public static League createLeague(String leagueName, int numberOfTeams) {
+        return createLeague(leagueName, numberOfTeams, 0);
+    }
+
+    public static League createLeague(String leagueName, int numberOfTeams, int numberOfPromotions) {
         List<Team> teams = Lists.newArrayList();
-        IntStream.range(1, 10).forEach(i -> teams.add(createTeam("Team" + i, PlayingSystem.SYSTEM_4_4_2)));
-        return new League("league", teams);
+        IntStream.range(1, numberOfTeams).forEach(i -> teams.add(createTeam("Team" + i, SYSTEM_4_4_2)));
+        return new League(leagueName, teams, numberOfPromotions);
+    }
+
+    public static League createLeague(String leagueName, List<String> teamNames, int numberOfPromotions) {
+        List<Team> teams = Lists.newArrayList();
+        teamNames.forEach(teamName -> teams.add(createTeam(teamName, SYSTEM_4_4_2)));
+        return new League(leagueName, teams, numberOfPromotions);
     }
 
     public static TimeTable createTimeTable(List<Team> teams) {
@@ -68,10 +79,10 @@ public class TestUtil {
 
     public static MatchDay createMatchDay(boolean setStartEleven) {
         MatchDay matchDay = new MatchDay();
-        Team team1 = createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2, setStartEleven);
-        Team team2 = createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2, setStartEleven);
-        Team team3 = createTeam(TEAM_NAME_3, PlayingSystem.SYSTEM_4_4_2, setStartEleven);
-        Team team4 = createTeam(TEAM_NAME_4, PlayingSystem.SYSTEM_4_4_2, setStartEleven);
+        Team team1 = createTeam(TEAM_NAME_1, SYSTEM_4_4_2, setStartEleven);
+        Team team2 = createTeam(TEAM_NAME_2, SYSTEM_4_4_2, setStartEleven);
+        Team team3 = createTeam(TEAM_NAME_3, SYSTEM_4_4_2, setStartEleven);
+        Team team4 = createTeam(TEAM_NAME_4, SYSTEM_4_4_2, setStartEleven);
         Match match1 = createMatch(team1, team2, false, false);
         matchDay.addMatch(match1);
         Match match2 = createMatch(team3, team4, false, false);
@@ -89,11 +100,11 @@ public class TestUtil {
     }
 
     public static Match createRunningMatch() {
-        return createMatch(createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2), createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2), false, true);
+        return createMatch(createTeam(TEAM_NAME_1, SYSTEM_4_4_2), createTeam(TEAM_NAME_2, SYSTEM_4_4_2), false, true);
     }
 
     public static Match createMatch() {
-        return createMatch(TEAM_NAME_1, TEAM_NAME_2, 0, 0, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2);
+        return createMatch(TEAM_NAME_1, TEAM_NAME_2, 0, 0, SYSTEM_4_4_2, SYSTEM_4_4_2);
     }
     public static Match createMatch(PlayingSystem homeSystem, PlayingSystem guestSystem) {
         return createMatch(TEAM_NAME_1, TEAM_NAME_2, 0, 0, homeSystem, guestSystem);
@@ -133,8 +144,8 @@ public class TestUtil {
     }
 
     public static Match createMatch(Team homeTeam, Team guestTeam, boolean finished, boolean started) {
-        return createMatch(homeTeam, guestTeam, finished, started, PlayingSystem.SYSTEM_4_4_2,
-                PlayingSystem.SYSTEM_4_4_2);
+        return createMatch(homeTeam, guestTeam, finished, started, SYSTEM_4_4_2,
+                SYSTEM_4_4_2);
     }
 
     public static Match createMatch(Team homeTeam, Team guestTeam, boolean isCreateFinishedMatch,
@@ -203,6 +214,10 @@ public class TestUtil {
             createStartElevenMatchingGivenSystem(team, playingSystem);
         }
         return team;
+    }
+
+    public static Team createTeam(String name) {
+        return createTeam(name, PlayingSystem.SYSTEM_4_4_2, 22, true);
     }
 
     public static Team createTeam(String name, PlayingSystem playingSystem) {

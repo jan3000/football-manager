@@ -1,5 +1,7 @@
 package de.footballmanager.backend.domain.league;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.club.Team;
 import org.joda.time.DateTime;
 
@@ -7,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @XmlType(propOrder = {"startDate", "endDate", "teams", "timeTable"})
@@ -17,6 +20,7 @@ public class Season {
     private DateTime endDate;
     private List<Team> teams;
     private TimeTable timeTable;
+    private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
 
     public Season() {}
 
@@ -49,7 +53,6 @@ public class Season {
     }
 
 
-
     @XmlElementWrapper(name = "teams")
     @XmlElement(name = "team")
     public List<Team> getTeams() {
@@ -58,6 +61,14 @@ public class Season {
 
     public void setTeams(final List<Team> teams) {
         this.teams = teams;
+    }
+
+    public Map<Integer, Table> getMatchDayToTable() {
+        return ImmutableMap.copyOf(matchDayToTable);
+    }
+
+    public void addMatchDayToTable(Integer matchDay, Table matchDayToTable) {
+        this.matchDayToTable.put(matchDay, matchDayToTable);
     }
 
     @Override

@@ -57,9 +57,11 @@ public class InitializationService {
     public void createLeagues(String teamsFile, String firstNameFile, String lastNameFile)
             throws JAXBException, FileNotFoundException {
         System.out.println("INIT STARTED");
+        List<String> leaguePriorityList = Lists.newArrayList();
         LeaguesWrapper leaguesWrapper = leagueParser.parse(teamsFile);
         List<LeagueInitializer> leagueInitializers = leaguesWrapper.getLeagues();
         leagueInitializers.forEach(leagueInitializer -> {
+            leaguePriorityList.add(leagueInitializer.getName());
             List<Team> teams = Lists.newArrayList();
             leagueInitializer.getClubInitializerList().forEach(data -> {
                 String clubName = data.getName();
@@ -81,7 +83,7 @@ public class InitializationService {
                 teams.add(team);
 
             });
-            League league = new League(leagueInitializer.getName(), teams);
+            League league = new League(leagueInitializer.getName(), teams, leagueInitializer.getNumberOfPromotions());
             TimeTable timeTable = timeTableService.createTimeTable(teams, dateService.getToday());
             league.addSeason(new Season(dateService.getToday(), timeTable, teams));
             nameToLeague.put(league.getName(), league);
@@ -89,6 +91,7 @@ public class InitializationService {
 
 
         });
+        leagueService.setLeaguePriorityList(leaguePriorityList);
         leagueService.setNameToLeague(nameToLeague);
         System.out.println("INIT FINISHED");
     }

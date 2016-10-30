@@ -10,6 +10,7 @@ import java.util.List;
 public class LeagueInitializer {
 
     private String name;
+    private int numberOfPromotions;
     private List<ClubInitializer> clubInitializerList;
 
     @XmlElement(name = "name")
@@ -19,6 +20,15 @@ public class LeagueInitializer {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @XmlElement(name = "promotions")
+    public int getNumberOfPromotions() {
+        return numberOfPromotions;
+    }
+
+    public void setNumberOfPromotions(int numberOfPromotions) {
+        this.numberOfPromotions = numberOfPromotions;
     }
 
     @XmlElementWrapper(name = "clubs")

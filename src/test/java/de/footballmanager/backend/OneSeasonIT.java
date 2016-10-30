@@ -15,8 +15,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
@@ -28,6 +30,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class OneSeasonIT {
 
     private static final String BUNDESLIGA = "Bundesliga";
@@ -36,13 +39,13 @@ public class OneSeasonIT {
     @Autowired
     private TeamManagerService teamManagerService;
     @Autowired
-    private LeagueService leagueService;
-    @Autowired
     private StatisticService statisticService;
     @Autowired
     private InitializationService initializationService;
     @Autowired
     private KIService kiService;
+    @Autowired
+    private LeagueService leagueService;
 
     @Before
     public void setUp() throws JAXBException, FileNotFoundException {
@@ -153,9 +156,9 @@ public class OneSeasonIT {
         assertEquals(homeTeam1, guestTeam2);
         assertEquals(homeTeam2, guestTeam1);
         TeamStatistic teamStatisticHomeTeam1 = statisticService.getTeamStatistics(timeTable, homeTeam1.getName(),
-                currentTable2, leagueService.getMatchDayToTable());
+                currentTable2, leagueService.getMatchDayToTable(BUNDESLIGA));
         TeamStatistic teamStatisticHomeTeam2 = statisticService.getTeamStatistics(timeTable, homeTeam2.getName(),
-                currentTable2, leagueService.getMatchDayToTable());
+                currentTable2, leagueService.getMatchDayToTable(BUNDESLIGA));
         assertNotNull(teamStatisticHomeTeam1);
         assertNotNull(teamStatisticHomeTeam1.getPlacementsInSeason()[0]);
         assertNotNull(teamStatisticHomeTeam1.getPlacementsInSeason()[1]);
@@ -182,7 +185,7 @@ public class OneSeasonIT {
         assertTrue(leagueService.getCurrentSeason(BUNDESLIGA).getTimeTable().isClosed());
 
         // season 2
-        leagueService.addNewSeason(BUNDESLIGA, leagueService.getTeams(BUNDESLIGA));
+        leagueService.addNewSeason();
         leagueService.finishDaysUntilNextSeason(BUNDESLIGA);
 
         assertEquals(2, league.getSeasons().size());
@@ -194,7 +197,7 @@ public class OneSeasonIT {
         assertTrue(leagueService.getCurrentSeason(BUNDESLIGA).getTimeTable().isClosed());
 
         // season 3
-        leagueService.addNewSeason(BUNDESLIGA, leagueService.getTeams(BUNDESLIGA));
+        leagueService.addNewSeason();
         leagueService.finishDaysUntilNextSeason(BUNDESLIGA);
 
         assertEquals(3, league.getSeasons().size());
@@ -227,8 +230,8 @@ public class OneSeasonIT {
         runAndAssertLastSeasonDay(ZWEITE_BUNDESLIGA);
         assertTrue(leagueService.getCurrentSeason(ZWEITE_BUNDESLIGA).getTimeTable().isClosed());
 
-        // season 2
-        leagueService.addNewSeason(BUNDESLIGA, leagueService.getTeams(BUNDESLIGA));
+        // season 2 add promoted team
+        leagueService.addNewSeason();
         leagueService.finishDaysUntilNextSeason(BUNDESLIGA);
 
         assertEquals(2, league.getSeasons().size());
@@ -240,7 +243,7 @@ public class OneSeasonIT {
         assertTrue(leagueService.getCurrentSeason(BUNDESLIGA).getTimeTable().isClosed());
 
         // season 3
-        leagueService.addNewSeason(BUNDESLIGA, leagueService.getTeams(BUNDESLIGA));
+        leagueService.addNewSeason();
         leagueService.finishDaysUntilNextSeason(BUNDESLIGA);
 
         assertEquals(3, league.getSeasons().size());
@@ -304,7 +307,7 @@ public class OneSeasonIT {
 
     private void assertTeamStatisticsHomeTeam(TimeTable timeTable, Result resultMatch1, Team homeTeam) {
         TeamStatistic teamStatistic = statisticService.getTeamStatistics(timeTable, homeTeam.getName(),
-                leagueService.getTable(BUNDESLIGA, 1), leagueService.getMatchDayToTable());
+                leagueService.getTable(BUNDESLIGA, 1), leagueService.getMatchDayToTable(BUNDESLIGA));
         assertNotNull(teamStatistic);
         assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistic.getHomeGoals()));
         assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistic.getTotalGoals()));
@@ -321,7 +324,7 @@ public class OneSeasonIT {
 
     private void assertTeamStatisticsGuestTeam(TimeTable timeTable, Result resultMatch1, Team guestTeam) {
         TeamStatistic teamStatistics = statisticService.getTeamStatistics(timeTable, guestTeam.getName(),
-                leagueService.getTable(BUNDESLIGA, 1), leagueService.getMatchDayToTable());
+                leagueService.getTable(BUNDESLIGA, 1), leagueService.getMatchDayToTable(BUNDESLIGA));
         assertNotNull(teamStatistics);
         assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistics.getReceivedAwayGoals()));
         assertEquals(resultMatch1.getHomeGoals(), getSumOfGoals(teamStatistics.getReceivedTotalGoals()));

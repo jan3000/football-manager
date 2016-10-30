@@ -11,15 +11,18 @@ import java.util.List;
 public class League {
 
     private String name;
+    private int numberOfPromotions = 0;
     private List<Team> teams;
     private List<Season> seasons = Lists.newArrayList();
 
-    private League() {}
+    private League() {
+    }
 
-    public League(String name, final List<Team> teams) {
+    public League(String name, List<Team> teams, int numberOfPromotions) {
         Preconditions.checkArgument(StringUtils.isNotBlank(name), "league name must be set");
         Preconditions.checkNotNull(teams, "teams must be set to create a league");
         this.name = name;
+        this.numberOfPromotions = numberOfPromotions;
         this.teams = teams;
     }
 
@@ -45,5 +48,9 @@ public class League {
 
     public void addSeason(Season season) {
         seasons.add(season);
+    }
+
+    public int getNumberOfPromotions() {
+        return numberOfPromotions;
     }
 }

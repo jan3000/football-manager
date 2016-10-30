@@ -72,7 +72,7 @@ public class HomeController implements FootballManagerFacade{
         int currentMatchDay = leagueService.getCurrentMatchDayNumber(BUNDESLIGA);
         TeamStatistic teamStatistics = statisticService.getTeamStatistics(
                 leagueService.getTimeTable(BUNDESLIGA), teamName,
-                leagueService.getTable(BUNDESLIGA, currentMatchDay - 1), leagueService.getMatchDayToTable());
+                leagueService.getTable(BUNDESLIGA, currentMatchDay - 1), leagueService.getMatchDayToTable(BUNDESLIGA));
         return teamStatistics;
     }
 

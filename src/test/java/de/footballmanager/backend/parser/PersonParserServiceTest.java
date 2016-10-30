@@ -22,7 +22,7 @@ public class PersonParserServiceTest {
 
         // given
         PersonParserService personParserService = new PersonParserService();
-        League league = createLeague();
+        League league = createLeague("league", 10);
         removeAllPlayersFromTeams(league);
         List<Team> teams = league.getTeams();
         assertFalse(areTeamsHavingMoreThan20Players(teams));
