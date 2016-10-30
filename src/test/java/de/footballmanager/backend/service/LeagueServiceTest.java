@@ -252,15 +252,18 @@ public class LeagueServiceTest {
         List<String> teamsLeague4Season1 = Lists.newArrayList(TEAM_10, TEAM_11, TEAM_12);
         League league1 = createLeague(LEAGUE_1, teamsLeague1Season1, 1);
 
-        Season season1 = setSeason(league1, teamsLeague1Season1);
+
+        DateTime startDate = new DateTime("2016-08-01");
+        Season season1 = setClosedSeason(league1, teamsLeague1Season1, startDate);
         nameToLeague.put(LEAGUE_1, league1);
         League league2 = createLeague(LEAGUE_2, Lists.newArrayList(TEAM_4, TEAM_5, TEAM_6), 1);
         League league3 = createLeague(LEAGUE_3, Lists.newArrayList(TEAM_7, TEAM_8, TEAM_9), 1);
         League league4 = createLeague(LEAGUE_4, Lists.newArrayList(TEAM_10, TEAM_11, TEAM_12), 1);
 
-        setSeason(league2, teamsLeague2Season1);
-        setSeason(league3, teamsLeague3Season1);
-        setSeason(league4, teamsLeague4Season1);
+
+        setClosedSeason(league2, teamsLeague2Season1, startDate);
+        setClosedSeason(league3, teamsLeague3Season1, startDate);
+        setClosedSeason(league4, teamsLeague4Season1, startDate);
 
         nameToLeague.put(LEAGUE_1, league1);
         nameToLeague.put(LEAGUE_2, league2);
@@ -290,7 +293,14 @@ public class LeagueServiceTest {
                 .andReturn(timeTableLeague4Season2).once();
         setField(leagueService, "timeTableService", timeTableService);
 
-        replay(timeTableService);
+        ClubService clubService = createMock(ClubService.class);
+        List<Team> allTeams = Lists.newArrayList(expectedTeamsLeague1);
+        allTeams.addAll(expectedTeamsLeague2);
+        allTeams.addAll(expectedTeamsLeague3);
+        allTeams.addAll(expectedTeamsLeague4);
+        allTeams.forEach(team -> expect(clubService.getTeam(team.getName())).andReturn(team).anyTimes());
+        setField(leagueService, "clubService", clubService);
+        replay(timeTableService, clubService);
 
         // when
         leagueService.addNewSeason();
@@ -310,22 +320,31 @@ public class LeagueServiceTest {
         assertEquals(3, league1Season1.getTeams().size());
         assertNotNull(league1Season1.getTimeTable());
         assertNotNull(league1Season1.getMatchDayToTable());
-        verify(timeTableService);
+        verify(timeTableService, clubService);
     }
 
     public void assertSeason(League league1, List<Team> expectedTeamsLeague1) {
         Season league1Season2 = league1.getSeasons().get(1);
         assertNotNull(league1Season2);
-        assertEquals("13/14", league1Season2.getName());
+        assertEquals("17/18", league1Season2.getName());
         assertEquals(expectedTeamsLeague1, league1Season2.getTeams());
         assertNotNull(league1Season2.getTimeTable());
         assertNotNull(league1Season2.getMatchDayToTable());
     }
 
-    private Season setSeason(League league1, List<String> teamNames) {
+    private Season setClosedSeason(League league1, List<String> teamNames, DateTime startDate) {
         List<Team> teams = teamNames.stream().map(teamName -> createTeam(teamName, SYSTEM_442)).collect(toList());
-        DateTime startDateSeason1 = new DateTime("2012-08-01");
-        Season season1 = new Season(startDateSeason1, createTimeTable(teams), teams);
+        TimeTable timeTable = createTimeTable(teams);
+        Season season1 = new Season(startDate, timeTable, teams);
+        season1.getTimeTable().setClosed();;
+        Table table = new Table();
+        for (int i = 0; i < teamNames.size(); i++) {
+            TableEntry tableEntry = new TableEntry(teamNames.get(i));
+            tableEntry.setPlace(i + 1);
+            table.addEntry(tableEntry);
+        }
+        int currentMatchDay = 1;
+        season1.addMatchDayToTable(currentMatchDay, table);
         league1.addSeason(season1);
         return season1;
     }

@@ -2,15 +2,14 @@ package de.footballmanager.backend.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.comparator.TeamValueComparator;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.*;
-import de.footballmanager.backend.domain.util.Pair;
 import de.footballmanager.backend.parser.LeagueParser;
 import de.footballmanager.backend.parser.PersonParserService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +33,8 @@ public class LeagueService {
     private LeagueParser leagueParser;
     @Autowired
     private DateService dateService;
+    @Autowired
+    private ClubService clubService;
 
     private List<String> leaguePriorityList;
     private Map<String, League> nameToLeague;
@@ -57,9 +58,17 @@ public class LeagueService {
 
 
     public void addNewSeason() {
+        Preconditions.checkArgument(areLeaguesFinished(leaguePriorityList), "leagues must be finished to create a " +
+                "new season");
         List<League> leagues = leaguePriorityList.stream().map(this::getLeague).collect(toList());
-        Map<String, List<Team>> leagueNameToTeams = Maps.newHashMap();
-        leagues.forEach(tmpLeague -> leagueNameToTeams.put(tmpLeague.getName(), getTeams(tmpLeague.getName())));
+        Map<String, List<String>> leagueNameToTeams = Maps.newHashMap();
+        leagues.forEach(tmpLeague -> {
+            Table currentTable = getCurrentTable(tmpLeague.getName());
+            List<String> sortedTableOfTeams = currentTable.getTableEntriesSorted().stream()
+                    .map(TableEntry::getTeam)
+                    .collect(toList());
+            leagueNameToTeams.put(tmpLeague.getName(), sortedTableOfTeams);
+        });
 
         for (int i = 0; i < leaguePriorityList.size() - 1; i++) {
             String leagueName1 = leaguePriorityList.get(i);
@@ -68,7 +77,8 @@ public class LeagueService {
         }
 
         DateTime startDate = getStartDateOfNextSeason(leagues.get(0).getName());
-        leagueNameToTeams.forEach((leagueName, teams) -> {
+        leagueNameToTeams.forEach((leagueName, teamNames) -> {
+            List<Team> teams = teamNames.stream().map(teamName -> clubService.getTeam(teamName)).collect(toList());
             TimeTable timeTable = timeTableService.createTimeTable(teams, startDate);
             Season nextSeason = new Season(startDate, timeTable, teams);
             getLeague(leagueName).addSeason(nextSeason);
@@ -76,27 +86,32 @@ public class LeagueService {
         });
     }
 
-    private void handlePromotions(String leagueName1, String leagueName2, Map<String, List<Team>> leagueNameToTeams) {
+    private boolean areLeaguesFinished(List<String> leagues) {
+        List<String> notFinishedLeagues = leagues.stream()
+                .filter(leagueName -> !getCurrentSeason(leagueName).getTimeTable().isClosed())
+                .collect(toList());
+        System.out.println(notFinishedLeagues);
+        return CollectionUtils.isEmpty(
+                notFinishedLeagues);
+    }
+
+    private void handlePromotions(String leagueName1, String leagueName2, Map<String, List<String>> leagueNameToTeams) {
         League league2 = getLeague(leagueName2);
 
-        Table table1 = getCurrentTable(leagueName1);
-        Table table2 = getCurrentTable(leagueName2);
-
-        table1.getEntries()
-        List<Team> teams1 = leagueNameToTeams.get(leagueName1);
-        List<Team> teams2 = leagueNameToTeams.get(leagueName2);
+        List<String> teamNames1 = leagueNameToTeams.get(leagueName1);
+        List<String> teamNames2 = leagueNameToTeams.get(leagueName2);
 
         int numberOfPromotions = league2.getNumberOfPromotions();
 
-        List<Team> teams1ForNextSeason = Lists.newArrayList(teams1.subList(0, teams1.size() - numberOfPromotions));
-        List<Team> c = teams2.subList(0, numberOfPromotions);
-        teams1ForNextSeason.addAll(c);
+        List<String> teamNames1ForNextSeason = Lists.newArrayList(teamNames1.subList(0, teamNames1.size() - numberOfPromotions));
+        List<String> c = teamNames2.subList(0, numberOfPromotions);
+        teamNames1ForNextSeason.addAll(c);
 
-        List<Team> teams2ForNextSeason = Lists.newArrayList(teams1.subList(numberOfPromotions + 1, teams1.size()));
-        teams2ForNextSeason.addAll(teams2.subList(numberOfPromotions, teams2.size()));
+        List<String> teamNames2ForNextSeason = Lists.newArrayList(teamNames1.subList(teamNames1.size() - numberOfPromotions, teamNames1.size()));
+        teamNames2ForNextSeason.addAll(teamNames2.subList(numberOfPromotions, teamNames2.size()));
 
-        leagueNameToTeams.put(leagueName1, teams1ForNextSeason);
-        leagueNameToTeams.put(leagueName2, teams2ForNextSeason);
+        leagueNameToTeams.put(leagueName1, teamNames1ForNextSeason);
+        leagueNameToTeams.put(leagueName2, teamNames2ForNextSeason);
     }
 
     public DateTime getStartDateOfNextSeason(String leagueName) {

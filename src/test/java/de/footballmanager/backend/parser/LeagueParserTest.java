@@ -19,7 +19,7 @@ public class LeagueParserTest {
         LeagueParser leagueParser = new LeagueParser();
         LeaguesWrapper leaguesWrapper = leagueParser.parse("club.xml");
         assertThat(leaguesWrapper).isNotNull();
-        assertThat(leaguesWrapper.getLeagues().size()).isEqualTo(3);
+        assertThat(leaguesWrapper.getLeagues().size()).isEqualTo(2);
         LeagueInitializer leagueInitializer = leaguesWrapper.getLeagues().get(0);
         assertThat(leagueInitializer.getName()).isEqualTo("Bundesliga");
         assertThat(leagueInitializer.getNumberOfPromotions()).isEqualTo(0);

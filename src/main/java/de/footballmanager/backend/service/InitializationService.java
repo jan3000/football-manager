@@ -65,22 +65,24 @@ public class InitializationService {
             List<Team> teams = Lists.newArrayList();
             leagueInitializer.getClubInitializerList().forEach(data -> {
                 String clubName = data.getName();
-                Club club = new Club(clubName);
-                clubService.registerClub(club);
                 Stadium stadium = new Stadium();
                 StadiumInitializer stadiumData = data.getStadiumInitializer();
                 stadium.setStance(stadiumData.getStance());
                 stadium.setRoofedStance(stadium.getRoofedStance());
                 stadium.setSeats(stadium.getSeats());
                 stadium.setRoofedSeats(stadium.getRoofedSeats());
-                club.setStadium(stadium);
                 String firstName = personParserService.getName(NAME_FILE);
                 String lastName = personParserService.getName(SURNAMES_FILE);
-                clubService.setManager(clubName, new Manager(firstName, lastName));
 
                 Team team = new Team(clubName);
                 team.setStrength(data.getStrength());
                 teams.add(team);
+
+                Club club = new Club(clubName);
+                club.setStadium(stadium);
+                club.setTeam(team);
+                clubService.registerClub(club);
+                clubService.setManager(clubName, new Manager(firstName, lastName));
 
             });
             League league = new League(leagueInitializer.getName(), teams, leagueInitializer.getNumberOfPromotions());
