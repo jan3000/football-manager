@@ -17,7 +17,8 @@ public class Season {
     private List<Team> teams;
     private TimeTable timeTable;
 
-    public Season() {}
+    public Season() {
+    }
 
     public Season(DateTime startDate, TimeTable timeTable, List<Team> teams) {
         this.startDate = startDate;
@@ -46,7 +47,6 @@ public class Season {
     public void setTimeTable(final TimeTable timeTable) {
         this.timeTable = timeTable;
     }
-
 
 
     @XmlElementWrapper(name = "teams")

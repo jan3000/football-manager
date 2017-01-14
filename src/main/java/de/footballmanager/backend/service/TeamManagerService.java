@@ -1,7 +1,10 @@
 package de.footballmanager.backend.service;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.*;
 import de.footballmanager.backend.enumeration.Position;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +72,7 @@ public class TeamManagerService {
     private void setPositionPlayerMapForKITeams(Match match, Team team, boolean homeTeam) {
         if (isKITeam(team)) {
             Pair<PlayingSystem, Map<Position, Player>> pair = getBestPlayersForBestSystem(team);
-            if(homeTeam) {
+            if (homeTeam) {
                 match.setPositionPlayerMapHomeTeam(pair.getSecond());
             } else {
                 match.setPositionPlayerMapGuestTeam(pair.getSecond());
@@ -187,13 +190,14 @@ public class TeamManagerService {
                 .filter(playingSystem -> {
                     return playingSystem.getPositions().containsAll(positions);
                 })
-        .findFirst().orElse(null);
+                .findFirst().orElse(null);
 
     }
 
 
     /**
      * Note: Do not use directly. Use getBestPlayersForBestSystem instead.
+     *
      * @param playingSystem
      * @param players
      * @return

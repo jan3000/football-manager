@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 @Service
 public class PlayerParserService {
 
-    private static final Position[] ALL_POSITIONS =Position.values();
+    private static final Position[] ALL_POSITIONS = Position.values();
     static final int MINIMAL_NUMBER_OF_PLAYERS = 20;
     private static final Path RESOURCE_DIRECTORY = Paths.get("src/main/resources");
     private static final Random RANDOM = new Random();

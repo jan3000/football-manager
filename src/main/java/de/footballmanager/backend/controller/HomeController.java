@@ -22,7 +22,7 @@ import java.util.Map;
 @Path("/home")
 @RequestScoped //  bean lives as long as a single HTTP request-response cycle
 @Component
-public class HomeController implements FootballManagerFacade{
+public class HomeController implements FootballManagerFacade {
 
     public static final String BUNDESLIGA = "Bundesliga";
     @Autowired

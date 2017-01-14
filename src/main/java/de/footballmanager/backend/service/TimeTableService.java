@@ -16,6 +16,6 @@ public abstract class TimeTableService {
     public boolean isTimeTableFinished(TimeTable timeTable) {
         ImmutableList<MatchDay> allMatchDays = timeTable.getAllMatchDays();
         return timeTable.getCurrentMatchDay() == allMatchDays.size()
-                && allMatchDays.get(allMatchDays.size() -1).isFinished();
+                && allMatchDays.get(allMatchDays.size() - 1).isFinished();
     }
 }

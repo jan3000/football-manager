@@ -45,6 +45,7 @@ public class Player {
             this.position = position;
             return this;
         }
+
         public Builder setStrength(int strength) {
             this.strength = strength;
             return this;

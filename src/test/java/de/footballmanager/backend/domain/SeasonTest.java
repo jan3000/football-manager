@@ -36,6 +36,6 @@ public class SeasonTest {
         Season season = new Season(now, timeTable, teams);
         assertNotNull(season);
         assertNotNull(season.getName());
-        assertEquals("16/17", season.getName());
+        assertEquals("17/18", season.getName());
     }
 }

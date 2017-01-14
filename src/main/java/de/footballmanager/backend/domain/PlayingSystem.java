@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import de.footballmanager.backend.enumeration.Position;
-import de.footballmanager.backend.service.StrengthService;
 
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +42,7 @@ public final class PlayingSystem {
                 SYSTEM_4_4_2_DIAMOND));
     }
 
-    
+
     private String name;
     private List<Position> positions = Lists.newArrayListWithCapacity(11);
 
