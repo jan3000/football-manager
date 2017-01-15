@@ -22,7 +22,8 @@ public class Season {
     private TimeTable timeTable;
     private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
 
-    public Season() {}
+    public Season() {
+    }
 
     public Season(DateTime startDate, TimeTable timeTable, List<Team> teams) {
         this.startDate = startDate;

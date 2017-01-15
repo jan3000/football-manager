@@ -60,7 +60,6 @@ public class TrialAndErrorTimeTableService extends TimeTableService {
     }
 
 
-
     List<MatchDay> getSecondRoundMatches(final List<MatchDay> firstRoundMatches) {
         Preconditions.checkNotNull(firstRoundMatches, "firstRoundMatches must be set to add secondRoundMatches");
 

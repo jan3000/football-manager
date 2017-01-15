@@ -145,7 +145,7 @@ public class LeagueService {
         Preconditions.checkNotNull(league, "no league found for leagueName: ", leagueName);
         TimeTable timeTable = getCurrentSeason(leagueName).getTimeTable();
         Preconditions.checkNotNull(timeTable, "no timeTable found for leagueName: ", leagueName);
-        return  timeTable.getMatch(matchDayNumber, teamName);
+        return timeTable.getMatch(matchDayNumber, teamName);
     }
 
 //    public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
@@ -183,14 +183,16 @@ public class LeagueService {
         League league = getLeague(leagueName);
         List<Season> seasons = league.getSeasons();
         int indexOfCurrentSeason = seasons.indexOf(currentSeason);
-        if (indexOfCurrentSeason +1 < seasons.size()) {
+        if (indexOfCurrentSeason + 1 < seasons.size()) {
             Season nextSeason = seasons.get(indexOfCurrentSeason + 1);
             dateService.finishDaysUntil(nextSeason.getStartDate());
-        };
+        }
+        ;
     }
 
     /**
      * Call startNextMatchDay before.
+     *
      * @return
      */
     public MatchDay runNextMinute(String leagueName) {

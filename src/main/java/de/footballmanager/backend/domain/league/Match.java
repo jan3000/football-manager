@@ -38,7 +38,8 @@ public class Match {
     private boolean isFinished = false;
     private boolean isStarted = false;
 
-    public Match() {}
+    public Match() {
+    }
 
     public Match(final Team homeTeam, final Team guestTeam) {
         super();

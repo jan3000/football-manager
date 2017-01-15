@@ -16,24 +16,25 @@ public abstract interface FootballManagerFacade {
 
     // Match Day
     public void setStartElevenHome(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven);
+
     public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven);
 
     // Statistics
 
 
-    public void initGame() ;
-    
-    
-    public void calculateMatchDay() ;
-    
+    public void initGame();
 
-    public void showTable() ;
+
+    public void calculateMatchDay();
+
+
+    public void showTable();
 
 
     public void showFormerMatchDay();
 
 
-    public void showTeamDetails() ;
+    public void showTeamDetails();
 
 
     public void changeTeamDetails();
