@@ -1,6 +1,6 @@
 package de.footballmanager.backend.service;
 
-import de.footballmanager.backend.domain.Player;
+import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.Position;
 import org.springframework.stereotype.Service;
 

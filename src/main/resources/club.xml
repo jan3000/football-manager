@@ -1,0 +1,229 @@
+<leaguesWrapper>
+    <leagues>
+        <league>
+            <name>Bundesliga</name>
+            <promotions>0</promotions>
+            <relegations>3</relegations>
+            <clubs>
+                <club>
+                    <name>Hamburger SV</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Volksparkstadion</name>
+                        <stance>11953</stance>
+                        <roofedStance>11953</roofedStance>
+                        <seats>45247</seats>
+                        <roofedSeats>45247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Borussia Dortmund 09</name>
+                    <strength>89</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Signal Iduna Park</name>
+                        <stance>28000</stance>
+                        <roofedStance>28000</roofedStance>
+                        <seats>53000</seats>
+                        <roofedSeats>53000</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Bayern München</name>
+                    <strength>94</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Allianz Arena</name>
+                        <stance>58000</stance>
+                        <roofedStance>58000</roofedStance>
+                        <seats>16000</seats>
+                        <roofedSeats>16000</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Werder Bremen</name>
+                    <strength>63</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Weserstadion</name>
+                        <stance>31000</stance>
+                        <roofedStance>31000</roofedStance>
+                        <seats>10000</seats>
+                        <roofedSeats>10000</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Eintracht Frankfurt</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Commerzbank Arena</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>1.FC Köln</name>
+                    <strength>45</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>RheinEnergieStadion</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Borussia Mönchengladbach</name>
+                    <strength>57</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Stadion im Borussia-Park</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>SC Freiburg</name>
+                    <strength>57</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Schwarzwald-Stadion</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>FC Schalke 04</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Veltins-Arena</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Bayer Leverkuse</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>BayArena</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>1. FSV Mainz 05</name>
+                    <strength>37</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>OpelArena</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Hertah BSC Berlin</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Olympiastadion</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>FC Augsburg</name>
+                    <strength>33</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>WWK Arena</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>1899 Hoffenheim</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Rhein-Neckar Arena</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>VfL Wolfsburg</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Volkswagen Arena</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>FC Ingolstadt</name>
+                    <strength>33</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Audi Sportpark</name>
+                        <capacity>57.200</capacity>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>RB Leipzig</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Red Bull Arena</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>SV Darmstadt</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Böllenfalltor</name>
+                        <stance>11.953</stance>
+                        <roofedStance>11.953</roofedStance>
+                        <seats>45.247</seats>
+                        <roofedSeats>45.247</roofedSeats>
+                    </stadium>
+                </club>
+
+            </clubs>
+        </league>
+    </leagues>
+</leaguesWrapper>

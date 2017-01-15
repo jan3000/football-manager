@@ -3,7 +3,10 @@ package de.footballmanager.backend.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.*;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.TestUtil;
@@ -178,7 +181,6 @@ public class ResultServiceTest {
         Map<Result, Integer> resultToCountMap = Maps.newHashMap();
         for (int i = 0; i < 10; i++) {
             TimeTable timeTable = timeTableService.createTimeTable(teams, new DateTime());
-            League league = new League(teams);
             for (MatchDay matchDay : timeTable.getAllMatchDays()) {
                 for (Match match : matchDay.getMatches()) {
                     resultService.calculateResult(match);

@@ -1,32 +1,37 @@
 package de.footballmanager.backend.service;
 
 import com.google.common.collect.*;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.Match;
+import de.footballmanager.backend.domain.league.MatchDay;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.domain.util.Pair;
+import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.TestUtil;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import static de.footballmanager.backend.enumeration.PlayingSystem.*;
 import static de.footballmanager.backend.enumeration.Position.*;
 import static de.footballmanager.backend.util.TestUtil.*;
 import static java.util.stream.Collectors.toList;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @RunWith(JUnitParamsRunner.class)
 public class TeamManagerServiceTest {
 
+    private static final String TEAM_NAME = "Hamburger SV";
 
-    public static final String TEAM_NAME = "Hamburger SV";
     private TeamManagerService teamManagerService;
 
     @Before
@@ -61,11 +66,11 @@ public class TeamManagerServiceTest {
         List<Player> players = team.getPlayers();
 
         StrengthService strengthService = createMock(StrengthService.class);
-        ReflectionTestUtils.setField(teamManagerService, "strengthService", strengthService);
+        setField(teamManagerService, "strengthService", strengthService);
         replay(strengthService);
 
         // when
-        Map<Position, Player> positionPlayerMap = teamManagerService.setBestPlayersForSystem(playingSystem, team.getPlayers());
+        Map<Position, Player> positionPlayerMap = teamManagerService.setBestPlayersForSystems(playingSystem, team.getPlayers());
 
         // then
         verify(strengthService);
@@ -102,11 +107,11 @@ public class TeamManagerServiceTest {
         expect(strengthService.getPlayerStrengthOnPosition(RIGHT_MIDFIELDER, alternativePlayer1)).andReturn(80).times(1);
         expect(strengthService.getPlayerStrengthOnPosition(RIGHT_MIDFIELDER, alternativePlayer2)).andReturn(50).times(1);
 
-        ReflectionTestUtils.setField(teamManagerService, "strengthService", strengthService);
+        setField(teamManagerService, "strengthService", strengthService);
         replay(strengthService);
 
         // when
-        Map<Position, Player> positionPlayerMap = teamManagerService.setBestPlayersForSystem(playingSystem, team.getPlayers());
+        Map<Position, Player> positionPlayerMap = teamManagerService.setBestPlayersForSystems(playingSystem, team.getPlayers());
 
         // then
         verify(strengthService);
@@ -145,11 +150,11 @@ public class TeamManagerServiceTest {
         expect(strengthService.getPlayerStrengthOnPosition(LEFT_MIDFIELDER, alternativePlayer3)).andReturn(60).times(1);
         expect(strengthService.getPlayerStrengthOnPosition(LEFT_MIDFIELDER, alternativePlayer4)).andReturn(60).times(1);
 
-        ReflectionTestUtils.setField(teamManagerService, "strengthService", strengthService);
+        setField(teamManagerService, "strengthService", strengthService);
         replay(strengthService);
 
         // when
-        Map<Position, Player> positionPlayerMap = teamManagerService.setBestPlayersForSystem(playingSystem, team.getPlayers());
+        Map<Position, Player> positionPlayerMap = teamManagerService.setBestPlayersForSystems(playingSystem, team.getPlayers());
 
         // then
         verify(strengthService);
@@ -190,7 +195,8 @@ public class TeamManagerServiceTest {
         removeTail(players, 17);
 
         // when
-        Pair<PlayingSystem, Map<Position, Player>> bestPlayersForBestSystem = teamManagerService.getBestPlayersForBestSystem(team);
+        Pair<PlayingSystem, Map<Position, Player>> bestPlayersForBestSystem =
+                teamManagerService.getBestPlayersForBestSystem(team);
 
         // then
         assertNotNull(bestPlayersForBestSystem);
@@ -206,20 +212,23 @@ public class TeamManagerServiceTest {
         // given
         Team team = createTeamForFourSystems();
         List<Player> players = team.getPlayers();
+        Player leftMidfielder = teamManagerService.getPlayerByPosition(players, LEFT_MIDFIELDER).get(0);
+        leftMidfielder.setStrength(99);
         setPositionAndStrength(players.get(15), LEFT_WINGER, 99);
         setPositionAndStrength(players.get(0), GOALY, 29);
 
         removeTail(players, 17);
 
         // when
-        Pair<PlayingSystem, Map<Position, Player>> bestPlayersForBestSystem = teamManagerService.getBestPlayersForBestSystem(team);
+        Pair<PlayingSystem, Map<Position, Player>> bestPlayersForBestSystem =
+                teamManagerService.getBestPlayersForBestSystem(team);
 
         // then
         assertNotNull(bestPlayersForBestSystem);
         PlayingSystem playingSystem = bestPlayersForBestSystem.getFirst();
         Map<Position, Player> positionPlayerMap = bestPlayersForBestSystem.getSecond();
         assertNotNull(playingSystem);
-        assertEquals(PlayingSystem.SYSTEM_4_3_3, playingSystem);
+        assertEquals(SYSTEM_4_3_3, playingSystem);
         assertNotNull(positionPlayerMap);
         assertEquals(11, positionPlayerMap.size());
 
@@ -263,8 +272,8 @@ public class TeamManagerServiceTest {
 
     @Test
     public void getPlayingSystem() {
-        PlayingSystem expectedHomeSystem = PlayingSystem.SYSTEM_3_4_3;
-        Match match = createMatch(expectedHomeSystem, PlayingSystem.SYSTEM_4_2_3_1);
+        PlayingSystem expectedHomeSystem = SYSTEM_3_4_3;
+        Match match = createMatch(expectedHomeSystem, SYSTEM_4_2_3_1);
         PlayingSystem playingSystem = teamManagerService.getPlayingSystem(match, match.getHomeTeam());
         assertEquals(expectedHomeSystem.getName(), playingSystem.getName());
         assertTrue(expectedHomeSystem.equals(playingSystem));
@@ -279,12 +288,12 @@ public class TeamManagerServiceTest {
         StrengthService strengthService = createMock(StrengthService.class);
         expect(strengthService.getPlayerStrengthOnPosition(anyObject(), anyObject())).andReturn(80).anyTimes();
         replay(strengthService);
-        ReflectionTestUtils.setField(teamManagerService, "strengthService", strengthService);
+        setField(teamManagerService, "strengthService", strengthService);
 
         PlayingSystem startSystem = teamManagerService.getPlayingSystem(match, homeTeam);
 
         // when
-        PlayingSystem expectedSystem = PlayingSystem.SYSTEM_3_4_3;
+        PlayingSystem expectedSystem = SYSTEM_3_4_3;
         teamManagerService.changePlayingSystem(match, homeTeam, expectedSystem);
 
         // then
@@ -293,27 +302,11 @@ public class TeamManagerServiceTest {
         assertEquals(expectedSystem, teamManagerService.getPlayingSystem(match, homeTeam));
     }
 
-    @Test
-    public void setStartEleven() {
-        MatchDay matchDay = createMatchDay();
-        teamManagerService.setStartElevenIfComputerManaged(matchDay);
-        assertNotNull(matchDay);
-        Match match1 = matchDay.getMatches().get(0);
-        Match match2 = matchDay.getMatches().get(1);
-        assertNotNull(match1.getPositionPlayerMapHomeTeam());
-        assertEquals(11, match1.getPositionPlayerMapHomeTeam().size());
-        assertNotNull(match1.getPositionPlayerMapGuestTeam());
-        assertEquals(11, match1.getPositionPlayerMapGuestTeam().size());
-        assertNotNull(match2.getPositionPlayerMapHomeTeam());
-        assertEquals(11, match1.getPositionPlayerMapHomeTeam().size());
-        assertNotNull(match2.getPositionPlayerMapGuestTeam());
-        assertEquals(11, match1.getPositionPlayerMapGuestTeam().size());
-    }
 
 
     @Test
     public void getBestPlayersForSystemSelectionBasedOnPosition() {
-        Team team = createTeam(TEAM_NAME, PlayingSystem.SYSTEM_4_4_2_DIAMOND);
+        Team team = createTeam(TEAM_NAME, SYSTEM_4_4_2_DIAMOND);
         List<Player> players = team.getPlayers();
         players.get(11).setPosition(CENTRAL_STRIKER);
         players.get(12).setPosition(CENTRAL_STOPPER);
@@ -323,7 +316,7 @@ public class TeamManagerServiceTest {
         shufflePlayers(team);
         team.getPlayers().forEach(System.out::println);
         Map<Position, Player> positionPlayerMap = teamManagerService.getBestPlayersForSystem(
-                PlayingSystem.SYSTEM_4_4_2_DIAMOND, team.getPlayers());
+                SYSTEM_4_4_2_DIAMOND, team.getPlayers());
         assertNotNull(positionPlayerMap);
         assertEquals(11, positionPlayerMap.size());
         assertPlayerSelected(team, "Mr.", "0", positionPlayerMap.get(GOALY));
@@ -349,7 +342,7 @@ public class TeamManagerServiceTest {
 
     @Test
     public void getBestPlayersForSystemSelectionBasedOnStrength() {
-        Team team = createTeam(TEAM_NAME, PlayingSystem.SYSTEM_4_4_2_DIAMOND);
+        Team team = createTeam(TEAM_NAME, SYSTEM_4_4_2_DIAMOND);
         List<Player> players = team.getPlayers();
         setPositionAndStrength(players.get(1), GOALY, 21);
         setPositionAndStrength(players.get(2), GOALY, 88);
@@ -376,7 +369,7 @@ public class TeamManagerServiceTest {
         shufflePlayers(team);
         team.getPlayers().forEach(System.out::println);
         Map<Position, Player> positionPlayerMap = teamManagerService.getBestPlayersForSystem(
-                PlayingSystem.SYSTEM_4_4_2_DIAMOND, team.getPlayers());
+                SYSTEM_4_4_2_DIAMOND, team.getPlayers());
         assertNotNull(positionPlayerMap);
         assertEquals(11, positionPlayerMap.size());
         assertPlayerSelected(team, "Mr.", "2", positionPlayerMap.get(GOALY));
@@ -400,11 +393,11 @@ public class TeamManagerServiceTest {
 
     @Test
     public void getPlayerByName() {
-        Team team = createTeam("Team1", PlayingSystem.SYSTEM_4_4_2_DIAMOND);
+        Team team = createTeam("Team1", SYSTEM_4_4_2_DIAMOND);
         Optional<Player> maybePlayer = teamManagerService.getPlayerByName(team, "Mr.", "5");
         assertTrue(maybePlayer.isPresent());
-        assertEquals(maybePlayer.get().getFirstname(), "Mr.");
-        assertEquals(maybePlayer.get().getLastname(), "5");
+        assertEquals(maybePlayer.get().getFirstName(), "Mr.");
+        assertEquals(maybePlayer.get().getLastName(), "5");
     }
 
     private void shufflePlayers(Team team) {
@@ -438,7 +431,7 @@ public class TeamManagerServiceTest {
         assertNotNull(possibleSystems);
         assertEquals(2, possibleSystems.size());
         assertTrue(possibleSystems.contains(PlayingSystem.SYSTEM_4_4_2));
-        assertTrue(possibleSystems.contains(PlayingSystem.SYSTEM_4_2_3_1));
+        assertTrue(possibleSystems.contains(SYSTEM_4_2_3_1));
     }
 
     @Test
@@ -446,11 +439,12 @@ public class TeamManagerServiceTest {
         Team team = createTeamForFourSystems();
         List<PlayingSystem> possibleSystems = teamManagerService.getPossibleSystems(team);
         assertNotNull(possibleSystems);
-        assertEquals(4, possibleSystems.size());
+        assertEquals(5, possibleSystems.size());
         assertTrue(possibleSystems.contains(PlayingSystem.SYSTEM_4_4_2));
-        assertTrue(possibleSystems.contains(PlayingSystem.SYSTEM_4_2_3_1));
-        assertTrue(possibleSystems.contains(PlayingSystem.SYSTEM_4_3_3));
-        assertTrue(possibleSystems.contains(PlayingSystem.SYSTEM_4_4_2_DIAMOND));
+        assertTrue(possibleSystems.contains(SYSTEM_4_2_3_1));
+        assertTrue(possibleSystems.contains(SYSTEM_4_3_3));
+        assertTrue(possibleSystems.contains(SYSTEM_4_2_4));
+        assertTrue(possibleSystems.contains(SYSTEM_4_4_2_DIAMOND));
     }
 
     private Team createTeamForFourSystems() {
@@ -475,14 +469,55 @@ public class TeamManagerServiceTest {
 
     public Object[][] parametersForHasPlayerForSystem() {
         return new Object[][]{
-            {PlayingSystem.SYSTEM_3_4_3 , PlayingSystem.SYSTEM_3_4_3, true},
-                {PlayingSystem.SYSTEM_4_2_3_1 , PlayingSystem.SYSTEM_4_2_3_1, true},
-                {PlayingSystem.SYSTEM_4_3_3, PlayingSystem.SYSTEM_4_3_3, true},
+            {SYSTEM_3_4_3 , SYSTEM_3_4_3, true},
+                {SYSTEM_4_2_3_1 , SYSTEM_4_2_3_1, true},
+                {SYSTEM_4_3_3, SYSTEM_4_3_3, true},
                 {PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2, true},
-                {PlayingSystem.SYSTEM_4_4_2_DIAMOND , PlayingSystem.SYSTEM_4_4_2_DIAMOND, true},
-                {PlayingSystem.SYSTEM_4_2_3_1 , PlayingSystem.SYSTEM_3_4_3, false},
-                {PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2_DIAMOND, false},
+                {SYSTEM_4_4_2_DIAMOND , SYSTEM_4_4_2_DIAMOND, true},
+                {SYSTEM_4_2_3_1 , SYSTEM_3_4_3, false},
+                {PlayingSystem.SYSTEM_4_4_2, SYSTEM_4_4_2_DIAMOND, false},
         };
+    }
+
+    @Test
+    public void setBestPlayersForSystems() {
+        StrengthService strengthService = new StrengthService();
+        setField(teamManagerService, "strengthService", strengthService);
+
+        PlayingSystem expectedSystem = SYSTEM_3_4_3;
+        List<PlayingSystem> playingSystems = Lists.newArrayList(PlayingSystem.SYSTEM_4_4_2,
+                SYSTEM_4_2_3_1, expectedSystem);
+
+        Team team = createTeam(TEAM_NAME, expectedSystem);
+        team.setPlayers(team.getPlayers().subList(0, 11));
+        List<Player> players = Lists.newArrayList(team.getPlayers());
+        Map<Position, Player> positionPlayerMap = teamManagerService.setBestPlayersForSystems(playingSystems, players);
+
+        PlayingSystem bestPlayingSystem = PlayingSystem.getPlayingSystem(positionPlayerMap.keySet());
+        assertEquals(expectedSystem, bestPlayingSystem);
+    }
+
+    @Test
+    public void setBestPlayersForSystemsTheMoreTheBetter() {
+        StrengthService strengthService = new StrengthService();
+        setField(teamManagerService, "strengthService", strengthService);
+
+        List<PlayingSystem> playingSystemsTrainer1 = Lists.newArrayList(SYSTEM_4_2_3_1);
+        List<PlayingSystem> playingSystemsTrainer2 = Lists.newArrayList(SYSTEM_4_2_3_1, SYSTEM_3_4_3, SYSTEM_4_3_3,
+                SYSTEM_4_4_2_DIAMOND, SYSTEM_4_2_4, SYSTEM_5_3_2, SYSTEM_3_5_2, SYSTEM_5_4_1);
+
+
+        Team team = createTeam(TEAM_NAME, PlayingSystem.SYSTEM_4_4_2);
+        team.setPlayers(team.getPlayers().subList(0, 11));
+        List<Player> players = Lists.newArrayList(team.getPlayers());
+        Map<Position, Player> positionPlayerMapTrainer1 = teamManagerService.setBestPlayersForSystems(
+                playingSystemsTrainer1, players);
+        Map<Position, Player> positionPlayerMapTrainer2 = teamManagerService.setBestPlayersForSystems(
+                playingSystemsTrainer2, players);
+
+        int strength1 = strengthService.getStrength(positionPlayerMapTrainer1);
+        int strength2 = strengthService.getStrength(positionPlayerMapTrainer2);
+        assertTrue(strength1 < strength2);
     }
 
 }

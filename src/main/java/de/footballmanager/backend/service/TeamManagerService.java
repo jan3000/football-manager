@@ -1,15 +1,19 @@
 package de.footballmanager.backend.service;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.*;
+import com.google.common.collect.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.Match;
+import de.footballmanager.backend.domain.league.MatchDay;
+import de.footballmanager.backend.domain.persons.Manager;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.domain.util.Pair;
+import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.enumeration.Position;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -20,6 +24,8 @@ public class TeamManagerService {
 
     @Autowired
     private StrengthService strengthService;
+    @Autowired
+    private ClubService clubService;
 
     private static final Comparator<Player> MAX_STRENGTH_COMPARATOR = new Comparator<Player>() {
         @Override
@@ -31,15 +37,9 @@ public class TeamManagerService {
     public void setTeamManager(Manager manager, Team team) {
         Preconditions.checkNotNull(manager, "manager must be set");
         Preconditions.checkNotNull(team, "team must be set");
-        team.setManager(manager);
+        clubService.setManager(team.getName(), manager);
     }
 
-    public void setStartElevenIfComputerManaged(MatchDay matchDay) {
-        matchDay.getMatches().forEach(match -> {
-            setPositionPlayerMapForKITeams(match, match.getHomeTeam(), true);
-            setPositionPlayerMapForKITeams(match, match.getGuestTeam(), false);
-        });
-    }
 
     public Map<Position, Player> getCurrentlyPlayingPlayers(Match match, Team team) {
         Preconditions.checkArgument(match.containsTeam(team), "team not contained in match: ", team);
@@ -69,16 +69,6 @@ public class TeamManagerService {
         }
     }
 
-    private void setPositionPlayerMapForKITeams(Match match, Team team, boolean homeTeam) {
-        if (isKITeam(team)) {
-            Pair<PlayingSystem, Map<Position, Player>> pair = getBestPlayersForBestSystem(team);
-            if (homeTeam) {
-                match.setPositionPlayerMapHomeTeam(pair.getSecond());
-            } else {
-                match.setPositionPlayerMapGuestTeam(pair.getSecond());
-            }
-        }
-    }
 
 
     public boolean hasPlayerForSystem(Team team, PlayingSystem system) {
@@ -95,7 +85,21 @@ public class TeamManagerService {
                 .collect(toList());
     }
 
-    public Map<Position, Player> setBestPlayersForSystem(PlayingSystem playingSystem, List<Player> playerList) {
+    public Map<Position, Player> setBestPlayersForSystems(List<PlayingSystem> playingSystems, List<Player> playerList) {
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(playingSystems), "playingSystems must be set");
+        Preconditions.checkArgument(playerList.size() > 7, "team must have at least 8 players");
+        Map<Integer, Map<Position, Player>> strengthToPositionPlayerMap = Maps.newHashMap();
+        playingSystems.forEach(playingSystem -> {
+            Map<Position, Player> positionPlayerMap = setBestPlayersForSystems(playingSystem, playerList);
+            int strength = strengthService.getStrength(positionPlayerMap);
+            strengthToPositionPlayerMap.put(strength, positionPlayerMap);
+        });
+        List<Integer> strengths = Lists.newArrayList(strengthToPositionPlayerMap.keySet());
+        strengths.sort((o1, o2) -> o1 < o2 ? 1 : -1);
+        return strengthToPositionPlayerMap.get(strengths.get(0));
+    }
+
+        public Map<Position, Player> setBestPlayersForSystems(PlayingSystem playingSystem, List<Player> playerList) {
         Preconditions.checkNotNull(playingSystem, "playingSystem must be set");
         Preconditions.checkArgument(playerList.size() > 7, "team must have at least 8 players");
         Map<Position, Player> positionPlayerMap = Maps.newHashMap();
@@ -135,6 +139,9 @@ public class TeamManagerService {
         return strengthService.getPlayerStrengthOnPosition(position, player);
     }
 
+    public List<Player> getPlayerByPosition(List<Player> players, Position position) {
+        return getPositionToPlayerMap(players).get(position);
+    }
 
     public ListMultimap<Position, Player> getPositionToPlayerMap(List<Player> players) {
         ListMultimap<Position, Player> positionToPlayers = ArrayListMultimap.create();
@@ -144,7 +151,7 @@ public class TeamManagerService {
 
     public Optional<Player> getPlayerByName(Team team, String firstName, String lastName) {
         return team.getPlayers().stream()
-                .filter(player -> player.getFirstname().equals(firstName) && player.getLastname().equals(lastName))
+                .filter(player -> player.getFirstName().equals(firstName) && player.getLastName().equals(lastName))
                 .findFirst();
     }
 
@@ -163,12 +170,12 @@ public class TeamManagerService {
         if (match.isHomeTeam(team)) {
             Map<Position, Player> positionPlayerMap = match.getPositionPlayerMapHomeTeam();
             Collection<Player> players = positionPlayerMap.values();
-            Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystem(newSystem, Lists.newArrayList(players));
+            Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystems(newSystem, Lists.newArrayList(players));
             match.setPositionPlayerMapHomeTeam(positionPlayerMapAfterChange);
         } else if (match.isGuestTeam(team)) {
             Map<Position, Player> positionPlayerMap = match.getPositionPlayerMapGuestTeam();
             Collection<Player> players = positionPlayerMap.values();
-            Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystem(newSystem, Lists.newArrayList(players));
+            Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystems(newSystem, Lists.newArrayList(players));
             match.setPositionPlayerMapGuestTeam(positionPlayerMapAfterChange);
         } else {
             throw new IllegalStateException("team neither home nor guest team: " + team);
@@ -190,14 +197,13 @@ public class TeamManagerService {
                 .filter(playingSystem -> {
                     return playingSystem.getPositions().containsAll(positions);
                 })
-                .findFirst().orElse(null);
+        .findFirst().orElse(null);
 
     }
 
 
     /**
      * Note: Do not use directly. Use getBestPlayersForBestSystem instead.
-     *
      * @param playingSystem
      * @param players
      * @return
@@ -222,7 +228,7 @@ public class TeamManagerService {
         List<Player> players = team.getPlayers();
         Map<PlayingSystem, Integer> systemIntegerMap = Maps.newHashMap();
         playingSystems.forEach(playingSystem -> {
-            Map<Position, Player> positionPlayerMap = setBestPlayersForSystem(playingSystem, team.getPlayers());
+            Map<Position, Player> positionPlayerMap = setBestPlayersForSystems(playingSystem, team.getPlayers());
 
         });
     }
@@ -230,7 +236,7 @@ public class TeamManagerService {
     public Pair<PlayingSystem, Map<Position, Player>> getBestPlayersForBestSystem(Team team) {
         List<PlayingSystem> possibleSystems = getPossibleSystems(team);
         if (possibleSystems.isEmpty()) {
-            Map<Position, Player> positionPlayerMap = setBestPlayersForSystem(PlayingSystem.SYSTEM_4_3_3, team.getPlayers());// TODO: best players for a list of systems, better coach -> more systems
+            Map<Position, Player> positionPlayerMap = setBestPlayersForSystems(PlayingSystem.SYSTEM_4_3_3, team.getPlayers());// TODO: best players for a list of systems, better coach -> more systems
             return new Pair<>(PlayingSystem.SYSTEM_4_3_3, positionPlayerMap);
         }
         Map<PlayingSystem, Integer> systemStrengthMap = Maps.newHashMap();
@@ -253,16 +259,6 @@ public class TeamManagerService {
     public int getTeamStrength(Collection<Player> players) {
         Preconditions.checkArgument(players.size() < 12, "number of players must be not more than 11");
         return new Double(Math.floor(players.stream().mapToInt(Player::getStrength).sum() / players.size())).intValue();
-    }
-
-
-//    Map<Position, Player> getPositionPlayerMap(Team team) {
-//        team.getPlayers();
-//    }
-
-    private boolean isKITeam(Team team) {
-        Preconditions.checkNotNull(team.getManager(), "no manager set for team {}", team.getName());
-        return team.getManager().isComputerManaged();
     }
 
 }
