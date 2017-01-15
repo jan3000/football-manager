@@ -1,9 +1,9 @@
 package de.footballmanager.backend.service;
 
 import com.google.common.collect.ImmutableList;
-import de.footballmanager.backend.domain.MatchDay;
-import de.footballmanager.backend.domain.Team;
-import de.footballmanager.backend.domain.TimeTable;
+import de.footballmanager.backend.domain.league.MatchDay;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.TimeTable;
 import org.joda.time.DateTime;
 
 import java.util.List;

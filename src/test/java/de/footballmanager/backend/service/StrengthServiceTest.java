@@ -1,7 +1,7 @@
 package de.footballmanager.backend.service;
 
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.Player;
+import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.Position;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;

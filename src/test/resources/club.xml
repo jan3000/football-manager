@@ -1,0 +1,94 @@
+<leaguesWrapper>
+    <leagues>
+        <league>
+            <name>Bundesliga</name>
+            <promotions>0</promotions>
+            <clubs>
+                <club>
+                    <name>Hamburger SV</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Volksparkstadion</name>
+                        <stance>11953</stance>
+                        <roofedStance>11953</roofedStance>
+                        <seats>45247</seats>
+                        <roofedSeats>45247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Borussia Dortmund 09</name>
+                    <strength>89</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Signal Iduna Park</name>
+                        <stance>28000</stance>
+                        <roofedStance>28000</roofedStance>
+                        <seats>53000</seats>
+                        <roofedSeats>53000</roofedSeats>
+                    </stadium>
+                </club>
+            </clubs>
+        </league>
+        <league>
+            <name>2. Bundesliga</name>
+            <promotions>1</promotions>
+            <clubs>
+                <club>
+                    <name>FC St.Pauli</name>
+                    <strength>48</strength>
+                    <capital>300000</capital>
+                    <stadium>
+                        <name>Millerntorstadion</name>
+                        <stance>11953</stance>
+                        <roofedStance>11953</roofedStance>
+                        <seats>20000</seats>
+                        <roofedSeats>20000</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Hannover 96</name>
+                    <strength>49</strength>
+                    <capital>300000</capital>
+                    <stadium>
+                        <name>HDI-Arena</name>
+                        <stance>28000</stance>
+                        <roofedStance>28000</roofedStance>
+                        <seats>25000</seats>
+                        <roofedSeats>25000</roofedSeats>
+                    </stadium>
+                </club>
+            </clubs>
+        </league>
+        <!--<league>-->
+            <!--<name>3. Bundesliga</name>-->
+            <!--<promotions>1</promotions>-->
+            <!--<clubs>-->
+                <!--<club>-->
+                    <!--<name>Hansa Rostok</name>-->
+                    <!--<strength>28</strength>-->
+                    <!--<capital>30000</capital>-->
+                    <!--<stadium>-->
+                        <!--<name>Ostseestadion</name>-->
+                        <!--<stance>11953</stance>-->
+                        <!--<roofedStance>11953</roofedStance>-->
+                        <!--<seats>20000</seats>-->
+                        <!--<roofedSeats>20000</roofedSeats>-->
+                    <!--</stadium>-->
+                <!--</club>-->
+                <!--<club>-->
+                    <!--<name>Dynamo Dresden</name>-->
+                    <!--<strength>29</strength>-->
+                    <!--<capital>300000</capital>-->
+                    <!--<stadium>-->
+                        <!--<name>DDV-Stadion</name>-->
+                        <!--<stance>28000</stance>-->
+                        <!--<roofedStance>28000</roofedStance>-->
+                        <!--<seats>25000</seats>-->
+                        <!--<roofedSeats>25000</roofedSeats>-->
+                    <!--</stadium>-->
+                <!--</club>-->
+            <!--</clubs>-->
+        <!--</league>-->
+    </leagues>
+</leaguesWrapper>

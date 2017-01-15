@@ -2,8 +2,13 @@ package de.footballmanager.backend.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.*;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.domain.statistics.ScorerStatistic;
+import de.footballmanager.backend.domain.statistics.TeamStatistic;
 import de.footballmanager.backend.enumeration.KindOfGoal;
+import de.footballmanager.backend.enumeration.PlayingSystem;
 import org.junit.Before;
 import org.junit.Test;
 

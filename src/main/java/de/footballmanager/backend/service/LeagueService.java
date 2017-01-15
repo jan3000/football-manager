@@ -2,21 +2,23 @@ package de.footballmanager.backend.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.comparator.TeamValueComparator;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.*;
 import de.footballmanager.backend.parser.LeagueParser;
-import de.footballmanager.backend.parser.PlayerParserService;
+import de.footballmanager.backend.parser.PersonParserService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class LeagueService {
@@ -24,40 +26,28 @@ public class LeagueService {
     @Autowired
     private TrialAndErrorTimeTableService timeTableService;
     @Autowired
-    private PlayerParserService playerParserService;
+    private PersonParserService personParserService;
     @Autowired
     private ResultService resultService;
     @Autowired
     private LeagueParser leagueParser;
     @Autowired
     private DateService dateService;
+    @Autowired
+    private ClubService clubService;
 
-    private Map<String, League> nameToLeague = Maps.newHashMap();
-    private Map<Integer, Table> matchDayToTable = Maps.newHashMap();
+    private List<String> leaguePriorityList;
+    private Map<String, League> nameToLeague;
 
-    @PostConstruct
-    public void initLeagues() {
-        try {
-            if (nameToLeague == null) {
-                createLeagues("team.xml", "names.txt", "surnames.txt");
-            }
-        } catch (JAXBException | FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
+    public void setNameToLeague(Map<String, League> nameToLeague) {
+        Preconditions.checkArgument(this.nameToLeague == null, "nameToLeague must not be overwritten");
+        this.nameToLeague = nameToLeague;
     }
 
-    public void createLeagues(String teamsFile, String firstNameFile, String lastNameFile)
-            throws JAXBException, FileNotFoundException {
-        System.out.println("INIT STARTED");
-        LeaguesWrapper leaguesWrapper = leagueParser.parse(teamsFile);
-        leaguesWrapper.getLeagues().forEach(league -> {
-            List<Team> teams = league.getTeams();
-            TimeTable timeTable = timeTableService.createTimeTable(teams, dateService.getToday());
-            league.addSeason(new Season(dateService.getToday(), timeTable, teams));
-            nameToLeague.put(league.getName(), league);
-            playerParserService.parsePlayerForLeague(league, firstNameFile, lastNameFile);
-        });
-        System.out.println("INIT FINISHED");
+    public void setLeaguePriorityList(List<String> leaguePriorityList) {
+        Preconditions.checkArgument(this.leaguePriorityList == null, "leaguePriorityList must not be overwritten");
+        this.leaguePriorityList = leaguePriorityList;
     }
 
     public League getLeague(String leagueName) {
@@ -66,18 +56,70 @@ public class LeagueService {
         return league;
     }
 
-    public void addNewSeason(String leagueName, List<Team> teams) {
+
+    public void addNewSeason() {
+        Preconditions.checkArgument(areLeaguesFinished(leaguePriorityList), "leagues must be finished to create a " +
+                "new season");
+        List<League> leagues = leaguePriorityList.stream().map(this::getLeague).collect(toList());
+        Map<String, List<String>> leagueNameToTeams = Maps.newHashMap();
+        leagues.forEach(tmpLeague -> {
+            Table currentTable = getCurrentTable(tmpLeague.getName());
+            List<String> sortedTableOfTeams = currentTable.getTableEntriesSorted().stream()
+                    .map(TableEntry::getTeam)
+                    .collect(toList());
+            leagueNameToTeams.put(tmpLeague.getName(), sortedTableOfTeams);
+        });
+
+        for (int i = 0; i < leaguePriorityList.size() - 1; i++) {
+            String leagueName1 = leaguePriorityList.get(i);
+            String leagueName2 = leaguePriorityList.get(i + 1);
+            handlePromotions(leagueName1, leagueName2, leagueNameToTeams);
+        }
+
+        DateTime startDate = getStartDateOfNextSeason(leagues.get(0).getName());
+        leagueNameToTeams.forEach((leagueName, teamNames) -> {
+            List<Team> teams = teamNames.stream().map(teamName -> clubService.getTeam(teamName)).collect(toList());
+            TimeTable timeTable = timeTableService.createTimeTable(teams, startDate);
+            Season nextSeason = new Season(startDate, timeTable, teams);
+            getLeague(leagueName).addSeason(nextSeason);
+
+        });
+    }
+
+    private boolean areLeaguesFinished(List<String> leagues) {
+        List<String> notFinishedLeagues = leagues.stream()
+                .filter(leagueName -> !getCurrentSeason(leagueName).getTimeTable().isClosed())
+                .collect(toList());
+        System.out.println("notFinishedLeagues: " + notFinishedLeagues);
+        return CollectionUtils.isEmpty(
+                notFinishedLeagues);
+    }
+
+    private void handlePromotions(String leagueName1, String leagueName2, Map<String, List<String>> leagueNameToTeams) {
+        League league2 = getLeague(leagueName2);
+
+        List<String> teamNames1 = leagueNameToTeams.get(leagueName1);
+        List<String> teamNames2 = leagueNameToTeams.get(leagueName2);
+
+        int numberOfPromotions = league2.getNumberOfPromotions();
+
+        List<String> teamNames1ForNextSeason = Lists.newArrayList(teamNames1.subList(0, teamNames1.size() - numberOfPromotions));
+        List<String> c = teamNames2.subList(0, numberOfPromotions);
+        teamNames1ForNextSeason.addAll(c);
+
+        List<String> teamNames2ForNextSeason = Lists.newArrayList(teamNames1.subList(teamNames1.size() - numberOfPromotions, teamNames1.size()));
+        teamNames2ForNextSeason.addAll(teamNames2.subList(numberOfPromotions, teamNames2.size()));
+
+        leagueNameToTeams.put(leagueName1, teamNames1ForNextSeason);
+        leagueNameToTeams.put(leagueName2, teamNames2ForNextSeason);
+    }
+
+    public DateTime getStartDateOfNextSeason(String leagueName) {
         League league = getLeague(leagueName);
         List<Season> seasons = league.getSeasons();
         Preconditions.checkArgument(seasons.size() > 0, "at least one season must be set to get the next season");
         Season lastSeason = seasons.get(seasons.size() - 1);
-        DateTime startDate = lastSeason.getEndDate().plusDays(1);
-        // go on here
-
-        TimeTable timeTable = timeTableService.createTimeTable(teams, startDate);
-        Season nextSeason = new Season(startDate, timeTable, teams);
-        league.addSeason(nextSeason);
-
+        return lastSeason.getEndDate().plusDays(1);
     }
 
     public Season getCurrentSeason(String leagueName) {
@@ -161,7 +203,7 @@ public class LeagueService {
 
         if (haveAllMatchesEnded(matches)) {
 
-            generateChart(leagueName, timeTable.getCurrentMatchDay());
+            generateTable(leagueName, timeTable.getCurrentMatchDay());
             if (timeTableService.isTimeTableFinished(timeTable)) {
                 timeTable.setClosed();
             } else {
@@ -208,11 +250,12 @@ public class LeagueService {
         return getTable(leagueName, timeTable.getCurrentMatchDay());
     }
 
-    public Map<Integer, Table> getMatchDayToTable() {
-        return matchDayToTable;
+    public Map<Integer, Table> getMatchDayToTable(String leagueName) {
+        return getCurrentSeason(leagueName).getMatchDayToTable();
     }
 
     public Table getTable(String leagueName, int day) {
+        Map<Integer, Table> matchDayToTable = getMatchDayToTable(leagueName);
         if (matchDayToTable.containsKey(day)) {
             return matchDayToTable.get(day);
         } else {
@@ -222,7 +265,7 @@ public class LeagueService {
         }
     }
 
-    protected Table generateChart(String leagueName, int day) {
+    Table generateTable(String leagueName, int day) {
         System.out.println("GENERATE CHART FOR DAY: " + day);
         Map<Team, Integer> teamToPointsMap = Maps.newHashMap();
         Map<Team, TableEntry> teamToTableEntryMap = Maps.newHashMap();
@@ -289,7 +332,7 @@ public class LeagueService {
             }
 
             System.out.println("GENERATE CHART END");
-            matchDayToTable.put(day, table);
+            getCurrentSeason(leagueName).addMatchDayToTable(day, table);
         }
         return table;
     }

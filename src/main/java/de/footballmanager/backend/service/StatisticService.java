@@ -4,7 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import de.footballmanager.backend.domain.*;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.*;
+import de.footballmanager.backend.domain.persons.Player;
+import de.footballmanager.backend.domain.statistics.ScorerStatistic;
+import de.footballmanager.backend.domain.statistics.TeamStatistic;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

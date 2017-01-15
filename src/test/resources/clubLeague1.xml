@@ -1,0 +1,34 @@
+<leaguesWrapper>
+    <leagues>
+        <league>
+            <name>Bundesliga</name>
+            <promotions>0</promotions>
+            <clubs>
+                <club>
+                    <name>Hamburger SV</name>
+                    <strength>78</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Volksparkstadion</name>
+                        <stance>11953</stance>
+                        <roofedStance>11953</roofedStance>
+                        <seats>45247</seats>
+                        <roofedSeats>45247</roofedSeats>
+                    </stadium>
+                </club>
+                <club>
+                    <name>Borussia Dortmund 09</name>
+                    <strength>89</strength>
+                    <capital>3000000</capital>
+                    <stadium>
+                        <name>Signal Iduna Park</name>
+                        <stance>28000</stance>
+                        <roofedStance>28000</roofedStance>
+                        <seats>53000</seats>
+                        <roofedSeats>53000</roofedSeats>
+                    </stadium>
+                </club>
+            </clubs>
+        </league>
+    </leagues>
+</leaguesWrapper>
