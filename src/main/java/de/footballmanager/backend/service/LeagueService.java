@@ -90,7 +90,7 @@ public class LeagueService {
         List<String> notFinishedLeagues = leagues.stream()
                 .filter(leagueName -> !getCurrentSeason(leagueName).getTimeTable().isClosed())
                 .collect(toList());
-        System.out.println(notFinishedLeagues);
+        System.out.println("notFinishedLeagues: " + notFinishedLeagues);
         return CollectionUtils.isEmpty(
                 notFinishedLeagues);
     }
