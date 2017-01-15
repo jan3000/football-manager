@@ -237,8 +237,13 @@ public class LeagueService {
         return timeTable.getMatchDay(getCurrentMatchDayNumber(leagueName));
     }
 
+    public MatchDay getMatchDay(String leagueName, int matDayNumber) {
+        TimeTable timeTable = getTimeTable(leagueName);
+        Preconditions.checkNotNull(timeTable, "no timeTable found for ", leagueName);
+        return timeTable.getMatchDay(matDayNumber);
+    }
+
     public MatchDay getTimeTableForMatchDay(String leagueName, int matchDay) {
-//        initLeagues();
         System.out.println("return match day");
         TimeTable timeTable = getTimeTable(leagueName);
         return timeTable.getMatchDay(matchDay);

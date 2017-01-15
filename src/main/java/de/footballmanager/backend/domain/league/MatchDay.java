@@ -77,15 +77,6 @@ public class MatchDay {
         return false;
     }
 
-    public String toStringAllMatches() {
-        StringBuilder builder = new StringBuilder();
-        for (Match match : matches) {
-            builder.append(match.printMatch());
-            builder.append("\n");
-        }
-        return builder.toString();
-    }
-
     public int getMatchDayNumber() {
         return matchDayNumber;
     }
@@ -106,18 +97,6 @@ public class MatchDay {
         return matches.stream()
                 .filter(m -> m.getHomeTeam().getName().equals(teamName) || m.getGuestTeam().getName().equals(teamName))
                 .collect(Collectors.toList()).get(0);
-    }
-
-    public String print() {
-        StringBuilder buffi = new StringBuilder();
-        buffi.append("MatchDay: ");
-        buffi.append(matchDayNumber);
-        buffi.append("\n");
-        for (Match match : matches) {
-            buffi.append(match.printMatch());
-            buffi.append("\n");
-        }
-        return buffi.toString();
     }
 
     @Override

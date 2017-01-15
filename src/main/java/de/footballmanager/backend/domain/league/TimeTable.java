@@ -55,19 +55,6 @@ public class TimeTable {
         this.closed = true;
     }
 
-    public String print() {
-        StringBuilder buildi = new StringBuilder();
-        buildi.append("TimeTable\n");
-        for (MatchDay matchDay : matchDays) {
-            buildi.append(String.format("%s\n", StringUtils.repeat("-", 50)));
-            buildi.append(String.format("MatchDay %s (%s):\n", matchDay.getMatchDayNumber(), matchDay.getDate()));
-            for (Match match : matchDay.getMatches()) {
-                buildi.append(String.format("%s", match.printMatch()));
-            }
-        }
-        return buildi.toString();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

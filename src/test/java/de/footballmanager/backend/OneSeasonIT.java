@@ -11,6 +11,7 @@ import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.enumeration.ResultType;
 import de.footballmanager.backend.service.*;
+import de.footballmanager.backend.util.PrintUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +99,7 @@ public class OneSeasonIT {
         IntStream.range(70, 90).forEach(i -> leagueService.runNextMinute(BUNDESLIGA));
 
         matches.forEach(match -> assertTrue(match1.isFinished()));
-        System.out.println(match1.printMatch());
+        System.out.println(PrintUtil.print(match1));
 
         // then
         Result resultMatch1 = match1.getResult();
@@ -137,7 +138,7 @@ public class OneSeasonIT {
         IntStream.range(1,90).forEach(i -> leagueService.runNextMinute(BUNDESLIGA));
 
         matches.forEach(match -> assertTrue(match2.isFinished()));
-        System.out.println(match2.printMatch());
+        System.out.println(PrintUtil.print(match2));
 
         Table currentTable2 = leagueService.getTable(BUNDESLIGA, 2);
         List<TableEntry> tableEntries2 = currentTable2.getEntries();

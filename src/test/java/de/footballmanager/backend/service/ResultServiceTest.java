@@ -9,6 +9,7 @@ import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.enumeration.Position;
 import de.footballmanager.backend.util.LeagueTestUtil;
+import de.footballmanager.backend.util.PrintUtil;
 import de.footballmanager.backend.util.TestUtil;
 import jersey.repackaged.com.google.common.collect.Sets;
 import org.joda.time.DateTime;
@@ -186,7 +187,7 @@ public class ResultServiceTest {
                     resultService.calculateResult(match);
                 }
             }
-            System.out.println(timeTable.print());
+            System.out.println(PrintUtil.print(timeTable));
             assertAllMatchesHaveEnded(timeTable);
 
             // testSorting of end table according to the teams strength

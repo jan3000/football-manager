@@ -49,8 +49,8 @@ public class KIService {
         Preconditions.checkArgument(isKIManaged(matchDay), "match day is not KI managed: ", matchDay);
         handleSetStartEleven(matchDay);
         leagueService.startNextMatchDay(leagueName);
-        matchDay.getMatches().forEach(match -> {
-            IntStream.range(1, 90).forEach(i -> leagueService.runNextMinute(leagueName));
+        IntStream.range(1, 90).forEach(i -> {
+            leagueService.runNextMinute(leagueName);
         });
     }
 

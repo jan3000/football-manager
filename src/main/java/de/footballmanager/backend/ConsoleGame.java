@@ -1,13 +1,15 @@
 package de.footballmanager.backend;
 
-import de.footballmanager.backend.domain.Match;
-import de.footballmanager.backend.domain.MatchDay;
-import de.footballmanager.backend.domain.Table;
-import de.footballmanager.backend.domain.Team;
+import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.Match;
+import de.footballmanager.backend.domain.league.MatchDay;
+import de.footballmanager.backend.domain.league.Table;
+import de.footballmanager.backend.service.InitializationService;
+import de.footballmanager.backend.service.KIService;
 import de.footballmanager.backend.service.LeagueService;
-import org.springframework.beans.factory.annotation.Autowired;
+import de.footballmanager.backend.util.PrintUtil;
+import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
@@ -25,33 +27,30 @@ public class ConsoleGame {
         System.out.println("---------------------------------------------");
 
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+        InitializationService initializationService = applicationContext.getBean(InitializationService.class);
         LeagueService leagueService = applicationContext.getBean(LeagueService.class);
-        applicationContext.getBean()
+        KIService kiService = applicationContext.getBean(KIService.class);
 
-        leagueService.createLeagues("team.xml", "names.txt", "surnames.txt");
+        initializationService.createLeagues("club.xml", "names.txt", "surnames.txt");
         List<Team> teams = leagueService.getTeams(BUNDESLIGA);
         System.out.println("\n\nLeague: " + BUNDESLIGA);
         for (Team team : teams) {
             System.out.println("\t " + team.getName());
         }
 
-
-        MatchDay currentMatchDay = leagueService.getCurrentMatchDay(BUNDESLIGA);
-        System.out.println("Match Day: " + currentMatchDay.getDate() + ", " + currentMatchDay.getMatchDayNumber());
-        for (Match match : currentMatchDay.getMatches()) {
-            System.out.println("\t " + match.printMatch());
-        }
-
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Run next match day? [y/n]");
-        String goOn = scanner.nextLine();
-        if (goOn.equals("Y")) {
-            leagueService.startNextMatchDay(BUNDESLIGA);
-            IntStream.range(1, 90).forEach(i -> leagueService.runNextMinute(BUNDESLIGA));
-            Table table = leagueService.getTable(BUNDESLIGA, 1);
-            MatchDay currentMatchDay1 = leagueService.getCurrentMatchDay(BUNDESLIGA);
-            currentMatchDay1.print();
-
+        while (true) {
+            System.out.println("Run next match day? [y/n]");
+            String goOn = scanner.nextLine();
+            if (goOn.equals("y")) {
+                kiService.handleNextMatchDay(BUNDESLIGA);
+                int currentMatchDayNumber = leagueService.getCurrentMatchDayNumber(BUNDESLIGA);
+                System.out.println("Table of matchday: " + currentMatchDayNumber);
+                MatchDay currentMatchDay1 = leagueService.getMatchDay(BUNDESLIGA, currentMatchDayNumber - 1);
+                System.out.println(PrintUtil.printCompact(currentMatchDay1));
+                System.out.println(PrintUtil.print(leagueService.getTable(BUNDESLIGA, currentMatchDayNumber -1 )));
+                System.out.println("---------------------------------------------------");
+            }
         }
 
 
