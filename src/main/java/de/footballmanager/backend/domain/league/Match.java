@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Match {
 
@@ -258,17 +259,6 @@ public class Match {
         return isFinished;
     }
 
-
-    public String printMatch() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(String.format("%s \t- \t%s \t%s : %s  (%s)", homeTeam.getName(), guestTeam.getName(),
-                result.getHomeGoals(), result.getGuestGoals(), halfTimeResult.print()));
-        for (Goal goal : goals) {
-            builder.append(String.format("\n%s. Minute\t%s", goal.getMinute(), goal.getNewResult().print()));
-        }
-        builder.append("\n");
-        return builder.toString();
-    }
 
     @Override
     public boolean equals(Object o) {

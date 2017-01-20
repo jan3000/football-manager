@@ -147,24 +147,6 @@ public class TableEntry {
         return homeGamesLost + awayGamesLost;
     }
 
-
-    public String print() {
-        StringBuffer buffi = new StringBuffer();
-        buffi.append(getTotalGamesWon() + " | ");
-        buffi.append(getTotalGamesDraw() + " | ");
-        buffi.append(getTotalGamesLost() + "\t");
-        buffi.append(getHomeGamesWon() + " | ");
-        buffi.append(getHomeGamesDraw() + " | ");
-        buffi.append(getHomeGamesLost() + "\t");
-        buffi.append(getAwayGamesWon() + " | ");
-        buffi.append(getAwayGamesDraw() + " | ");
-        buffi.append(getAwayGamesLost() + "\t");
-        buffi.append(getTotalGoals() + " : ");
-        buffi.append(getTotalReceivedGoals() + "\t\t");
-        buffi.append(getPoints() + "\t");
-        return buffi.toString();
-    }
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

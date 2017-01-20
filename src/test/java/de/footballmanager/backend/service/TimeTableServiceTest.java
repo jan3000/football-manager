@@ -7,6 +7,7 @@ import de.footballmanager.backend.domain.league.Match;
 import de.footballmanager.backend.domain.league.MatchDay;
 import de.footballmanager.backend.domain.league.TimeTable;
 import de.footballmanager.backend.util.LeagueTestUtil;
+import de.footballmanager.backend.util.PrintUtil;
 import de.footballmanager.backend.util.TestUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
@@ -335,7 +336,7 @@ public class TimeTableServiceTest {
         assertAppearanceOfTeamsInMatchDays(matchDays);
         assertAllTeamsHaveSameSumOfMatches2(matchDays, NUMBER_OF_MATCH_DAYS);
         assertDatesAreSet(matchDays);
-        System.out.println(timeTable.print());
+        System.out.println(PrintUtil.print(timeTable));
         verify(dateService);
     }
 
@@ -372,7 +373,7 @@ public class TimeTableServiceTest {
                 }
             }
             assertEquals(String.format("team [%s] appears [%s] times in timeTable of matchDay [%s]", team.getName(),
-                    appearancesInMatchDay, matchDay.print()), 1, appearancesInMatchDay);
+                    appearancesInMatchDay, PrintUtil.print(matchDay)), 1, appearancesInMatchDay);
         }
     }
 }
