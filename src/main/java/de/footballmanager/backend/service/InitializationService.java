@@ -14,6 +14,7 @@ import de.footballmanager.backend.domain.league.TimeTable;
 import de.footballmanager.backend.domain.util.xml.StadiumInitializer;
 import de.footballmanager.backend.parser.LeagueParser;
 import de.footballmanager.backend.parser.PersonParserService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,8 +46,9 @@ public class InitializationService {
 
     @PostConstruct
     public void initLeagues() {
+        System.out.println("Start initializing football UHU!!!!!!!!!!!!!!!");
         try {
-            if (nameToLeague == null) {
+            if (nameToLeague == null || nameToLeague.isEmpty()) {
                 createLeagues("club.xml", NAME_FILE, SURNAMES_FILE);
             }
         } catch (JAXBException | FileNotFoundException e) {

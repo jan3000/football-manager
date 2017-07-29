@@ -60,7 +60,7 @@ public class OneSeasonIT {
         Team managedTeam = teams.get(0);
         teamManagerService.setTeamManager(manager, managedTeam);
 
-        TimeTable timeTable = getTimeTable(BUNDESLIGA);
+        TimeTable timeTable = getAndAssertTimeTable(BUNDESLIGA);
 
         // ----------------------------------------
         // when: run match1 day 1
@@ -276,7 +276,7 @@ public class OneSeasonIT {
         assertNotNull(season2.getTimeTable().getMatchDay(1).getMatches().get(0).getGuestTeam());
     }
 
-    private TimeTable getTimeTable(String leagueName) {
+    private TimeTable getAndAssertTimeTable(String leagueName) {
         TimeTable timeTable = leagueService.getTimeTable(leagueName);
         assertNotNull(timeTable);
         int numberOfDays = timeTable.getNumberOfMatchDays();
