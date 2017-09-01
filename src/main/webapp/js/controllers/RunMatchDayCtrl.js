@@ -13,18 +13,24 @@ module.controller('RunMatchDayCtrl', function ($scope, $http, $log, $timeout, Ti
     }
 
     $scope.runNextMatchDay = function () {
-        $http.get('rest/home/runNextMatchDayMinute/').then(function (result) {
-            $log.log('runNextMatchDayMinute: ' + JSON.stringify(result));
-            TimeTableService.setCurrentMatchDay(result.data.matchDayNumber);
-            $scope.matches = result.data.matches;
-            $scope.matchDayNumber = result.data.matchDayNumber;
-            if (!isMatchDayFinished($scope.matches)) {
-                $log.log('timeout!');
-                $timeout($scope.runNextMatchDay, 100);
-            } else {
-                $log.log('match day finished')
-            }
-        })
+        $http.get('rest/home/setNextMatchDayToRunnable/').then(function (result) {
+
+            $log.log('setNextMatchDayToRunnable!!!!' + JSON.stringify(result));
+
+            $http.get('rest/home/runNextMatchDayMinute/').then(function (result) {
+                $log.log('runNextMatchDayMinute: ' + JSON.stringify(result));
+                TimeTableService.setCurrentMatchDay(result.data.matchDayNumber);
+                $scope.matches = result.data.matches;
+                $scope.matchDayNumber = result.data.matchDayNumber;
+                if (!isMatchDayFinished($scope.matches)) {
+                    $log.log('timeout!');
+                    $timeout($scope.runNextMatchDay, 100);
+                } else {
+                    $log.log('match day finished')
+                }
+            })
+        });
+
     };
     $scope.runNextMatchDay();
 

@@ -8,6 +8,7 @@ import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.statistics.ScorerStatistic;
 import de.footballmanager.backend.domain.statistics.TeamStatistic;
 import de.footballmanager.backend.enumeration.Position;
+import de.footballmanager.backend.service.KIService;
 import de.footballmanager.backend.service.LeagueService;
 import de.footballmanager.backend.service.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class HomeController implements FootballManagerFacade {
     private LeagueService leagueService;
     @Autowired
     private StatisticService statisticService;
+    @Autowired
+    private KIService kiService;
 
     @GET
     @Path("teams")
@@ -50,6 +53,18 @@ public class HomeController implements FootballManagerFacade {
         System.out.println("HomeController getTimeTableForMatchDay: " + matchDay);
         return leagueService.getTimeTableForMatchDay(BUNDESLIGA, matchDay);
     }
+
+    @GET
+    @Path("setNextMatchDayToRunnable")
+    @Produces(MediaType.APPLICATION_JSON)
+    public boolean setNextMatchDayToRunnable() {
+        System.out.println("setNextMatchDayToRunnable");
+        MatchDay matchDay = leagueService.getTimeTableForMatchDay(BUNDESLIGA, leagueService.getTimeTable(BUNDESLIGA).getCurrentMatchDay());
+        kiService.handleSetStartEleven(matchDay);
+        leagueService.startNextMatchDay(BUNDESLIGA);
+        return true;
+    }
+
 
     @GET
     @Path("runNextMatchDayMinute")
