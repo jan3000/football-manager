@@ -7,6 +7,7 @@
     display: inline-block;
     vertical-align: middle;
     float: none;
+    height: 28px;
 }
 
 .green {
@@ -29,6 +30,15 @@
     font-weight: bold;
 }
 
-.body {
+body {
     font-size: 10px; !important;
+    background: #3c763d; !important;
+}
+
+.table {
+    background-color: #ccc !important;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background-color: #1b6d85; !important;
 }

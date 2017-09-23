@@ -1,0 +1,26 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-5">
+            <table class="table-striped table-bordered table">
+                <thead>
+                <tr style="font-weight: bold">
+                    <td>Teams</td>
+                    <td>Strength</td>
+                </tr>
+                </thead>
+                <tr ng-repeat="team in teams | orderBy:'name'">
+                    <td>{{team.name}}</td>
+                    <td>{{team.strength}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-sm-8">
+            <table class="table-striped table-bordered">
+                <tr ng-repeat="matchDay in timeTable.allMatchDays">
+                    <td>{{matchDay.matchDayNumber}}</td>
+                </tr>
+                <tr></tr>
+            </table>
+        </div>
+    </div>
+</div>

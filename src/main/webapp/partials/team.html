@@ -1,26 +1,43 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-5">
-            <table class="table-striped table-bordered table">
-                <thead>
+
+    </div>
+    <div class="row">
+    <div class="col-sm-2">
+        <table class="table-bordered table table-hover">
+            <thead>
                 <tr style="font-weight: bold">
                     <td>Teams</td>
                     <td>Strength</td>
                 </tr>
-                </thead>
-                <tr ng-repeat="team in teams | orderBy:'name'">
-                    <td>{{team.name}}</td>
-                    <td>{{team.strength}}</td>
-                </tr>
-            </table>
-        </div>
-        <div class="col-sm-8">
-            <table class="table-striped table-bordered">
-                <tr ng-repeat="matchDay in timeTable.allMatchDays">
-                    <td>{{matchDay.matchDayNumber}}</td>
-                </tr>
-                <tr></tr>
-            </table>
+            </thead>
+            <tr ng-repeat="team in teams | orderBy:'name'" ng-click="getTeam(team.name)">
+                <td>{{team.name}}</td>
+                <td>{{team.strength}}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-sm-6">
+        <table ng-show="selectedTeam" class="table-bordered table">
+            <thead>
+            <tr style="font-weight: bold">
+                <td>Surname</td>
+                <td>Name</td>
+                <td>Position</td>
+                <td>Date of birth</td>
+                <td>Age</td>
+                <td>Strength</td>
+            </tr>
+            </thead>
+            <tr ng-repeat="player in selectedTeam.players" ng-style="{'background-color':getPositionZone(player.position)}">
+                <td>{{player.lastName}}</td>
+                <td>{{player.firstName}}</td>
+                <td>{{player.position}}</td>
+                <td>{{player.dateOfBirth.dayOfMonth}}.{{player.dateOfBirth.monthOfYear}}.{{player.dateOfBirth.year}}</td>
+                <td>{{player.age}}</td>
+                <td>{{player.strength}}</td>
+            </tr>
+        </table>
         </div>
     </div>
 </div>

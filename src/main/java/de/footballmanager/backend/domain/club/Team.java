@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @XmlRootElement(name = "team")
-@XmlType(propOrder = {"name", "strength", "players", "manager"})
+@XmlType(propOrder = {"name", "strength", "players"})
 public class Team {
 
 //    private Manager manager;
