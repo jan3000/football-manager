@@ -151,8 +151,8 @@ public class TestUtil {
     public static Match createMatch(Team homeTeam, Team guestTeam, boolean isCreateFinishedMatch,
                                     boolean isMatchStarted, PlayingSystem systemHome, PlayingSystem systemGuest) {
         Match match = new Match();
-        match.setHomeTeam(homeTeam);
-        match.setGuestTeam(guestTeam);
+        match.setHomeTeam(homeTeam.getName());
+        match.setGuestTeam(guestTeam.getName());
         match.setPositionPlayerMapHomeTeam(createStartElevenMatchingGivenSystem(homeTeam, systemHome));
         match.setPositionPlayerMapGuestTeam(createStartElevenMatchingGivenSystem(guestTeam, systemGuest));
         if (isMatchStarted) {

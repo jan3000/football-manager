@@ -9,6 +9,7 @@ import de.footballmanager.backend.domain.league.*;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.statistics.ScorerStatistic;
 import de.footballmanager.backend.domain.statistics.TeamStatistic;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,9 @@ import static java.util.stream.Collectors.toSet;
 
 @Service
 public class StatisticService {
+
+    @Autowired
+    private MatchService matchService;
 
     public TeamStatistic getTeamStatistics(TimeTable timeTable, String teamName, Table currentTable, Map<Integer, Table> matchDayToTable) {
         TeamStatistic teamStatistic = new TeamStatistic(teamName);
@@ -35,7 +39,7 @@ public class StatisticService {
             for (Match match : matchDay.getMatches()) {
 
                 scorers.addAll(match.getGoals().stream()
-                        .filter(goal -> teamName.equals(goal.getTeam().getName()))
+                        .filter(goal -> teamName.equals(goal.getTeam()))
                         .map(Goal::getScorer)
                         .collect(toSet()));
 
@@ -61,17 +65,17 @@ public class StatisticService {
     }
 
     private boolean isGuestTeam(String teamName, Match match) {
-        return match.getGuestTeam().getName().equals(teamName);
+        return match.getGuestTeam().equals(teamName);
     }
 
     private boolean isHomeTeam(String teamName, Match match) {
-        return match.getHomeTeam().getName().equals(teamName);
+        return match.getHomeTeam().equals(teamName);
     }
 
     private void addGoalsToTimeline(String teamName, Integer[] goals, Integer[] totalGoals, Integer[] receivedGoals,
                                     Integer[] receivedTotalGoals, Match match) {
         for (Goal goal : match.getGoals()) {
-            if (goal.getTeam().getName().equals(teamName)) {
+            if (goal.getTeam().equals(teamName)) {
                 goals[goal.getMinute() - 1]++;
                 totalGoals[goal.getMinute() - 1]++;
             } else {
@@ -115,9 +119,9 @@ public class StatisticService {
         ImmutableList<MatchDay> allMatchDays = timeTable.getAllMatchDays();
         for (MatchDay matchDay : allMatchDays) {
             if (matchDay.isFinished()) {
-                Match matchOfTeam = matchDay.getMatchOfTeam(teamName);
+                Match matchOfTeam = matchService.getMatchOfTeam(matchDay, teamName);
                 for (Goal goal : matchOfTeam.getGoals()) {
-                    if (goal.getTeam().getName().equals(teamName)) {
+                    if (goal.getTeam().equals(teamName)) {
                         Player scorer = goal.getScorer();
                         if (!scorerToGoals.containsKey(scorer)) {
                             scorerToGoals.put(scorer, 1);

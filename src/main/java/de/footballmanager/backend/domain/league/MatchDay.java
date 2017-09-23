@@ -50,14 +50,14 @@ public class MatchDay {
         return matches.contains(match);
     }
 
-    public boolean containsTeam(final Team team) {
-        for (Match match : matches) {
-            if (match.containsTeam(team)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean containsTeam(final Team team) {
+//        for (Match match : matches) {
+//            if (match.containsTeam(team)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     public boolean isHomeTeam(final Team team) {
         for (Match match : matches) {
@@ -93,11 +93,7 @@ public class MatchDay {
         return matches.stream().allMatch(Match::isFinished);
     }
 
-    public Match getMatchOfTeam(String teamName) {
-        return matches.stream()
-                .filter(m -> m.getHomeTeam().getName().equals(teamName) || m.getGuestTeam().getName().equals(teamName))
-                .collect(Collectors.toList()).get(0);
-    }
+
 
     @Override
     public String toString() {

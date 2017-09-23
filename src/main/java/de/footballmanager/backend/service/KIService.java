@@ -32,6 +32,8 @@ public class KIService {
     private LeagueService leagueService;
     @Autowired
     private ClubService clubService;
+    @Autowired
+    private MatchService matchService;
 
 
 
@@ -56,8 +58,8 @@ public class KIService {
 
     public void handleSetStartEleven(MatchDay matchDay){
         matchDay.getMatches().forEach(match -> {
-            setPositionPlayerMapForKITeams(match, match.getHomeTeam(), true);
-            setPositionPlayerMapForKITeams(match, match.getGuestTeam(), false);
+            setPositionPlayerMapForKITeams(match, clubService.getTeam(matchService.getHomeTeam(match)), true);
+            setPositionPlayerMapForKITeams(match, clubService.getTeam(matchService.getGuestTeam(match)), false);
         });
     }
 
@@ -79,8 +81,8 @@ public class KIService {
     }
 
     public boolean isKIManaged(Match match) {
-        String homeTeam = match.getHomeTeam().getName();
-        String guestTeam = match.getGuestTeam().getName();
+        String homeTeam = match.getHomeTeam();
+        String guestTeam = match.getGuestTeam();
 
         return CollectionUtils.isEmpty(
                 Lists.newArrayList(homeTeam, guestTeam).stream()

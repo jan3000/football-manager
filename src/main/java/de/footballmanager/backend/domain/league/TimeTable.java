@@ -32,10 +32,6 @@ public class TimeTable {
         return matchDays.get(matchDayNumber - 1);
     }
 
-    public Match getMatch(int matchDayNumber, String teamName) {
-        MatchDay matchDay = getMatchDay(matchDayNumber);
-        return matchDay.getMatchOfTeam(teamName);
-    }
 
     public int getCurrentMatchDay() {
         return currentMatchDay;

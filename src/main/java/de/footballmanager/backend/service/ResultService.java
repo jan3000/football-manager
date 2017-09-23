@@ -27,6 +27,10 @@ public class ResultService {
 
     @Autowired
     private StrengthService strengthService;
+    @Autowired
+    private MatchService matchService;
+    @Autowired
+    private ClubService clubService;
 
     /**
      * Do not call directly. Use LeagueService instead.
@@ -46,28 +50,28 @@ public class ResultService {
         if (isGoalInThisMinute(strengthService.getStrength(match.getPositionPlayerMapGuestTeam()), false)) {
             addGuestGoal(match, minute);
         }
-        match.increaseMinute();
+        matchService.increaseMinute(match);
 
         // TODO calculate additionalTime
         // TODO cards, injuries, changes
     }
 
     void addGuestGoal(Match match, int minute) {
-        Player goalMaker = getScorer(match.getGuestTeam());
+        Player goalMaker = getScorer(clubService.getTeam(match.getGuestTeam()));
         Goal goal = new Goal(minute, match.getGuestTeam(), goalMaker, null, new Result(match.getGoalsHomeTeam(),
                 match.getGoalsGuestTeam() + 1));
-        match.increaseGoalsGuestTeam(goal);
+        matchService.increaseGoalsGuestTeam(match, goal);
     }
 
     void addHomeGoal(Match match, int minute) {
-        Player goalMaker = getScorer(match.getHomeTeam());
+        Player goalMaker = getScorer(clubService.getTeam(match.getHomeTeam()));
         Goal goal = new Goal(minute, match.getHomeTeam(), goalMaker, null, new Result(match.getGoalsHomeTeam() + 1,
                 match.getGoalsGuestTeam()));
-        match.increaseGoalsHomeTeam(goal);
+        matchService.increaseGoalsHomeTeam(match, goal);
     }
 
     @Cacheable(cacheNames = "scorerMaps", key = "#team.name")
-    Player getScorer(Team team) {
+    public Player getScorer(Team team) {
         Preconditions.checkArgument(team.getName() != null, "team must have a name");
         Preconditions.checkArgument(!team.getPlayers().isEmpty(), "no players set in team %s", team.getName());
         Map<Integer, Player> scoreToPlayer;

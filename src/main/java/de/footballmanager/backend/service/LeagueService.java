@@ -35,6 +35,8 @@ public class LeagueService {
     private DateService dateService;
     @Autowired
     private ClubService clubService;
+    @Autowired
+    private MatchService matchService;
 
     private List<String> leaguePriorityList;
     private Map<String, League> nameToLeague;
@@ -145,7 +147,7 @@ public class LeagueService {
         Preconditions.checkNotNull(league, "no league found for leagueName: ", leagueName);
         TimeTable timeTable = getCurrentSeason(leagueName).getTimeTable();
         Preconditions.checkNotNull(timeTable, "no timeTable found for leagueName: ", leagueName);
-        return timeTable.getMatch(matchDayNumber, teamName);
+        return matchService.getMatch(timeTable, matchDayNumber, teamName);
     }
 
 //    public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
@@ -165,7 +167,7 @@ public class LeagueService {
         TimeTable timeTable = getTimeTable(leagueName);
         MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
         List<Match> matches = matchDay.getMatches();
-        matches.forEach(Match::start);
+        matches.forEach(match -> matchService.start(match));
     }
 
     public void finishDay() {
@@ -280,13 +282,15 @@ public class LeagueService {
         for (MatchDay matchDay : timeTable.getAllMatchDays().asList().subList(0, day)) {
             for (Match match : matchDay.getMatches()) {
                 if (match.isFinished()) {
-                    if (!teamToPointsMap.containsKey(match.getHomeTeam())) {
-                        teamToPointsMap.put(match.getHomeTeam(), 0);
-                        teamToTableEntryMap.put(match.getHomeTeam(), new TableEntry(match.getHomeTeam().getName()));
+                    Team homeTeam = clubService.getTeam(match.getHomeTeam());
+                    Team guestTeam = clubService.getTeam(match.getGuestTeam());
+                    if (!teamToPointsMap.containsKey(homeTeam)) {
+                        teamToPointsMap.put(homeTeam, 0);
+                        teamToTableEntryMap.put(homeTeam, new TableEntry(match.getHomeTeam()));
                     }
-                    if (!teamToPointsMap.containsKey(match.getGuestTeam())) {
-                        teamToPointsMap.put(match.getGuestTeam(), 0);
-                        teamToTableEntryMap.put(match.getGuestTeam(), new TableEntry(match.getGuestTeam().getName()));
+                    if (!teamToPointsMap.containsKey(guestTeam)) {
+                        teamToPointsMap.put(guestTeam, 0);
+                        teamToTableEntryMap.put(guestTeam, new TableEntry(match.getGuestTeam()));
                     }
 
                     TableEntry homeTableEntry = teamToTableEntryMap.get(match.getHomeTeam());
@@ -295,29 +299,29 @@ public class LeagueService {
                     homeTableEntry.setReceivedHomeGoals(homeTableEntry.getReceivedHomeGoals() + match.getGoalsGuestTeam());
                     guestTableEntry.setAwayGoals(guestTableEntry.getAwayGoals() + match.getGoalsGuestTeam());
                     guestTableEntry.setReceivedAwayGoals(guestTableEntry.getReceivedAwayGoals() + match.getGoalsHomeTeam());
-                    switch (match.getResultType()) {
+                    switch (matchService.getResultType(match)) {
                         case HOME_WON:
-                            teamToPointsMap.put(match.getHomeTeam(), teamToPointsMap.get(match.getHomeTeam()) + 3);
+                            teamToPointsMap.put(clubService.getTeam(match.getHomeTeam()), teamToPointsMap.get(match.getHomeTeam()) + 3);
                             homeTableEntry.setPoints(homeTableEntry.getPoints() + 3);
                             homeTableEntry.setHomeGamesWon(homeTableEntry.getHomeGamesWon() + 1);
                             guestTableEntry.setAwayGamesLost(guestTableEntry.getAwayGamesLost() + 1);
                             break;
                         case DRAW:
-                            teamToPointsMap.put(match.getHomeTeam(), teamToPointsMap.get(match.getHomeTeam()) + 1);
-                            teamToPointsMap.put(match.getGuestTeam(), teamToPointsMap.get(match.getGuestTeam()) + 1);
+                            teamToPointsMap.put(clubService.getTeam(match.getHomeTeam()), teamToPointsMap.get(match.getHomeTeam()) + 1);
+                            teamToPointsMap.put(clubService.getTeam(match.getGuestTeam()), teamToPointsMap.get(match.getGuestTeam()) + 1);
                             homeTableEntry.setPoints(homeTableEntry.getPoints() + 1);
                             guestTableEntry.setPoints(guestTableEntry.getPoints() + 1);
                             homeTableEntry.setHomeGamesDraw(homeTableEntry.getHomeGamesDraw() + 1);
                             guestTableEntry.setAwayGamesDraw(guestTableEntry.getAwayGamesDraw() + 1);
                             break;
                         case GUEST_WON:
-                            teamToPointsMap.put(match.getGuestTeam(), teamToPointsMap.get(match.getGuestTeam()) + 3);
+                            teamToPointsMap.put(clubService.getTeam(match.getGuestTeam()), teamToPointsMap.get(match.getGuestTeam()) + 3);
                             guestTableEntry.setPoints(guestTableEntry.getPoints() + 3);
                             homeTableEntry.setHomeGamesLost(homeTableEntry.getHomeGamesLost() + 1);
                             guestTableEntry.setAwayGamesWon(guestTableEntry.getAwayGamesWon() + 1);
                             break;
                         default:
-                            System.out.println("unknown match result type: " + match.getResultType());
+                            System.out.println("unknown match result type: " + matchService.getResultType(match));
                             break;
                     }
                 }

@@ -93,8 +93,8 @@ public class PrintUtil {
 
     public static String print(Match match) {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("%s \t- \t%s \t%s : %s  (%s)", fillUpSpaces(match.getHomeTeam().getName()),
-                fillUpSpaces(match.getGuestTeam().getName()),
+        builder.append(String.format("%s \t- \t%s \t%s : %s  (%s)", fillUpSpaces(match.getHomeTeam()),
+                fillUpSpaces(match.getGuestTeam()),
                 match.getResult().getHomeGoals(), match.getResult().getGuestGoals(), match.getHalfTimeResult().print()));
         for (Goal goal : match.getGoals()) {
             builder.append(String.format("\n%s. Minute\t%s", goal.getMinute(), goal.getNewResult().print()));
@@ -105,8 +105,8 @@ public class PrintUtil {
 
     public static String printCompact(Match match) {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("%s \t- \t%s \t%s : %s  (%s)", fillUpSpaces(match.getHomeTeam().getName()),
-                fillUpSpaces(match.getGuestTeam().getName()),
+        builder.append(String.format("%s \t- \t%s \t%s : %s  (%s)", fillUpSpaces(match.getHomeTeam()),
+                fillUpSpaces(match.getGuestTeam()),
                 match.getResult().getHomeGoals(), match.getResult().getGuestGoals(), match.getHalfTimeResult().print()));
         return builder.toString();
     }
