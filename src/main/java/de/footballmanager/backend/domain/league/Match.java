@@ -1,9 +1,7 @@
 package de.footballmanager.backend.domain.league;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.util.MaxSizeHashMap;
 import de.footballmanager.backend.enumeration.Position;
@@ -20,6 +18,18 @@ public class Match {
 
     private Map<Position, Player> positionPlayerMapHomeTeam = new MaxSizeHashMap<>(11);
     private Map<Position, Player> positionPlayerMapGuestTeam = new MaxSizeHashMap<>(11);
+
+    private int additionalTime = 0;
+    private List<Player> yellowCards;
+    private List<Player> redCards;
+    private List<PlayerChange> playerChangesHomeTeam = Lists.newArrayListWithCapacity(3);
+    private List<PlayerChange> playerChangesGuestTeam = Lists.newArrayListWithCapacity(3);
+
+    private final List<Goal> goals = Lists.newArrayList();
+    private final Result halfTimeResult = new Result(0, 0);
+    private Result result = new Result(0, 0);
+    private boolean isFinished = false;
+    private boolean isStarted = false;
 
     private int minute = 1;
 
@@ -60,17 +70,7 @@ public class Match {
         return additionalTime;
     }
 
-    private int additionalTime = 0;
-    private List<Player> yellowCards;
-    private List<Player> redCards;
-    private List<PlayerChange> playerChangesHomeTeam = Lists.newArrayListWithCapacity(3);
-    private List<PlayerChange> playerChangesGuestTeam = Lists.newArrayListWithCapacity(3);
 
-    private final List<Goal> goals = Lists.newArrayList();
-    private final Result halfTimeResult = new Result(0, 0);
-    private Result result = new Result(0, 0);
-    private boolean isFinished = false;
-    private boolean isStarted = false;
 
     public Match() {
     }
@@ -105,7 +105,7 @@ public class Match {
 
 
     public Map<Position, Player> getPositionPlayerMapGuestTeam() {
-        return ImmutableMap.copyOf(positionPlayerMapGuestTeam);
+        return positionPlayerMapGuestTeam;
     }
 
     public void setPositionPlayerMapGuestTeam(Map<Position, Player> positionPlayerMapGuestTeam) {
@@ -165,9 +165,6 @@ public class Match {
     public List<Goal> getGoals() {
         return goals;
     }
-
-
-
 
     public Result getResult() {
         return result;

@@ -12,6 +12,7 @@ import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.PrintUtil;
 import de.footballmanager.backend.util.TestUtil;
 import jersey.repackaged.com.google.common.collect.Sets;
+import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -26,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.stream.IntStream;
 
+import static de.footballmanager.backend.enumeration.PlayingSystem.SYSTEM_4_4_2;
 import static de.footballmanager.backend.util.TestUtil.*;
 import static org.easymock.EasyMock.*;
 import static org.fest.assertions.Assertions.assertThat;
@@ -34,16 +36,30 @@ import static org.junit.Assert.*;
 public class ResultServiceTest {
 
     private ResultService resultService;
+    private MatchService matchService;
+    private ClubService clubService;
 
     @Before
     public void setUp() {
         resultService = new ResultService();
+        matchService = createMock(MatchService.class);
+        clubService = createMock(ClubService.class);
+        ReflectionTestUtils.setField(resultService, "clubService", clubService);
+        ReflectionTestUtils.setField(resultService, "matchService", matchService);
     }
 
     @Test
     public void addHomeGoal() {
         // given
-        Match match = createRunningMatch();
+        Team homeTeam = createTeam(TEAM_NAME_2, SYSTEM_4_4_2);
+        Match match = createRunningMatch(homeTeam, createTeam(TEAM_NAME_1, SYSTEM_4_4_2));
+        startMatch(match);
+
+        expect(clubService.getTeam(homeTeam.getName())).andReturn(homeTeam);
+        matchService.increaseGoalsHomeTeam(eq(match), (Goal) anyObject());
+        expectLastCall();
+
+        replay(clubService, matchService);
         assertEquals(0, match.getGoals().size());
 
         // when
@@ -51,13 +67,29 @@ public class ResultServiceTest {
         resultService.addHomeGoal(match, minute);
 
         // then
-        assertGoalIsMade(match, minute, 1, 0);
+        verify(clubService, matchService);
+    }
+
+    private void startMatch(Match match) {
+        match.setStarted(true);
+    }
+
+    private void finishMatch(Match match) {
+        IntStream.range(1, MatchService.MINUTES_OF_GAME).forEach(i -> matchService.increaseMinute(match));
     }
 
     @Test
     public void addGuestGoal() {
         // given
-        Match match = createRunningMatch();
+        Team guestTeam = createTeam(TEAM_NAME_1, SYSTEM_4_4_2);
+        Match match = createRunningMatch(createTeam(TEAM_NAME_2, SYSTEM_4_4_2), guestTeam);
+        startMatch(match);
+
+        expect(clubService.getTeam(guestTeam.getName())).andReturn(guestTeam);
+        matchService.increaseGoalsGuestTeam(eq(match), (Goal) anyObject());
+        expectLastCall();
+
+        replay(clubService, matchService);
         assertEquals(0, match.getGoals().size());
 
         // when
@@ -65,7 +97,7 @@ public class ResultServiceTest {
         resultService.addGuestGoal(match, minute);
 
         // then
-        assertGoalIsMade(match, minute, 0, 1);
+        verify(clubService, matchService);
     }
 
     private void assertGoalIsMade(Match match, int minute, int expectedHomeGoals, int expectedGuastGoals) {
@@ -81,27 +113,37 @@ public class ResultServiceTest {
 
     @Test
     public void calculateNextMinuteAddsOneMinuteToMatch() {
+        // given
         StrengthService strengthService = mockStrengthService();
         List<Match> matches = Lists.newArrayList();
-        Match match = createRunningMatch();
+        Match match = createRunningMatch(createTeam(TEAM_NAME_2, SYSTEM_4_4_2), createTeam(TEAM_NAME_1, SYSTEM_4_4_2));
+        startMatch(match);
         matches.add(match);
+        matchService.increaseMinute(match);
+        expectLastCall().once();
         assertEquals(1, match.getMinute());
+
+        replay(matchService);
+
+        // when
         resultService.calculateNextMinute(matches);
+
+        // then
         assertNotNull(matches);
         assertEquals(1, matches.size());
-        assertEquals(2, match.getMinute());
         assertFalse(match.isFinished());
-        verify(strengthService);
+        verify(strengthService, matchService);
     }
 
     @Test
+    @Ignore("This is now done in MatchService")
     public void calculateNextMinuteFinished() {
 
         StrengthService strengthService = mockStrengthService();
 
         List<Match> matches = Lists.newArrayList();
-        Match match = createRunningMatch();
-        IntStream.range(1, 89).forEach(i -> match.increaseMinute());
+        Match match = createRunningMatch(createTeam(TEAM_NAME_2, SYSTEM_4_4_2), createTeam(TEAM_NAME_1, SYSTEM_4_4_2));
+        IntStream.range(1, 89).forEach(i -> matchService.increaseMinute(match));
         matches.add(match);
         assertEquals(89, match.getMinute());
         resultService.calculateNextMinute(matches);
@@ -204,17 +246,21 @@ public class ResultServiceTest {
 
     //TODO go on here with testing the resultService
     @Test
+    @Ignore("maybe thats an IT?")
     public void bulkResultTest() {
         StrengthService strengthService = createMock(StrengthService.class);
         expect(strengthService.getStrength(anyObject())).andReturn(100).anyTimes();
-
-        replay(strengthService);
-        ReflectionTestUtils.setField(resultService, "strengthService", strengthService);
         Team team1 = TestUtil.createTeam(TEAM_NAME_1, PlayingSystem.SYSTEM_4_4_2);
         Team team2 = TestUtil.createTeam(TEAM_NAME_2, PlayingSystem.SYSTEM_4_4_2);
 
+        expect(clubService.getTeam(TEAM_NAME_1)).andReturn(team1).anyTimes();
+        expect(clubService.getTeam(TEAM_NAME_2)).andReturn(team2).anyTimes();
+
+        replay(strengthService, clubService);
+        ReflectionTestUtils.setField(resultService, "strengthService", strengthService);
+
         List<Match> matches = Lists.newArrayList();
-        IntStream.rangeClosed(1,10000).forEach(i -> {
+        IntStream.rangeClosed(1,100).forEach(i -> {
             matches.addAll(runCompleteMatches(team1, team2));
 //            System.out.println(matches.get(0).getResult().print());
         });
@@ -226,6 +272,7 @@ public class ResultServiceTest {
 
     private List<Match> runCompleteMatches(Team team1, Team team2) {
         List<Match> matches = Lists.newArrayList(createMatch(team1, team2, false, true));
+        matches.forEach(m-> m.setStarted(true));
         IntStream.range(1,90).forEach(i -> {
             resultService.calculateNextMinute(matches);
         });

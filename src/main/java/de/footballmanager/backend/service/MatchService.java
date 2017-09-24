@@ -21,7 +21,7 @@ public class MatchService {
     @Autowired
     private ClubService clubService;
 
-    private static final int MINUTES_OF_GAME = 90;
+    protected static final int MINUTES_OF_GAME = 90;
     private static final int MINUTES_HALF_TIME = 45;
 
 
@@ -43,10 +43,10 @@ public class MatchService {
 
     public void increaseMinute(Match match) {
         validateMatchIsRunning(match);
-        int minute = match.getMinute();
-        match.setMinute(minute + 1);
+        int minute = match.getMinute() + 1;
+        match.setMinute(minute);
         if (minute >= MINUTES_OF_GAME + match.getAdditionalTime()) {
-            setFinished(match, true);
+            setFinished(match);
         }
     }
 
@@ -143,10 +143,10 @@ public class MatchService {
     }
 
 
-    private void setFinished(Match match, final boolean finished) {
+    protected void setFinished(Match match) {
         Preconditions.checkState(match.isStarted(), "match cannot be finished if it has not been started");
         Preconditions.checkArgument(match.getMinute()>= MINUTES_OF_GAME + match.getAdditionalTime(), String.format("do not finish match before 90 minutes passed: {%s}", match.getMinute()));
-        match.setFinished(finished);
+        match.setFinished(true);
     }
     public ResultType getResultType(Match match) {
         Result result = match.getResult();
@@ -167,9 +167,9 @@ public class MatchService {
         return match.getGuestTeam();
     }
 
-    public boolean containsTeam(MatchDay matchDay, final Team team) {
+    public boolean containsTeam(MatchDay matchDay, String teamName) {
         for (Match match : matchDay.getMatches()) {
-            if (containsTeam(match, team.getName())) {
+            if (containsTeam(match, teamName)) {
                 return true;
             }
         }

@@ -6,16 +6,16 @@ import de.footballmanager.backend.domain.club.Team;
 import java.util.Comparator;
 import java.util.Map;
 
-public class TeamValueComparator implements Comparator<Team> {
+public class TeamValueComparator implements Comparator<String> {
 
-    Map<Team, TableEntry> map;
+    private Map<String, TableEntry> map;
 
-    public TeamValueComparator(final Map<Team, TableEntry> map) {
+    public TeamValueComparator(final Map<String, TableEntry> map) {
         super();
         this.map = map;
     }
 
-    public int compare(final Team o1, final Team o2) {
+    public int compare(final String o1, final String o2) {
         TableEntry tableEntry2 = map.get(o2);
         TableEntry tableEntry1 = map.get(o1);
         if (tableEntry1.getPoints() < tableEntry2.getPoints()) {

@@ -51,15 +51,15 @@ public class KIService {
         Preconditions.checkArgument(isKIManaged(matchDay), "match day is not KI managed: ", matchDay);
         handleSetStartEleven(matchDay);
         leagueService.startNextMatchDay(leagueName);
-        IntStream.range(1, 90).forEach(i -> {
+        IntStream.range(1, MatchService.MINUTES_OF_GAME).forEach(i -> {
             leagueService.runNextMinute(leagueName);
         });
     }
 
     public void handleSetStartEleven(MatchDay matchDay){
         matchDay.getMatches().forEach(match -> {
-            setPositionPlayerMapForKITeams(match, clubService.getTeam(matchService.getHomeTeam(match)), true);
-            setPositionPlayerMapForKITeams(match, clubService.getTeam(matchService.getGuestTeam(match)), false);
+            setPositionPlayerMapForKITeams(match, clubService.getTeam(match.getHomeTeam()), true);
+            setPositionPlayerMapForKITeams(match, clubService.getTeam(match.getGuestTeam()), false);
         });
     }
 

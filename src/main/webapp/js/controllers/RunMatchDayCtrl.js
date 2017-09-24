@@ -18,7 +18,7 @@ module.controller('RunMatchDayCtrl', function ($scope, $http, $log, $timeout, Ti
             $log.log('setNextMatchDayToRunnable!!!!' + JSON.stringify(result));
 
             $http.get('rest/home/runNextMatchDayMinute/').then(function (result) {
-                $log.log('runNextMatchDayMinute: ' + JSON.stringify(result));
+                $log.log('runNextMatchDayMinute: ' + JSON.stringify(result.data.matches[1]));
                 TimeTableService.setCurrentMatchDay(result.data.matchDayNumber);
                 $scope.matches = result.data.matches;
                 $scope.matchDayNumber = result.data.matchDayNumber;

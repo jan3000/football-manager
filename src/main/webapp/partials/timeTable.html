@@ -22,8 +22,8 @@
         <div class="col-sm-offset-1 col-sm-7">
             <table class="table table-condensed table-bordered" style="background-color: cornsilk">
                 <tr ng-repeat="match in matches">
-                    <td class="col-sm-3">{{match.homeTeam.name}}</td>
-                    <td class="col-sm-3">{{match.guestTeam.name}}</td>
+                    <td class="col-sm-3">{{match.homeTeam}}</td>
+                    <td class="col-sm-3">{{match.guestTeam}}</td>
                     <td class="col-sm-1">{{match.result.homeGoals}} : {{match.result.guestGoals}}</td>
                     <td class="col-sm-1">({{match.halfTimeResult.homeGoals}} : {{match.halfTimeResult.guestGoals}})</td>
                 </tr>

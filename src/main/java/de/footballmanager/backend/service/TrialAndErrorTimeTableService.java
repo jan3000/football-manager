@@ -209,9 +209,9 @@ public class TrialAndErrorTimeTableService extends TimeTableService {
         }
     }
 
-    protected boolean isTeamNotInMatchDay(final MatchDay matchDay, final String team) {
+    protected boolean isTeamNotInMatchDay(final MatchDay matchDay, final String teamName) {
         Preconditions.checkNotNull(matchDay, "matchDay should not be null in isTeamNotInMatchDay");
-        return !matchService.containsTeam(matchDay, clubService.getTeam(team));
+        return !matchService.containsTeam(matchDay, teamName);
     }
 
     protected Map<Match, Integer> calculateScoreMapping(final List<Match> allPossibleMatches,

@@ -46,37 +46,6 @@ public class MatchDay {
         this.matches = matches;
     }
 
-    public boolean containsMatch(final Match match) {
-        return matches.contains(match);
-    }
-
-//    public boolean containsTeam(final Team team) {
-//        for (Match match : matches) {
-//            if (match.containsTeam(team)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-    public boolean isHomeTeam(final Team team) {
-        for (Match match : matches) {
-            if (match.getHomeTeam().equals(team)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isGuestTeam(final Team team) {
-        for (Match match : matches) {
-            if (match.getGuestTeam().equals(team)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public int getMatchDayNumber() {
         return matchDayNumber;
     }

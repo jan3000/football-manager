@@ -13,21 +13,23 @@
     <div class="row" style="height: 20px;"></div>
     <div class="row">
         <div class="col-sm-offset-1 col-sm-8">
-            <table class="table table-condensed table-bordered" ng-repeat="match in matches">
-                <tr>
-                    <td class="col-sm-3">{{match.homeTeam.name}}</td>
-                    <td class="col-sm-3">{{match.guestTeam.name}}</td>
+            <table class="table table-condensed table-bordered">
+                <tr  ng-repeat="match in matches">
+                    <td class="col-sm-3">{{match.homeTeam}}</td>
+                    <td class="col-sm-3">{{match.guestTeam}}</td>
                     <td ng-class="{'bold-text': match.finished}" class="col-sm-1">
                         {{match.result.homeGoals}} : {{match.result.guestGoals}}
                     </td>
-                    <td class="col-sm-1">({{match.halfTimeResult.homeGoals}} : {{match.halfTimeResult.guestGoals}})</td>
-                    <!--<td>match.goals: {{match.goals}}</td>-->
-                    <td>
-                        <div ng-repeat="goal in match.goals">
-                            ({{goal.minute}}.) {{goal.newResult.homeGoals}} : {{goal.newResult.guestGoals}}
-                            {{goal.scorer.lastName}} ({{goal.scorer.position}})
-                        </div>
+                    <td class="col-sm-1">
+                        ({{match.halfTimeResult.homeGoals}} : {{match.halfTimeResult.guestGoals}})
                     </td>
+                    <!--<td>match.goals: {{match.goals}}</td>-->
+                    <!--<td>-->
+                        <!--<div ng-repeat="goal in match.goals">-->
+                            <!--({{goal.minute}}.) {{goal.newResult.homeGoals}} : {{goal.newResult.guestGoals}}-->
+                            <!--{{goal.scorer.lastName}} ({{goal.scorer.position}})-->
+                        <!--</div>-->
+                    <!--</td>-->
                 </tr>
             </table>
         </div>

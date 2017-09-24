@@ -15,8 +15,8 @@ public class LeagueTestUtil {
 
     public static Match createMatch(final String team1, final String team2) {
         Match match = new Match();
-        match.setHomeTeam(new Team(team1));
-        match.setGuestTeam(new Team(team2));
+        match.setHomeTeam(team1);
+        match.setGuestTeam(team2);
         return match;
     }
 
