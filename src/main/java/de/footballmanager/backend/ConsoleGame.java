@@ -1,21 +1,17 @@
 package de.footballmanager.backend;
 
 import de.footballmanager.backend.domain.club.Team;
-import de.footballmanager.backend.domain.league.Match;
 import de.footballmanager.backend.domain.league.MatchDay;
-import de.footballmanager.backend.domain.league.Table;
 import de.footballmanager.backend.service.InitializationService;
 import de.footballmanager.backend.service.KIService;
 import de.footballmanager.backend.service.LeagueService;
 import de.footballmanager.backend.util.PrintUtil;
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.IntStream;
 
 public class ConsoleGame {
 
@@ -48,7 +44,7 @@ public class ConsoleGame {
                 System.out.println("Table of matchday: " + currentMatchDayNumber);
                 MatchDay currentMatchDay1 = leagueService.getMatchDay(BUNDESLIGA, currentMatchDayNumber - 1);
                 System.out.println(PrintUtil.printCompact(currentMatchDay1));
-                System.out.println(PrintUtil.print(leagueService.getTable(BUNDESLIGA, currentMatchDayNumber -1 )));
+                System.out.println(PrintUtil.print(leagueService.getTable(BUNDESLIGA, currentMatchDayNumber - 1)));
                 System.out.println("---------------------------------------------------");
             }
         }
@@ -57,8 +53,7 @@ public class ConsoleGame {
     }
 
 
-
-    public static void printList(List<Object> items)  {
+    public static void printList(List<Object> items) {
         for (Object item : items) {
             System.out.println(item.toString());
         }

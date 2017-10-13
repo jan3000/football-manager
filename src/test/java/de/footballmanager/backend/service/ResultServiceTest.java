@@ -12,7 +12,6 @@ import de.footballmanager.backend.util.LeagueTestUtil;
 import de.footballmanager.backend.util.PrintUtil;
 import de.footballmanager.backend.util.TestUtil;
 import jersey.repackaged.com.google.common.collect.Sets;
-import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -260,7 +259,7 @@ public class ResultServiceTest {
         ReflectionTestUtils.setField(resultService, "strengthService", strengthService);
 
         List<Match> matches = Lists.newArrayList();
-        IntStream.rangeClosed(1,100).forEach(i -> {
+        IntStream.rangeClosed(1, 100).forEach(i -> {
             matches.addAll(runCompleteMatches(team1, team2));
 //            System.out.println(matches.get(0).getResult().print());
         });
@@ -271,9 +270,9 @@ public class ResultServiceTest {
     }
 
     private List<Match> runCompleteMatches(Team team1, Team team2) {
-        List<Match> matches = Lists.newArrayList(createMatch(team1, team2, false, true));
-        matches.forEach(m-> m.setStarted(true));
-        IntStream.range(1,90).forEach(i -> {
+        List<Match> matches = Lists.newArrayList(createMatch(team1, team2));
+        matches.forEach(m -> m.setStarted(true));
+        IntStream.range(1, 90).forEach(i -> {
             resultService.calculateNextMinute(matches);
         });
         return matches;
@@ -320,7 +319,6 @@ public class ResultServiceTest {
             }
         }
     }
-
 
 
     private class ResultComparator implements Comparator<Result> {

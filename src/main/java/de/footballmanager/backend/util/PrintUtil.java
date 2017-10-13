@@ -21,7 +21,6 @@ public class PrintUtil {
     }
 
 
-
     public static String print(Table table) {
 
         List<TableEntry> tableEntries = table.getTableEntriesSorted();
@@ -63,7 +62,6 @@ public class PrintUtil {
         buffi.append(tableEntry.getPoints() + "\t\n");
         return buffi.toString();
     }
-
 
 
     public static String print(MatchDay matchDay) {

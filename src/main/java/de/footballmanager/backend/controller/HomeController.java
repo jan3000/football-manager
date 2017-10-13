@@ -144,7 +144,6 @@ public class HomeController implements FootballManagerFacade {
 
     @Override
     public void showFormerMatchDay() {
-
     }
 
     @Override

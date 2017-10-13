@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -34,7 +33,6 @@ public class KIService {
     private ClubService clubService;
     @Autowired
     private MatchService matchService;
-
 
 
     public void handleNextMatchDay(String leagueName) {
@@ -56,7 +54,7 @@ public class KIService {
         });
     }
 
-    public void handleSetStartEleven(MatchDay matchDay){
+    public void handleSetStartEleven(MatchDay matchDay) {
         matchDay.getMatches().forEach(match -> {
             setPositionPlayerMapForKITeams(match, clubService.getTeam(match.getHomeTeam()), true);
             setPositionPlayerMapForKITeams(match, clubService.getTeam(match.getGuestTeam()), false);
@@ -66,7 +64,7 @@ public class KIService {
     private void setPositionPlayerMapForKITeams(Match match, Team team, boolean homeTeam) {
         if (isKIManged(team.getName())) {
             Pair<PlayingSystem, Map<Position, Player>> pair = teamManagerService.getBestPlayersForBestSystem(team);
-            if(homeTeam) {
+            if (homeTeam) {
                 match.setPositionPlayerMapHomeTeam(pair.getSecond());
             } else {
                 match.setPositionPlayerMapGuestTeam(pair.getSecond());
@@ -104,8 +102,13 @@ public class KIService {
                         .collect(toList()));
     }
 
-    public void handleChanges(){}
-    public void handleTraining(){}
-    public void handleTransfers(){}
+    public void handleChanges() {
+    }
+
+    public void handleTraining() {
+    }
+
+    public void handleTransfers() {
+    }
 
 }

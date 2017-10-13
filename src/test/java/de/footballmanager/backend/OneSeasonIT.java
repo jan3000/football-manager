@@ -119,7 +119,6 @@ public class OneSeasonIT {
         assertTeamStatisticsGuestTeam(timeTable, resultMatch1, guestTeam1);
 
 
-
         // ----------------------------------------
         // day 2
         // ----------------------------------------
@@ -137,7 +136,7 @@ public class OneSeasonIT {
         teamManagerService.setStartEleven(match2, managedTeam, bestPlayersForBestSystem.getSecond());
 
         leagueService.startNextMatchDay(BUNDESLIGA);
-        IntStream.range(1,90).forEach(i -> leagueService.runNextMinute(BUNDESLIGA));
+        IntStream.range(1, 90).forEach(i -> leagueService.runNextMinute(BUNDESLIGA));
 
         matches.forEach(match -> assertTrue(match2.isFinished()));
         System.out.println(PrintUtil.print(match2));

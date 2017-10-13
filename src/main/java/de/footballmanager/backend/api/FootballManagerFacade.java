@@ -1,8 +1,8 @@
 package de.footballmanager.backend.api;
 
 
-import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.Position;
 
 import java.util.Map;

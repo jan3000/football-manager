@@ -7,7 +7,7 @@ public class Goal {
 
     private int minute;
     private String team;
-//    private Team team;
+    //    private Team team;
     private Player scorer;
     private Result newResult;
     private KindOfGoal kindOfGoal;

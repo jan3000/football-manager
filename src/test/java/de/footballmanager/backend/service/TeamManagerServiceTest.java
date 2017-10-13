@@ -1,6 +1,9 @@
 package de.footballmanager.backend.service;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.Match;
 import de.footballmanager.backend.domain.persons.Player;
@@ -15,7 +18,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static de.footballmanager.backend.enumeration.PlayingSystem.*;
 import static de.footballmanager.backend.enumeration.Position.*;
@@ -335,7 +341,6 @@ public class TeamManagerServiceTest {
     }
 
 
-
     @Test
     public void getBestPlayersForSystemSelectionBasedOnPosition() {
         Team team = createTeam(TEAM_NAME, SYSTEM_4_4_2_DIAMOND);
@@ -501,12 +506,12 @@ public class TeamManagerServiceTest {
 
     public Object[][] parametersForHasPlayerForSystem() {
         return new Object[][]{
-            {SYSTEM_3_4_3 , SYSTEM_3_4_3, true},
-                {SYSTEM_4_2_3_1 , SYSTEM_4_2_3_1, true},
+                {SYSTEM_3_4_3, SYSTEM_3_4_3, true},
+                {SYSTEM_4_2_3_1, SYSTEM_4_2_3_1, true},
                 {SYSTEM_4_3_3, SYSTEM_4_3_3, true},
                 {PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2, true},
-                {SYSTEM_4_4_2_DIAMOND , SYSTEM_4_4_2_DIAMOND, true},
-                {SYSTEM_4_2_3_1 , SYSTEM_3_4_3, false},
+                {SYSTEM_4_4_2_DIAMOND, SYSTEM_4_4_2_DIAMOND, true},
+                {SYSTEM_4_2_3_1, SYSTEM_3_4_3, false},
                 {PlayingSystem.SYSTEM_4_4_2, SYSTEM_4_4_2_DIAMOND, false},
         };
     }

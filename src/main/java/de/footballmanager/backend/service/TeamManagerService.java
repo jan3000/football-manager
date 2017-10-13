@@ -1,10 +1,12 @@
 package de.footballmanager.backend.service;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.Match;
-import de.footballmanager.backend.domain.league.MatchDay;
 import de.footballmanager.backend.domain.persons.Manager;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.util.Pair;
@@ -73,7 +75,6 @@ public class TeamManagerService {
     }
 
 
-
     public boolean hasPlayerForSystem(Team team, PlayingSystem system) {
         List<Position> positionsInTeam = Lists.newArrayList();
         List<Player> players = team.getPlayers();
@@ -102,7 +103,7 @@ public class TeamManagerService {
         return strengthToPositionPlayerMap.get(strengths.get(0));
     }
 
-        public Map<Position, Player> setBestPlayersForSystems(PlayingSystem playingSystem, List<Player> playerList) {
+    public Map<Position, Player> setBestPlayersForSystems(PlayingSystem playingSystem, List<Player> playerList) {
         Preconditions.checkNotNull(playingSystem, "playingSystem must be set");
         Preconditions.checkArgument(playerList.size() > 7, "team must have at least 8 players");
         Map<Position, Player> positionPlayerMap = Maps.newHashMap();
@@ -201,13 +202,14 @@ public class TeamManagerService {
                 .filter(playingSystem -> {
                     return playingSystem.getPositions().containsAll(positions);
                 })
-        .findFirst().orElse(null);
+                .findFirst().orElse(null);
 
     }
 
 
     /**
      * Note: Do not use directly. Use getBestPlayersForBestSystem instead.
+     *
      * @param playingSystem
      * @param players
      * @return

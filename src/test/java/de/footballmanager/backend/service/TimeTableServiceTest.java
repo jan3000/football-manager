@@ -11,7 +11,6 @@ import de.footballmanager.backend.util.PrintUtil;
 import de.footballmanager.backend.util.TestUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

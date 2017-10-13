@@ -12,7 +12,6 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -298,7 +297,6 @@ public class LeagueServiceTest {
         leagueService.generateTable(BUNDESLIGA, 6);
 
 
-
         // run
         Table currentTable = leagueService.getCurrentTable(BUNDESLIGA);
 
@@ -429,7 +427,8 @@ public class LeagueServiceTest {
         List<Team> teams = teamNames.stream().map(teamName -> createTeam(teamName, SYSTEM_442)).collect(toList());
         TimeTable timeTable = createTimeTable(teams);
         Season season1 = new Season(startDate, timeTable, teams);
-        season1.getTimeTable().setClosed();;
+        season1.getTimeTable().setClosed();
+        ;
         Table table = new Table();
         for (int i = 0; i < teamNames.size(); i++) {
             TableEntry tableEntry = new TableEntry(teamNames.get(i));

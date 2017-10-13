@@ -2,12 +2,10 @@ package de.footballmanager.backend.domain.league;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Lists;
-import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.serializer.CustomDateSerializer;
 import org.joda.time.DateTime;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class MatchDay {
@@ -61,7 +59,6 @@ public class MatchDay {
     public boolean isFinished() {
         return matches.stream().allMatch(Match::isFinished);
     }
-
 
 
     @Override

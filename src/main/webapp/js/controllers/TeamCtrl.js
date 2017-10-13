@@ -7,12 +7,9 @@ controllers.controller("TeamCtrl", function ($scope, $log, TeamService) {
     $scope.teams = TeamService.getTeams();
 
     $scope.getTeam = function (teamName) {
-        console.log("getTeam!!!!!!!!!!!!!");
         for (var i = 0; i < $scope.teams.length; i++) {
             var team = $scope.teams[i];
-            console.log("Teamy: " + team.name);
             if (team.name === teamName) {
-                console.log("Teamy: " + team.name);
                 $scope.selectedTeam = team;
                 break
             }

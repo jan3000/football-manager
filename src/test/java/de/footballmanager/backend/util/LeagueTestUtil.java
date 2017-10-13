@@ -1,8 +1,8 @@
 package de.footballmanager.backend.util;
 
 import com.google.common.collect.Lists;
-import de.footballmanager.backend.domain.league.Match;
 import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.Match;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package de.footballmanager.backend.parser;
 
 import com.google.common.collect.Lists;
-import de.footballmanager.backend.domain.league.League;
 import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.League;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;

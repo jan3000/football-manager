@@ -83,7 +83,7 @@ public class MatchService {
     }
 
 
-    public boolean containsTeam(Match  match, final String team) {
+    public boolean containsTeam(Match match, final String team) {
         return areTeamsSet(match) && (match.getHomeTeam().equals(team) || match.getGuestTeam().equals(team));
     }
 
@@ -101,7 +101,7 @@ public class MatchService {
      */
     public void changePlayer(Match match, String team, Player in, Player out) {
         Preconditions.checkArgument(containsTeam(match, team), "cannot change player for not contained team: ", team);
-        if (isHomeTeam(match , team)) {
+        if (isHomeTeam(match, team)) {
             changePlayer(in, out, match.getPositionPlayerMapHomeTeam(), match.getHomeTeam(), match.getPlayerChangesHomeTeam(), match.getMinute());
         } else if (isGuestTeam(match, team)) {
             changePlayer(in, out, match.getPositionPlayerMapGuestTeam(), match.getGuestTeam(), match.getPlayerChangesGuestTeam(), match.getMinute());
@@ -145,9 +145,10 @@ public class MatchService {
 
     protected void setFinished(Match match) {
         Preconditions.checkState(match.isStarted(), "match cannot be finished if it has not been started");
-        Preconditions.checkArgument(match.getMinute()>= MINUTES_OF_GAME + match.getAdditionalTime(), String.format("do not finish match before 90 minutes passed: {%s}", match.getMinute()));
+        Preconditions.checkArgument(match.getMinute() >= MINUTES_OF_GAME + match.getAdditionalTime(), String.format("do not finish match before 90 minutes passed: {%s}", match.getMinute()));
         match.setFinished(true);
     }
+
     public ResultType getResultType(Match match) {
         Result result = match.getResult();
         if (result.getHomeGoals() > result.getGuestGoals()) {

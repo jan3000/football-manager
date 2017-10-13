@@ -9,12 +9,10 @@ import de.footballmanager.backend.domain.statistics.ScorerStatistic;
 import de.footballmanager.backend.domain.statistics.TeamStatistic;
 import de.footballmanager.backend.enumeration.KindOfGoal;
 import de.footballmanager.backend.enumeration.PlayingSystem;
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.rmi.server.ExportException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

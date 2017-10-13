@@ -3,11 +3,9 @@ package de.footballmanager.backend.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.jvnet.hk2.config.DataType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class DateServiceTest {
 

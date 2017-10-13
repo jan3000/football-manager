@@ -1,13 +1,11 @@
 package de.footballmanager.backend.service;
 
-import de.footballmanager.backend.domain.club.Club;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.Match;
 import de.footballmanager.backend.domain.league.MatchDay;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.util.Pair;
 import de.footballmanager.backend.enumeration.Position;
-import de.footballmanager.backend.util.TestUtil;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,9 +41,9 @@ public class KIServiceTest {
         team2 = createTeam(TEAM_NAME_2, SYSTEM_4_4_2, setStartEleven);
         team3 = createTeam(TEAM_NAME_3, SYSTEM_4_4_2, setStartEleven);
         team4 = createTeam(TEAM_NAME_4, SYSTEM_4_4_2, setStartEleven);
-        Match match1 = createMatch(team1, team2, false, false);
+        Match match1 = createMatch(team1, team2);
         matchDay.addMatch(match1);
-        Match match2 = createMatch(team3, team4, false, false);
+        Match match2 = createMatch(team3, team4);
         matchDay.addMatch(match2);
         matchDay.setDate(new DateTime());
         matchDay.setMatchDayNumber(1);

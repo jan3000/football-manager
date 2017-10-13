@@ -3,15 +3,12 @@ package de.footballmanager.backend.parser;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.neovisionaries.i18n.CountryCode;
-import de.footballmanager.backend.domain.league.League;
-import de.footballmanager.backend.domain.persons.Manager;
-import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.club.Team;
+import de.footballmanager.backend.domain.league.League;
+import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.Position;
-import de.footballmanager.backend.service.ClubService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -75,13 +72,12 @@ public class PersonParserService {
 
     private int getStrength(Team team) {
         int teamStrength = team.getStrength();
-        int variablePart;
-        if (teamStrength > 50) {
-            variablePart = 100 - teamStrength;
+        int variablePart = 20;
+        if (RANDOM.nextBoolean()) {
+            return teamStrength + RANDOM.nextInt(variablePart);
         } else {
-            variablePart = teamStrength;
+            return teamStrength - RANDOM.nextInt(variablePart);
         }
-        return RANDOM.nextInt(variablePart) + teamStrength;
     }
 
     private int getNumberOfPlayers() {

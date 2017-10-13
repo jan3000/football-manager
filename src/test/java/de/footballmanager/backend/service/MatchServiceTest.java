@@ -8,8 +8,6 @@ import de.footballmanager.backend.domain.league.Match;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.PlayingSystem;
 import de.footballmanager.backend.enumeration.Position;
-import de.footballmanager.backend.service.ClubService;
-import de.footballmanager.backend.service.MatchService;
 import de.footballmanager.backend.util.TestUtil;
 import org.junit.Before;
 import org.junit.Test;

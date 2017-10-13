@@ -24,7 +24,7 @@
                 <tr ng-repeat="match in matches"  ng-click="showMatchDetails(match)">
                     <td class="col-sm-3">{{match.homeTeam}}</td>
                     <td class="col-sm-3">{{match.guestTeam}}</td>
-                    <td class="col-sm-1">{{match.result.homeGoals}} : {{match.result.guestGoals}}</td>
+                    <td class="col-sm-1" style="font-weight: bold">{{match.result.homeGoals}} : {{match.result.guestGoals}}</td>
                     <td class="col-sm-1">({{match.halfTimeResult.homeGoals}} : {{match.halfTimeResult.guestGoals}})</td>
                 </tr>
             </table>

@@ -1,11 +1,8 @@
 package de.footballmanager.backend.domain.util.xml;
 
-import de.footballmanager.backend.domain.util.xml.LeagueInitializer;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 @XmlRootElement(name = "leaguesWrapper")

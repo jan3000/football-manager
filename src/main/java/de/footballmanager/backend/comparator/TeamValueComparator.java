@@ -1,7 +1,6 @@
 package de.footballmanager.backend.comparator;
 
 import de.footballmanager.backend.domain.league.TableEntry;
-import de.footballmanager.backend.domain.club.Team;
 
 import java.util.Comparator;
 import java.util.Map;

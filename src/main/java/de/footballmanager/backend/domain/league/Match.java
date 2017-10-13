@@ -71,7 +71,6 @@ public class Match {
     }
 
 
-
     public Match() {
     }
 
@@ -80,7 +79,6 @@ public class Match {
         this.homeTeam = homeTeam;
         this.guestTeam = guestTeam;
     }
-
 
 
     public List<PlayerChange> getPlayerChangesHomeTeam() {
