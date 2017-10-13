@@ -3,9 +3,9 @@ package de.footballmanager.backend.service;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.Match;
 import de.footballmanager.backend.domain.league.MatchDay;
-import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.TimeTable;
 import de.footballmanager.backend.exception.TimeTableCreationStuckException;
 import org.joda.time.DateTime;
@@ -25,6 +25,10 @@ public class TrialAndErrorTimeTableService extends TimeTableService {
 
     @Autowired
     private DateService dateService;
+    @Autowired
+    private MatchService matchService;
+    @Autowired
+    private ClubService clubService;
 
     private static final int DURATION_WINTER_BREAK = 6;
 
@@ -205,9 +209,9 @@ public class TrialAndErrorTimeTableService extends TimeTableService {
         }
     }
 
-    protected boolean isTeamNotInMatchDay(final MatchDay matchDay, final Team team) {
+    protected boolean isTeamNotInMatchDay(final MatchDay matchDay, final String teamName) {
         Preconditions.checkNotNull(matchDay, "matchDay should not be null in isTeamNotInMatchDay");
-        return !matchDay.containsTeam(team);
+        return !matchService.containsTeam(matchDay, teamName);
     }
 
     protected Map<Match, Integer> calculateScoreMapping(final List<Match> allPossibleMatches,
@@ -230,7 +234,8 @@ public class TrialAndErrorTimeTableService extends TimeTableService {
         return matchToScore;
     }
 
-    protected boolean isHomeTeam(final MatchDay matchDay, final Team team) {
+    protected boolean isHomeTeam(final MatchDay matchDay, final String teamName) {
+        Team team = clubService.getTeam(teamName);
         for (Match match : matchDay.getMatches()) {
             if (match.getHomeTeam().equals(team)) {
                 return true;
@@ -239,7 +244,8 @@ public class TrialAndErrorTimeTableService extends TimeTableService {
         return false;
     }
 
-    protected boolean isGuestTeam(final MatchDay matchDay, final Team team) {
+    protected boolean isGuestTeam(final MatchDay matchDay, final String teamName) {
+        Team team = clubService.getTeam(teamName);
         for (Match match : matchDay.getMatches()) {
             if (match.getGuestTeam().equals(team)) {
                 return true;
@@ -268,8 +274,8 @@ public class TrialAndErrorTimeTableService extends TimeTableService {
             for (int h = 1; h < teams.size(); h++) {
                 if (h > i) {
                     Match match = new Match();
-                    match.setHomeTeam(teams.get(i));
-                    match.setGuestTeam(teams.get(h));
+                    match.setHomeTeam(teams.get(i).getName());
+                    match.setGuestTeam(teams.get(h).getName());
                     firstRoundMatches.add(match);
                 }
             }

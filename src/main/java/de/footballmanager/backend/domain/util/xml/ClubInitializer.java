@@ -29,6 +29,7 @@ public class ClubInitializer {
     public void setStrength(int strength) {
         this.strength = strength;
     }
+
     @XmlElement(name = "capital")
     public int getCapital() {
         return capital;

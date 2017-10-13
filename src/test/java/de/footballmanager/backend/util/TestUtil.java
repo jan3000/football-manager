@@ -5,7 +5,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.club.Club;
 import de.footballmanager.backend.domain.club.Team;
-import de.footballmanager.backend.domain.league.*;
+import de.footballmanager.backend.domain.league.League;
+import de.footballmanager.backend.domain.league.Match;
+import de.footballmanager.backend.domain.league.Result;
+import de.footballmanager.backend.domain.league.TimeTable;
 import de.footballmanager.backend.domain.persons.Manager;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.PlayingSystem;
@@ -21,9 +24,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 import static de.footballmanager.backend.enumeration.PlayingSystem.SYSTEM_4_4_2;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 
 public class TestUtil {
 
@@ -60,9 +61,6 @@ public class TestUtil {
         return timeTableService.createTimeTable(teams, now);
     }
 
-    public static MatchDay createMatchDay() {
-        return createMatchDay(true);
-    }
 
     public static Club createClub(String name, boolean computerManaged) {
         Club club = new Club("name");
@@ -77,90 +75,57 @@ public class TestUtil {
         return manager;
     }
 
-    public static MatchDay createMatchDay(boolean setStartEleven) {
-        MatchDay matchDay = new MatchDay();
-        Team team1 = createTeam(TEAM_NAME_1, SYSTEM_4_4_2, setStartEleven);
-        Team team2 = createTeam(TEAM_NAME_2, SYSTEM_4_4_2, setStartEleven);
-        Team team3 = createTeam(TEAM_NAME_3, SYSTEM_4_4_2, setStartEleven);
-        Team team4 = createTeam(TEAM_NAME_4, SYSTEM_4_4_2, setStartEleven);
-        Match match1 = createMatch(team1, team2, false, false);
-        matchDay.addMatch(match1);
-        Match match2 = createMatch(team3, team4, false, false);
-        matchDay.addMatch(match2);
-        matchDay.setDate(new DateTime());
-        matchDay.setMatchDayNumber(1);
-        return matchDay;
+    public static Match createRunningMatch(Team homeTeam, Team guestTeam) {
+        return createMatch(homeTeam, guestTeam);
     }
 
-
-    public static void finishMatch(Match match) {
-        IntStream.range(1, 90).forEach(i -> {
-            match.increaseMinute();
-        });
+    public static Match createMatch(Team homeTeam, Team guestTeam) {
+        return createMatch(0, 0, SYSTEM_4_4_2, SYSTEM_4_4_2, homeTeam, guestTeam);
     }
 
-    public static Match createRunningMatch() {
-        return createMatch(createTeam(TEAM_NAME_1, SYSTEM_4_4_2), createTeam(TEAM_NAME_2, SYSTEM_4_4_2), false, true);
+    // TODO check if system set in team instance is enough and that homeSystem and guestSystem can be removed maybe!
+    public static Match createMatch(PlayingSystem homeSystem, PlayingSystem guestSystem, Team homeTeam, Team guestTeam) {
+        return createMatch(0, 0, homeSystem, guestSystem, homeTeam, guestTeam);
     }
 
-    public static Match createMatch() {
-        return createMatch(TEAM_NAME_1, TEAM_NAME_2, 0, 0, SYSTEM_4_4_2, SYSTEM_4_4_2);
-    }
-    public static Match createMatch(PlayingSystem homeSystem, PlayingSystem guestSystem) {
-        return createMatch(TEAM_NAME_1, TEAM_NAME_2, 0, 0, homeSystem, guestSystem);
-    }
-
-    public static Match createMatch(String teamNameHome, String teamNameGuest, int homeGoals, int guestGoals,
-                                    PlayingSystem homeSystem, PlayingSystem guestSystem) {
-        Team homeTeam = createTeam(teamNameHome, homeSystem);
-        Team guestTeam = createTeam(teamNameGuest, guestSystem);
+    public static Match createMatch(int homeGoals, int guestGoals,
+                                    PlayingSystem homeSystem, PlayingSystem guestSystem, Team homeTeam, Team guestTeam) {
         return createMatch(homeTeam, guestTeam, homeGoals, guestGoals, homeSystem, guestSystem);
     }
+
     public static Match createFinishedMatch(String teamNameHome, String teamNameGuest, int homeGoals, int guestGoals,
-                                    PlayingSystem homeSystem, PlayingSystem guestSystem) {
+                                            PlayingSystem homeSystem, PlayingSystem guestSystem) {
         Team homeTeam = createTeam(teamNameHome, homeSystem);
         Team guestTeam = createTeam(teamNameGuest, guestSystem);
         return createFinishedMatch(homeTeam, guestTeam, homeGoals, guestGoals, homeSystem, guestSystem);
     }
 
     public static Match createMatch(Team team1, Team team2, int homeGoals, int guestGoals,
-                                            PlayingSystem homeSystem, PlayingSystem guestSystem) {
-        Match match = createMatch(team1, team2, false, true, homeSystem, guestSystem);
-        match.setResult(new Result (homeGoals, guestGoals));
+                                    PlayingSystem homeSystem, PlayingSystem guestSystem) {
+        Match match = createMatch(team1, team2, homeSystem, guestSystem);
+        match.setResult(new Result(homeGoals, guestGoals));
         return match;
     }
 
     public static Match createFinishedMatch(Team team1, Team team2, int homeGoals, int guestGoals,
                                             PlayingSystem homeSystem, PlayingSystem guestSystem) {
-        Match match = createMatch(team1, team2, true, true, homeSystem, guestSystem);
+        Match match = createMatch(team1, team2, homeSystem, guestSystem);
         match.setResult(new Result(homeGoals, guestGoals));
         return match;
     }
 
     public static Match createMatch(Team team1, Team team2, int homeGoals, int guestGoals) {
-        Match match = createMatch(team1, team2, true, true);
+        Match match = createMatch(team1, team2);
         match.setResult(new Result(homeGoals, guestGoals));
         return match;
     }
 
-    public static Match createMatch(Team homeTeam, Team guestTeam, boolean finished, boolean started) {
-        return createMatch(homeTeam, guestTeam, finished, started, SYSTEM_4_4_2,
-                SYSTEM_4_4_2);
-    }
-
-    public static Match createMatch(Team homeTeam, Team guestTeam, boolean isCreateFinishedMatch,
-                                    boolean isMatchStarted, PlayingSystem systemHome, PlayingSystem systemGuest) {
+    public static Match createMatch(Team homeTeam, Team guestTeam, PlayingSystem systemHome, PlayingSystem systemGuest) {
         Match match = new Match();
-        match.setHomeTeam(homeTeam);
-        match.setGuestTeam(guestTeam);
+        match.setHomeTeam(homeTeam.getName());
+        match.setGuestTeam(guestTeam.getName());
         match.setPositionPlayerMapHomeTeam(createStartElevenMatchingGivenSystem(homeTeam, systemHome));
         match.setPositionPlayerMapGuestTeam(createStartElevenMatchingGivenSystem(guestTeam, systemGuest));
-        if (isMatchStarted) {
-            match.start();
-        }
-        if (isCreateFinishedMatch) {
-            finishMatch(match);
-        }
         return match;
     }
 
@@ -171,7 +136,7 @@ public class TestUtil {
 
         List<Player> players = team.getPlayers();
         Iterator<Player> iterator = players.iterator();
-        IntStream.range(0,11).forEach(i -> {
+        IntStream.range(0, 11).forEach(i -> {
             Player player = iterator.next();
             positionPlayerMap.put(player.getPosition(), player);
         });
@@ -180,13 +145,14 @@ public class TestUtil {
 
     /**
      * Adds position of system to the first 11 players, for the others goaly position
+     *
      * @param team
      * @param system
      */
     public static void setPlayerPositions(Team team, PlayingSystem system) {
         List<Player> players = team.getPlayers();
         Iterator<Position> positionIterator = system.getPositions().iterator();
-        IntStream.range(0,11).forEach(i -> players.get(i).setPosition(positionIterator.next()));
+        IntStream.range(0, 11).forEach(i -> players.get(i).setPosition(positionIterator.next()));
         if (players.size() > 11) {
             IntStream.range(11, players.size()).forEach(i -> {
                 players.get(i).setPosition(Position.GOALY);

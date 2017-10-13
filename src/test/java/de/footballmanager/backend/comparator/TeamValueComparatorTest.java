@@ -2,7 +2,6 @@ package de.footballmanager.backend.comparator;
 
 import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.league.TableEntry;
-import de.footballmanager.backend.domain.club.Team;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
@@ -19,9 +18,7 @@ public class TeamValueComparatorTest {
 
     private static final String TEAM_1 = "team1";
     private static final String TEAM_2 = "team2";
-    private Map<Team, TableEntry> teamTableEntryMap;
-    private Team team1;
-    private Team team2;
+    private Map<String, TableEntry> teamTableEntryMap;
     private TableEntry tableEntry1;
     private TableEntry tableEntry2;
 
@@ -29,8 +26,6 @@ public class TeamValueComparatorTest {
     @Before
     public void setUp() {
         teamTableEntryMap = Maps.newHashMap();
-        team1 = new Team(TEAM_1);
-        team2 = new Team(TEAM_2);
         tableEntry1 = new TableEntry(TEAM_1);
         tableEntry2 = new TableEntry(TEAM_2);
     }
@@ -41,11 +36,11 @@ public class TeamValueComparatorTest {
     public void differentPoints(String name, int points1, int points2, int expectedCompare) {
         tableEntry1.setPoints(points1);
         tableEntry2.setPoints(points2);
-        teamTableEntryMap.put(team1, tableEntry1);
-        teamTableEntryMap.put(team2, tableEntry2);
+        teamTableEntryMap.put(TEAM_1, tableEntry1);
+        teamTableEntryMap.put(TEAM_2, tableEntry2);
 
         TeamValueComparator teamValueComparator = new TeamValueComparator(teamTableEntryMap);
-        int compare = teamValueComparator.compare(team1, team2);
+        int compare = teamValueComparator.compare(TEAM_1, TEAM_2);
         assertThat(compare).isEqualTo(expectedCompare);
     }
 
@@ -59,11 +54,11 @@ public class TeamValueComparatorTest {
         tableEntry2.setPoints(3);
         tableEntry2.setHomeGoals(goals2);
         tableEntry2.setAwayGoals(goals2);
-        teamTableEntryMap.put(team1, tableEntry1);
-        teamTableEntryMap.put(team2, tableEntry2);
+        teamTableEntryMap.put(TEAM_1, tableEntry1);
+        teamTableEntryMap.put(TEAM_2, tableEntry2);
 
         TeamValueComparator teamValueComparator = new TeamValueComparator(teamTableEntryMap);
-        int compare = teamValueComparator.compare(team1, team2);
+        int compare = teamValueComparator.compare(TEAM_1, TEAM_2);
         assertThat(compare).isEqualTo(expectedCompare);
     }
 
@@ -82,11 +77,11 @@ public class TeamValueComparatorTest {
         tableEntry2.setReceivedHomeGoals(goals2 - 5);
         tableEntry2.setReceivedAwayGoals(goals2 - 5);
 
-        teamTableEntryMap.put(team1, tableEntry1);
-        teamTableEntryMap.put(team2, tableEntry2);
+        teamTableEntryMap.put(TEAM_1, tableEntry1);
+        teamTableEntryMap.put(TEAM_2, tableEntry2);
 
         TeamValueComparator teamValueComparator = new TeamValueComparator(teamTableEntryMap);
-        int compare = teamValueComparator.compare(team1, team2);
+        int compare = teamValueComparator.compare(TEAM_1, TEAM_2);
         assertThat(compare).isEqualTo(expectedCompare);
     }
 

@@ -20,6 +20,7 @@ public class StadiumInitializer {
     public void setStadiumName(String stadiumName) {
         this.stadiumName = stadiumName;
     }
+
     @XmlElement(name = "stance")
     public int getStance() {
         return stance;
@@ -28,6 +29,7 @@ public class StadiumInitializer {
     public void setStance(int stance) {
         this.stance = stance;
     }
+
     @XmlElement(name = "roofedStance")
     public int getRoofedStance() {
         return roofedStance;
@@ -36,6 +38,7 @@ public class StadiumInitializer {
     public void setRoofedStance(int roofedStance) {
         this.roofedStance = roofedStance;
     }
+
     @XmlElement(name = "seats")
     public int getSeats() {
         return seats;
@@ -44,6 +47,7 @@ public class StadiumInitializer {
     public void setSeats(int seats) {
         this.seats = seats;
     }
+
     @XmlElement(name = "roofedSeats")
     public int getRoofedSeats() {
         return roofedSeats;

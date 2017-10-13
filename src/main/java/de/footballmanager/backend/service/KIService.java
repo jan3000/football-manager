@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -32,7 +31,8 @@ public class KIService {
     private LeagueService leagueService;
     @Autowired
     private ClubService clubService;
-
+    @Autowired
+    private MatchService matchService;
 
 
     public void handleNextMatchDay(String leagueName) {
@@ -49,22 +49,22 @@ public class KIService {
         Preconditions.checkArgument(isKIManaged(matchDay), "match day is not KI managed: ", matchDay);
         handleSetStartEleven(matchDay);
         leagueService.startNextMatchDay(leagueName);
-        IntStream.range(1, 90).forEach(i -> {
+        IntStream.range(1, MatchService.MINUTES_OF_GAME).forEach(i -> {
             leagueService.runNextMinute(leagueName);
         });
     }
 
-    public void handleSetStartEleven(MatchDay matchDay){
+    public void handleSetStartEleven(MatchDay matchDay) {
         matchDay.getMatches().forEach(match -> {
-            setPositionPlayerMapForKITeams(match, match.getHomeTeam(), true);
-            setPositionPlayerMapForKITeams(match, match.getGuestTeam(), false);
+            setPositionPlayerMapForKITeams(match, clubService.getTeam(match.getHomeTeam()), true);
+            setPositionPlayerMapForKITeams(match, clubService.getTeam(match.getGuestTeam()), false);
         });
     }
 
     private void setPositionPlayerMapForKITeams(Match match, Team team, boolean homeTeam) {
         if (isKIManged(team.getName())) {
             Pair<PlayingSystem, Map<Position, Player>> pair = teamManagerService.getBestPlayersForBestSystem(team);
-            if(homeTeam) {
+            if (homeTeam) {
                 match.setPositionPlayerMapHomeTeam(pair.getSecond());
             } else {
                 match.setPositionPlayerMapGuestTeam(pair.getSecond());
@@ -79,8 +79,8 @@ public class KIService {
     }
 
     public boolean isKIManaged(Match match) {
-        String homeTeam = match.getHomeTeam().getName();
-        String guestTeam = match.getGuestTeam().getName();
+        String homeTeam = match.getHomeTeam();
+        String guestTeam = match.getGuestTeam();
 
         return CollectionUtils.isEmpty(
                 Lists.newArrayList(homeTeam, guestTeam).stream()
@@ -102,8 +102,13 @@ public class KIService {
                         .collect(toList()));
     }
 
-    public void handleChanges(){}
-    public void handleTraining(){}
-    public void handleTransfers(){}
+    public void handleChanges() {
+    }
+
+    public void handleTraining() {
+    }
+
+    public void handleTransfers() {
+    }
 
 }

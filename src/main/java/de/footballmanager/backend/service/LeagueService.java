@@ -35,18 +35,20 @@ public class LeagueService {
     private DateService dateService;
     @Autowired
     private ClubService clubService;
+    @Autowired
+    private MatchService matchService;
 
     private List<String> leaguePriorityList;
     private Map<String, League> nameToLeague;
 
 
     public void setNameToLeague(Map<String, League> nameToLeague) {
-        Preconditions.checkArgument(this.nameToLeague == null, "nameToLeague must not be overwritten");
+//        Preconditions.checkArgument(this.nameToLeague == null, "nameToLeague must not be overwritten");
         this.nameToLeague = nameToLeague;
     }
 
     public void setLeaguePriorityList(List<String> leaguePriorityList) {
-        Preconditions.checkArgument(this.leaguePriorityList == null, "leaguePriorityList must not be overwritten");
+//        Preconditions.checkArgument(this.leaguePriorityList == null, "leaguePriorityList must not be overwritten");
         this.leaguePriorityList = leaguePriorityList;
     }
 
@@ -145,7 +147,7 @@ public class LeagueService {
         Preconditions.checkNotNull(league, "no league found for leagueName: ", leagueName);
         TimeTable timeTable = getCurrentSeason(leagueName).getTimeTable();
         Preconditions.checkNotNull(timeTable, "no timeTable found for leagueName: ", leagueName);
-        return timeTable.getMatch(matchDayNumber, teamName);
+        return matchService.getMatch(timeTable, matchDayNumber, teamName);
     }
 
 //    public void setStartElevenGuest(int matchDayNumber, String teamName, Map<Position, Player> positionToStartEleven) {
@@ -165,7 +167,7 @@ public class LeagueService {
         TimeTable timeTable = getTimeTable(leagueName);
         MatchDay matchDay = timeTable.getMatchDay(timeTable.getCurrentMatchDay());
         List<Match> matches = matchDay.getMatches();
-        matches.forEach(Match::start);
+        matches.forEach(match -> matchService.start(match));
     }
 
     public void finishDay() {
@@ -272,21 +274,23 @@ public class LeagueService {
 
     Table generateTable(String leagueName, int day) {
         System.out.println("GENERATE CHART FOR DAY: " + day);
-        Map<Team, Integer> teamToPointsMap = Maps.newHashMap();
-        Map<Team, TableEntry> teamToTableEntryMap = Maps.newHashMap();
+        Map<String, Integer> teamToPointsMap = Maps.newHashMap();
+        Map<String, TableEntry> teamToTableEntryMap = Maps.newHashMap();
 
         TimeTable timeTable = getTimeTable(leagueName);
         Preconditions.checkNotNull(timeTable, "no timeTable found for ", leagueName);
         for (MatchDay matchDay : timeTable.getAllMatchDays().asList().subList(0, day)) {
             for (Match match : matchDay.getMatches()) {
                 if (match.isFinished()) {
-                    if (!teamToPointsMap.containsKey(match.getHomeTeam())) {
-                        teamToPointsMap.put(match.getHomeTeam(), 0);
-                        teamToTableEntryMap.put(match.getHomeTeam(), new TableEntry(match.getHomeTeam().getName()));
+                    String homeTeam = match.getHomeTeam();
+                    String guestTeam = match.getGuestTeam();
+                    if (!teamToPointsMap.containsKey(homeTeam)) {
+                        teamToPointsMap.put(homeTeam, 0);
+                        teamToTableEntryMap.put(homeTeam, new TableEntry(match.getHomeTeam()));
                     }
-                    if (!teamToPointsMap.containsKey(match.getGuestTeam())) {
-                        teamToPointsMap.put(match.getGuestTeam(), 0);
-                        teamToTableEntryMap.put(match.getGuestTeam(), new TableEntry(match.getGuestTeam().getName()));
+                    if (!teamToPointsMap.containsKey(guestTeam)) {
+                        teamToPointsMap.put(guestTeam, 0);
+                        teamToTableEntryMap.put(guestTeam, new TableEntry(match.getGuestTeam()));
                     }
 
                     TableEntry homeTableEntry = teamToTableEntryMap.get(match.getHomeTeam());
@@ -295,7 +299,7 @@ public class LeagueService {
                     homeTableEntry.setReceivedHomeGoals(homeTableEntry.getReceivedHomeGoals() + match.getGoalsGuestTeam());
                     guestTableEntry.setAwayGoals(guestTableEntry.getAwayGoals() + match.getGoalsGuestTeam());
                     guestTableEntry.setReceivedAwayGoals(guestTableEntry.getReceivedAwayGoals() + match.getGoalsHomeTeam());
-                    switch (match.getResultType()) {
+                    switch (matchService.getResultType(match)) {
                         case HOME_WON:
                             teamToPointsMap.put(match.getHomeTeam(), teamToPointsMap.get(match.getHomeTeam()) + 3);
                             homeTableEntry.setPoints(homeTableEntry.getPoints() + 3);
@@ -317,7 +321,7 @@ public class LeagueService {
                             guestTableEntry.setAwayGamesWon(guestTableEntry.getAwayGamesWon() + 1);
                             break;
                         default:
-                            System.out.println("unknown match result type: " + match.getResultType());
+                            System.out.println("unknown match result type: " + matchService.getResultType(match));
                             break;
                     }
                 }
@@ -326,10 +330,10 @@ public class LeagueService {
 
         final Table table = new Table();
         if (!teamToPointsMap.isEmpty()) {
-            TreeMap<Team, Integer> sortedTeamToPointsMap = Maps.newTreeMap(new TeamValueComparator(teamToTableEntryMap));
+            TreeMap<String, Integer> sortedTeamToPointsMap = Maps.newTreeMap(new TeamValueComparator(teamToTableEntryMap));
             sortedTeamToPointsMap.putAll(teamToPointsMap);
             int place = 1;
-            for (Team team : sortedTeamToPointsMap.keySet()) {
+            for (String team : sortedTeamToPointsMap.keySet()) {
                 TableEntry tableEntry = teamToTableEntryMap.get(team);
                 tableEntry.setPlace(place);
                 place++;

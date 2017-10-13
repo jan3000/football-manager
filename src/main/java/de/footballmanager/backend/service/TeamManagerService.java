@@ -1,10 +1,12 @@
 package de.footballmanager.backend.service;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.Match;
-import de.footballmanager.backend.domain.league.MatchDay;
 import de.footballmanager.backend.domain.persons.Manager;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.util.Pair;
@@ -26,6 +28,8 @@ public class TeamManagerService {
     private StrengthService strengthService;
     @Autowired
     private ClubService clubService;
+    @Autowired
+    private MatchService matchService;
 
     private static final Comparator<Player> MAX_STRENGTH_COMPARATOR = new Comparator<Player>() {
         @Override
@@ -42,10 +46,10 @@ public class TeamManagerService {
 
 
     public Map<Position, Player> getCurrentlyPlayingPlayers(Match match, Team team) {
-        Preconditions.checkArgument(match.containsTeam(team), "team not contained in match: ", team);
-        if (match.isHomeTeam(team)) {
+        Preconditions.checkArgument(matchService.containsTeam(match, team.getName()), "team not contained in match: ", team);
+        if (matchService.isHomeTeam(match, team.getName())) {
             return match.getPositionPlayerMapHomeTeam();
-        } else if (match.isGuestTeam(team)) {
+        } else if (matchService.isGuestTeam(match, team.getName())) {
             return match.getPositionPlayerMapGuestTeam();
         }
         throw new IllegalStateException("team neither home nor guest team: " + team);
@@ -59,16 +63,16 @@ public class TeamManagerService {
     }
 
     public void setStartEleven(Match match, Team team, Map<Position, Player> positionToPlayerMap) {
-        Preconditions.checkArgument(match.containsTeam(team), "team not contained in match: ", team);
-        if (match.isHomeTeam(team)) {
+        String teamName = team.getName();
+        Preconditions.checkArgument(matchService.containsTeam(match, teamName), "team not contained in match: ", teamName);
+        if (matchService.isHomeTeam(match, teamName)) {
             match.setPositionPlayerMapHomeTeam(positionToPlayerMap);
-        } else if (match.isGuestTeam(team)) {
+        } else if (matchService.isGuestTeam(match, teamName)) {
             match.setPositionPlayerMapGuestTeam(positionToPlayerMap);
         } else {
-            throw new IllegalStateException("team neither home nor guest team: " + team);
+            throw new IllegalStateException("teamName neither home nor guest team: " + teamName);
         }
     }
-
 
 
     public boolean hasPlayerForSystem(Team team, PlayingSystem system) {
@@ -99,7 +103,7 @@ public class TeamManagerService {
         return strengthToPositionPlayerMap.get(strengths.get(0));
     }
 
-        public Map<Position, Player> setBestPlayersForSystems(PlayingSystem playingSystem, List<Player> playerList) {
+    public Map<Position, Player> setBestPlayersForSystems(PlayingSystem playingSystem, List<Player> playerList) {
         Preconditions.checkNotNull(playingSystem, "playingSystem must be set");
         Preconditions.checkArgument(playerList.size() > 7, "team must have at least 8 players");
         Map<Position, Player> positionPlayerMap = Maps.newHashMap();
@@ -159,37 +163,38 @@ public class TeamManagerService {
      * Position is kept
      */
     public void changePlayer(Match match, Team team, Player in, Player out) {
-        match.changePlayer(team, in, out);
+        matchService.changePlayer(match, team.getName(), in, out);
     }
 
     /**
      * Players are kept
      */
     public void changePlayingSystem(Match match, Team team, PlayingSystem newSystem) {
-        Preconditions.checkArgument(match.containsTeam(team), "team not contained in match: ", team);
-        if (match.isHomeTeam(team)) {
+        String teamName = team.getName();
+        Preconditions.checkArgument(matchService.containsTeam(match, teamName), "team not contained in match: ", teamName);
+        if (matchService.isHomeTeam(match, teamName)) {
             Map<Position, Player> positionPlayerMap = match.getPositionPlayerMapHomeTeam();
             Collection<Player> players = positionPlayerMap.values();
             Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystems(newSystem, Lists.newArrayList(players));
             match.setPositionPlayerMapHomeTeam(positionPlayerMapAfterChange);
-        } else if (match.isGuestTeam(team)) {
+        } else if (matchService.isGuestTeam(match, teamName)) {
             Map<Position, Player> positionPlayerMap = match.getPositionPlayerMapGuestTeam();
             Collection<Player> players = positionPlayerMap.values();
             Map<Position, Player> positionPlayerMapAfterChange = setBestPlayersForSystems(newSystem, Lists.newArrayList(players));
             match.setPositionPlayerMapGuestTeam(positionPlayerMapAfterChange);
         } else {
-            throw new IllegalStateException("team neither home nor guest team: " + team);
+            throw new IllegalStateException("team neither home nor guest team: " + teamName);
         }
     }
 
     public PlayingSystem getPlayingSystem(Match match, Team team) {
         Map<Position, Player> positionPlayerMap;
-        if (match.isHomeTeam(team)) {
+        if (matchService.isHomeTeam(match, team.getName())) {
             positionPlayerMap = match.getPositionPlayerMapHomeTeam();
-        } else if (match.isGuestTeam(team)) {
+        } else if (matchService.isGuestTeam(match, team.getName())) {
             positionPlayerMap = match.getPositionPlayerMapGuestTeam();
         } else {
-            throw new IllegalStateException("team neither home nor guest team: " + team);
+            throw new IllegalStateException("team neither home nor guest team: " + team.getName());
         }
 
         Set<Position> positions = positionPlayerMap.keySet();
@@ -197,13 +202,14 @@ public class TeamManagerService {
                 .filter(playingSystem -> {
                     return playingSystem.getPositions().containsAll(positions);
                 })
-        .findFirst().orElse(null);
+                .findFirst().orElse(null);
 
     }
 
 
     /**
      * Note: Do not use directly. Use getBestPlayersForBestSystem instead.
+     *
      * @param playingSystem
      * @param players
      * @return

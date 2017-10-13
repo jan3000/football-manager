@@ -34,6 +34,11 @@ controllers.controller("TimeTableCtrl", function ($scope, $http, $log, TimeTable
     };
     getMatchDay($scope.shownMatchDay);
 
+    $scope.showMatchDetails = function(match) {
+        $log.log("showMatchDetails")
+        $scope.selectedMatch = match;
+    };
+
     //$scope.getCurrentTable = function () {
     //    $http.get('rest/home/currentTable/').then(function (result) {
     //        $log.log('getCurrentTable: ' + JSON.stringify(result));

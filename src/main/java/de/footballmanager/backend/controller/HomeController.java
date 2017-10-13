@@ -1,13 +1,16 @@
 package de.footballmanager.backend.controller;
 
 import de.footballmanager.backend.api.FootballManagerFacade;
+import de.footballmanager.backend.domain.club.Club;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.MatchDay;
 import de.footballmanager.backend.domain.league.Table;
+import de.footballmanager.backend.domain.persons.Manager;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.statistics.ScorerStatistic;
 import de.footballmanager.backend.domain.statistics.TeamStatistic;
 import de.footballmanager.backend.enumeration.Position;
+import de.footballmanager.backend.service.ClubService;
 import de.footballmanager.backend.service.KIService;
 import de.footballmanager.backend.service.LeagueService;
 import de.footballmanager.backend.service.StatisticService;
@@ -36,6 +39,8 @@ public class HomeController implements FootballManagerFacade {
     @Autowired
     private StatisticService statisticService;
     @Autowired
+    private ClubService clubService;
+    @Autowired
     private KIService kiService;
 
     @GET
@@ -44,6 +49,14 @@ public class HomeController implements FootballManagerFacade {
     public List<Team> getTeams() throws JAXBException, FileNotFoundException {
         System.out.println("HomeController getTeams");
         return leagueService.getLeague(BUNDESLIGA).getTeams();
+    }
+
+    @GET
+    @Path("clubs")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Club> getClubs() throws JAXBException, FileNotFoundException {
+        System.out.println("HomeController getClubs");
+        return clubService.getAllClubs();
     }
 
     @GET
@@ -131,7 +144,6 @@ public class HomeController implements FootballManagerFacade {
 
     @Override
     public void showFormerMatchDay() {
-
     }
 
     @Override
@@ -142,6 +154,13 @@ public class HomeController implements FootballManagerFacade {
     @Override
     public void changeTeamDetails() {
 
+    }
+
+    public void createNewManager(Manager manager) {
+
+    }
+
+    public void getManagerDetails(String teamName) {
     }
 }
 

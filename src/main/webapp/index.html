@@ -11,6 +11,7 @@
 <div class="container-fluid" ng-controller="AppCtrl">
     <div class="row">
         <div class=" col-sm-6 btn-group-sm btn-success">
+            <div class="btn" ng-class="{'btn-active': isActive('market')}" ng-click="changeView('market')">Market</div>
             <div class="btn" ng-class="{'btn-active': isActive('team')}" ng-click="changeView('team')">Teams</div>
             <div class="btn" ng-class="{'btn-active': isActive('timeTable')}" ng-click="changeView('timeTable')">Time
                 table
@@ -21,7 +22,7 @@
             <div class="btn" ng-class="{'btn-active': isActive('go')}" ng-click="changeView('go')">Go</div>
         </div>
         <div class="col-sm-6 vcenter" style="background-color: #5cb85c; color: white;
-                font-family: 'Helvetica Neue,Helvetica,Arial,sans-serif'; height: 30px; font-size: 12px;
+                font-family: 'Helvetica Neue,Helvetica,Arial,sans-serif'; height: 28px; font-size: 12px;
                 text-align: right">
             <div>Match day {{}}</div>
         </div>

@@ -26,6 +26,10 @@ public class ClubService {
         clubNameToClub.put(club.getName(), club);
     }
 
+    public List<Club> getAllClubs() {
+        return (List<Club>) clubNameToClub.values();
+    }
+
     public Club getClub(String clubName) {
         Club club = clubNameToClub.get(clubName);
         Preconditions.checkNotNull(club, "no club found with name: ", clubName);

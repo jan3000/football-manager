@@ -6,15 +6,14 @@ import de.footballmanager.backend.domain.club.Club;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.infrastructure.Stadium;
 import de.footballmanager.backend.domain.league.League;
+import de.footballmanager.backend.domain.league.Season;
+import de.footballmanager.backend.domain.league.TimeTable;
 import de.footballmanager.backend.domain.persons.Manager;
 import de.footballmanager.backend.domain.util.xml.LeagueInitializer;
 import de.footballmanager.backend.domain.util.xml.LeaguesWrapper;
-import de.footballmanager.backend.domain.league.Season;
-import de.footballmanager.backend.domain.league.TimeTable;
 import de.footballmanager.backend.domain.util.xml.StadiumInitializer;
 import de.footballmanager.backend.parser.LeagueParser;
 import de.footballmanager.backend.parser.PersonParserService;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

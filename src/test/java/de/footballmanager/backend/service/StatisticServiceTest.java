@@ -11,16 +11,17 @@ import de.footballmanager.backend.enumeration.KindOfGoal;
 import de.footballmanager.backend.enumeration.PlayingSystem;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static de.footballmanager.backend.util.TestUtil.*;
+import static org.easymock.EasyMock.*;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class StatisticServiceTest {
-
 
     private TimeTable timeTable;
     private Team team1;
@@ -30,6 +31,9 @@ public class StatisticServiceTest {
     private Player scorer1;
     private Player scorer2;
     private Player scorer3;
+    private MatchService matchService;
+    private Match match1;
+    private Match match2;
 
     private Player buildPlayer(String firstName, String lastName) {
         return new Player.Builder(firstName, lastName).build();
@@ -38,25 +42,31 @@ public class StatisticServiceTest {
     @Before
     public void setUp() {
         statisticService = new StatisticService();
+        matchService = createMock(MatchService.class);
+        ReflectionTestUtils.setField(statisticService, "matchService", matchService);
         table = new Table();
 
         team1 = new Team(TEAM_NAME_1);
         team2 = new Team(TEAM_NAME_2);
-        Match match1 = createFinishedMatch(TEAM_NAME_1, TEAM_NAME_2, 2, 2, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2);
+        match1 = createFinishedMatch(TEAM_NAME_1, TEAM_NAME_2, 2, 2, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2);
+        match1.setStarted(true);
+        match1.setFinished(true);
         scorer1 = buildPlayer("John", "Dumbo");
         scorer2 = buildPlayer("Jeff", "Patterns");
         scorer3 = buildPlayer("Jordy", "Madrid");
-        match1.addGoal(new Goal(12, team1, scorer1, KindOfGoal.HEAD, new Result(1, 0)));
-        match1.addGoal(new Goal(23, team2, scorer2, KindOfGoal.HEAD, new Result(1, 1)));
-        match1.addGoal(new Goal(44, team2, scorer2, KindOfGoal.HEAD, new Result(1, 2)));
-        match1.addGoal(new Goal(90, team1, scorer1, KindOfGoal.HEAD, new Result(2, 2)));
+        match1.addGoal(new Goal(12, team1.getName(), scorer1, KindOfGoal.HEAD, new Result(1, 0)));
+        match1.addGoal(new Goal(23, team2.getName(), scorer2, KindOfGoal.HEAD, new Result(1, 1)));
+        match1.addGoal(new Goal(44, team2.getName(), scorer2, KindOfGoal.HEAD, new Result(1, 2)));
+        match1.addGoal(new Goal(90, team1.getName(), scorer1, KindOfGoal.HEAD, new Result(2, 2)));
         MatchDay matchDay1 = new MatchDay(Lists.newArrayList(match1));
-        Match match2 = createFinishedMatch(TEAM_NAME_2, TEAM_NAME_1, 4, 1, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2);
-        match2.addGoal(new Goal(8, team2, scorer2, KindOfGoal.HEAD, new Result(1, 0)));
-        match2.addGoal(new Goal(12, team1, scorer1, KindOfGoal.HEAD, new Result(1, 1)));
-        match2.addGoal(new Goal(33, team2, scorer3, KindOfGoal.HEAD, new Result(2, 1)));
-        match2.addGoal(new Goal(54, team2, scorer2, KindOfGoal.HEAD, new Result(3, 1)));
-        match2.addGoal(new Goal(58, team2, scorer2, KindOfGoal.HEAD, new Result(4, 1)));
+        match2 = createFinishedMatch(TEAM_NAME_2, TEAM_NAME_1, 4, 1, PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2);
+        match2.addGoal(new Goal(8, team2.getName(), scorer2, KindOfGoal.HEAD, new Result(1, 0)));
+        match2.addGoal(new Goal(12, team1.getName(), scorer1, KindOfGoal.HEAD, new Result(1, 1)));
+        match2.addGoal(new Goal(33, team2.getName(), scorer3, KindOfGoal.HEAD, new Result(2, 1)));
+        match2.addGoal(new Goal(54, team2.getName(), scorer2, KindOfGoal.HEAD, new Result(3, 1)));
+        match2.addGoal(new Goal(58, team2.getName(), scorer2, KindOfGoal.HEAD, new Result(4, 1)));
+        match2.setStarted(true);
+        match2.setFinished(true);
         MatchDay matchDay2 = new MatchDay(Lists.newArrayList(match2));
 
         timeTable = new TimeTable(Lists.newArrayList(matchDay1, matchDay2));
@@ -139,7 +149,17 @@ public class StatisticServiceTest {
 
     @Test
     public void getScorers() {
+        // given
+        expect(matchService.getMatchOfTeam(timeTable.getMatchDay(1), team1.getName())).andReturn(match1);
+        expect(matchService.getMatchOfTeam(timeTable.getMatchDay(2), team1.getName())).andReturn(match2);
+        expect(matchService.getMatchOfTeam(timeTable.getMatchDay(1), team2.getName())).andReturn(match1);
+        expect(matchService.getMatchOfTeam(timeTable.getMatchDay(2), team2.getName())).andReturn(match2);
+        replay(matchService);
+
+        // when
         List<ScorerStatistic> scorerTable = statisticService.getScorerTable(Lists.newArrayList(team1, team2), timeTable);
+
+        // then
         assertThat(scorerTable.size()).isEqualTo(3);
         assertThat(scorerTable.get(0).getPlayer()).isEqualTo(scorer2.getFullname());
         assertThat(scorerTable.get(0).getGoals()).isEqualTo(5);
@@ -152,6 +172,7 @@ public class StatisticServiceTest {
         assertThat(scorerTable.get(2).getPlayer()).isEqualTo(scorer3.getFullname());
         assertThat(scorerTable.get(2).getGoals()).isEqualTo(1);
         assertThat(scorerTable.get(2).getTeam()).isEqualTo(team2.getName());
+        verify(matchService);
     }
 
 }

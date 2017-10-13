@@ -1,32 +1,24 @@
 package de.footballmanager.backend.domain.league;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.util.MaxSizeHashMap;
 import de.footballmanager.backend.enumeration.Position;
-import de.footballmanager.backend.enumeration.ResultType;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Match {
 
-    private static final int MINUTES_OF_GAME = 90;
-    private static final int MINUTES_HALF_TIME = 45;
-    private Team homeTeam;
-    private Team guestTeam;
+
+    private String homeTeam;
+    private String guestTeam;
 
     private Map<Position, Player> positionPlayerMapHomeTeam = new MaxSizeHashMap<>(11);
     private Map<Position, Player> positionPlayerMapGuestTeam = new MaxSizeHashMap<>(11);
 
-    private int minute = 1;
     private int additionalTime = 0;
     private List<Player> yellowCards;
     private List<Player> redCards;
@@ -39,106 +31,55 @@ public class Match {
     private boolean isFinished = false;
     private boolean isStarted = false;
 
+    private int minute = 1;
+
+    public void setPositionPlayerMapHomeTeam(Map<Position, Player> positionPlayerMapHomeTeam) {
+        this.positionPlayerMapHomeTeam = positionPlayerMapHomeTeam;
+    }
+
+    public List<Player> getYellowCards() {
+        return yellowCards;
+    }
+
+    public void setYellowCards(List<Player> yellowCards) {
+        this.yellowCards = yellowCards;
+    }
+
+    public List<Player> getRedCards() {
+        return redCards;
+    }
+
+    public void setRedCards(List<Player> redCards) {
+        this.redCards = redCards;
+    }
+
+    public void setPlayerChangesHomeTeam(List<PlayerChange> playerChangesHomeTeam) {
+        this.playerChangesHomeTeam = playerChangesHomeTeam;
+    }
+
+    public void setPlayerChangesGuestTeam(List<PlayerChange> playerChangesGuestTeam) {
+        this.playerChangesGuestTeam = playerChangesGuestTeam;
+    }
+
+    public void setFinished(boolean finished) {
+        isFinished = finished;
+    }
+
+    public int getAdditionalTime() {
+
+        return additionalTime;
+    }
+
+
     public Match() {
     }
 
-    public Match(final Team homeTeam, final Team guestTeam) {
+    public Match(final String homeTeam, final String guestTeam) {
         super();
         this.homeTeam = homeTeam;
         this.guestTeam = guestTeam;
     }
 
-    public boolean isHomeTeam(Team team) {
-        return homeTeam.equals(team);
-    }
-
-    public boolean isGuestTeam(Team team) {
-        return guestTeam.equals(team);
-    }
-
-    private void validateIsMatchPrepared() {
-        Preconditions.checkNotNull(homeTeam, "home team not set");
-        Preconditions.checkNotNull(guestTeam, "guest team not set");
-
-        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 11,
-                "start eleven of home team not set correctly, size: ", positionPlayerMapHomeTeam.size());
-        Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 11,
-                "start eleven of guest team not set correctly, size: ", positionPlayerMapGuestTeam.size());
-
-    }
-
-    public void start() {
-        validateIsMatchPrepared();
-        isStarted = true;
-    }
-
-    public void increaseMinute() {
-        validateMatchIsRunning();
-        minute++;
-        if (minute >= MINUTES_OF_GAME + additionalTime) {
-            setFinished(true);
-        }
-    }
-
-    public void increaseGoalsHomeTeam(final Goal goal) {
-        validateMatchIsRunning();
-        if (goal.getMinute() <= MINUTES_HALF_TIME) {
-            halfTimeResult.increaseHomeGoal();
-        }
-        result.increaseHomeGoal();
-        addGoal(goal);
-    }
-
-    private void validateMatchIsRunning() {
-        Preconditions.checkArgument(isStarted, "match not started yet");
-        Preconditions.checkArgument(!isFinished(), "match is already finished");
-    }
-
-    public void increaseGoalsGuestTeam(final Goal goal) {
-        validateMatchIsRunning();
-        if (goal.getMinute() <= MINUTES_HALF_TIME) {
-            halfTimeResult.increaseGuestGoal();
-        }
-        result.increaseGuestGoal();
-        addGoal(goal);
-    }
-
-
-    private boolean areTeamsSet() {
-        return guestTeam != null && homeTeam != null;
-    }
-
-
-    public boolean containsTeam(final Team team) {
-        return areTeamsSet() && (homeTeam.equals(team) || guestTeam.equals(team));
-    }
-
-    /**
-     * Position is kept
-     */
-    public void changePlayer(Team team, Player in, Player out) {
-        Preconditions.checkArgument(this.containsTeam(team), "cannot change player for not contained team: ", team);
-        if (isHomeTeam(team)) {
-            changePlayer(in, out, positionPlayerMapHomeTeam, homeTeam, playerChangesHomeTeam);
-        } else if (isGuestTeam(team)) {
-            changePlayer(in, out, positionPlayerMapGuestTeam, guestTeam, playerChangesGuestTeam);
-        }
-    }
-
-    private void changePlayer(Player in, Player out, Map<Position, Player> positionPlayerMap, Team team, List<PlayerChange> playerChanges) {
-        Preconditions.checkArgument(positionPlayerMap.values().contains(out), String.format("coming out player {%s} not member of current players", out));
-        Preconditions.checkArgument(team.getPlayers().contains(in), String.format("coming in player {%s} not member of team", in));
-        Preconditions.checkArgument(!positionPlayerMap.values().contains(in), String.format("coming in player {%s} already playing", in));
-        Preconditions.checkState(playerChanges.size() < 3, "max number of player changes already reached");
-        positionPlayerMap.entrySet().forEach(positionToPlayer -> {
-            Position position = positionToPlayer.getKey();
-            if (position.equals(out.getPosition())) {
-                System.out.println("changed " + position);
-                positionPlayerMap.put(position, in);
-                playerChanges.add(new PlayerChange(minute, in, out));
-            }
-        });
-    }
 
     public List<PlayerChange> getPlayerChangesHomeTeam() {
         return playerChangesHomeTeam;
@@ -152,25 +93,17 @@ public class Match {
         return isStarted;
     }
 
+    public void setStarted(boolean started) {
+        isStarted = started;
+    }
+
     public Map<Position, Player> getPositionPlayerMapHomeTeam() {
         return positionPlayerMapHomeTeam;
     }
 
-    public void setPositionPlayerMapHomeTeam(Map<Position, Player> positionPlayerMapHomeTeam) {
-        Preconditions.checkState(!isFinished, "startEleven cannot be set if match already finished");
-        Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 11, "11 players must be set");
-        List<Player> playersNotPartOfTeam = positionPlayerMapHomeTeam.values().stream()
-                .filter(player -> !homeTeam.getPlayers().contains(player))
-                .collect(Collectors.toList());
-        Preconditions.checkArgument(playersNotPartOfTeam.isEmpty(), "players must be part of the team");
-        Preconditions.checkArgument(Sets.newHashSet(positionPlayerMapHomeTeam.values()).size() == 11, "players must be different");
-
-        this.positionPlayerMapHomeTeam = positionPlayerMapHomeTeam;
-
-    }
 
     public Map<Position, Player> getPositionPlayerMapGuestTeam() {
-        return ImmutableMap.copyOf(positionPlayerMapGuestTeam);
+        return positionPlayerMapGuestTeam;
     }
 
     public void setPositionPlayerMapGuestTeam(Map<Position, Player> positionPlayerMapGuestTeam) {
@@ -181,12 +114,6 @@ public class Match {
 //        throw new NotSupportedException();
 //    }
 
-    private void setFinished(final boolean finished) {
-        Preconditions.checkState(isStarted, "match cannot be finished if it has not been started");
-        Preconditions.checkArgument(minute >= MINUTES_OF_GAME + additionalTime, String.format("do not finish match before 90 minutes passed: {%s}", minute));
-        this.isFinished = finished;
-    }
-
     public int getGoalsHomeTeam() {
         return result.getHomeGoals();
     }
@@ -195,21 +122,21 @@ public class Match {
         return result.getGuestGoals();
     }
 
-    public Team getHomeTeam() {
+    public String getHomeTeam() {
         return homeTeam;
     }
 
-    public void setHomeTeam(final Team homeTeam) {
+    public void setHomeTeam(final String homeTeam) {
         Preconditions.checkArgument(positionPlayerMapHomeTeam.size() == 0,
                 "home team cannot be changed if start eleven is set already");
         this.homeTeam = homeTeam;
     }
 
-    public Team getGuestTeam() {
+    public String getGuestTeam() {
         return guestTeam;
     }
 
-    public void setGuestTeam(final Team guestTeam) {
+    public void setGuestTeam(final String guestTeam) {
         Preconditions.checkArgument(positionPlayerMapGuestTeam.size() == 0,
                 "guest team cannot be changed if start eleven is set already");
         this.guestTeam = guestTeam;
@@ -224,6 +151,11 @@ public class Match {
         return minute;
     }
 
+
+    public void setMinute(int minute) {
+        this.minute = minute;
+    }
+
     public void addGoal(final Goal goal) {
         goals.add(goal);
     }
@@ -231,17 +163,6 @@ public class Match {
     public List<Goal> getGoals() {
         return goals;
     }
-
-    public ResultType getResultType() {
-        if (result.getHomeGoals() > result.getGuestGoals()) {
-            return ResultType.HOME_WON;
-        } else if (result.getHomeGoals() < result.getGuestGoals()) {
-            return ResultType.GUEST_WON;
-        } else {
-            return ResultType.DRAW;
-        }
-    }
-
 
     public Result getResult() {
         return result;
@@ -302,7 +223,7 @@ public class Match {
         return builder.toString();
     }
 
-    class PlayerChange {
+    public static class PlayerChange {
         private int minute;
         private Player in;
         private Player out;

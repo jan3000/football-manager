@@ -1,13 +1,13 @@
 package de.footballmanager.backend.domain.league;
 
-import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.enumeration.KindOfGoal;
 
 public class Goal {
 
     private int minute;
-    private Team team;
+    private String team;
+    //    private Team team;
     private Player scorer;
     private Result newResult;
     private KindOfGoal kindOfGoal;
@@ -15,7 +15,7 @@ public class Goal {
     public Goal() {
     }
 
-    public Goal(final int minute, final Team team, final Player scorer, final KindOfGoal kindOfGoal,
+    public Goal(final int minute, final String team, final Player scorer, final KindOfGoal kindOfGoal,
                 final Result newResult) {
         super();
         this.minute = minute;
@@ -49,11 +49,11 @@ public class Goal {
         this.kindOfGoal = kindOfGoal;
     }
 
-    public Team getTeam() {
+    public String getTeam() {
         return team;
     }
 
-    public void setTeam(final Team team) {
+    public void setTeam(final String team) {
         this.team = team;
     }
 

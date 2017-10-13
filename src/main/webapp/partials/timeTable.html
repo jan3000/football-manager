@@ -20,29 +20,57 @@
     <div class="row" style="height: 20px;"></div>
     <div class="row">
         <div class="col-sm-offset-1 col-sm-7">
-            <table class="table table-condensed table-bordered">
-                <tr ng-repeat="match in matches">
-                    <td class="col-sm-3">{{match.homeTeam.name}}</td>
-                    <td class="col-sm-3">{{match.guestTeam.name}}</td>
-                    <td class="col-sm-1">{{match.result.homeGoals}} : {{match.result.guestGoals}}</td>
-                    <td class="col-sm-1">({{match.halfTime.homeGoals}} : {{match.halfTime.guestGoals}})</td>
+            <table class="table table-condensed table-bordered table-hover">
+                <tr ng-repeat="match in matches"  ng-click="showMatchDetails(match)">
+                    <td class="col-sm-3">{{match.homeTeam}}</td>
+                    <td class="col-sm-3">{{match.guestTeam}}</td>
+                    <td class="col-sm-1" style="font-weight: bold">{{match.result.homeGoals}} : {{match.result.guestGoals}}</td>
+                    <td class="col-sm-1">({{match.halfTimeResult.homeGoals}} : {{match.halfTimeResult.guestGoals}})</td>
                 </tr>
             </table>
         </div>
+
+        <div class="col-sm-3" ng-if="selectedMatch" >
+            <table class="table-bordered table table-condensed">
+                <thead style="background-color: darkgray; font-weight: bold">
+                    <tr>
+                        <td colspan="3">
+                            {{selectedMatch.homeTeam}} - {{selectedMatch.guestTeam}}
+                        </td>
+                        <td> {{selectedMatch.result.homeGoals}} : {{selectedMatch.result.guestGoals}}</td>
+                    </tr>
+                    <tr><td colspan="4" style="background-color: lightgrey"></td></tr>
+                    <tr>
+                        <td>Minute</td>
+                        <td>Result</td>
+                        <td>Player</td>
+                        <td>Position</td>
+                    </tr>
+                </thead>
+                <tr ng-repeat="goal in selectedMatch.goals">
+                    <td style="font-weight: bold">{{goal.minute}}.</td>
+                    <td>{{goal.newResult.homeGoals}} : {{goal.newResult.guestGoals}}</td>
+                    <td>{{goal.scorer.lastName}}</td>
+                    <td>{{goal.scorer.position}}</td>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
     </div>
     <div class="row">
         <div class="col-sm-offset-1 col-sm-7">
             <table class="table table-condensed table-bordered">
                 <thead style="background-color: darkgray; font-weight: bold">
-                <tr>
-                    <td>Place</td>
-                    <td>Team</td>
-                    <td>won</td>
-                    <td>draw</td>
-                    <td>lost</td>
-                    <td>goals</td>
-                    <td>points</td>
-                </tr>
+                    <tr>
+                        <td>Place</td>
+                        <td>Team</td>
+                        <td>won</td>
+                        <td>draw</td>
+                        <td>lost</td>
+                        <td>goals</td>
+                        <td>points</td>
+                    </tr>
                 </thead>
                 <tr ng-class="{'green': $index===0, 'yellow': $index>0&&$index<6, 'orange': $index===15, 'red': $index>15}"
                     ng-repeat="entry in table.entries">
@@ -56,7 +84,7 @@
                 </tr>
             </table>
         </div>
-        <div class="col-lg-offset-1 col-lg-3">
+        <div class="col-lg-3">
             <table class="table table-condensed table-bordered">
                 <thead style="background-color: darkgray; font-weight: bold">
                 <td>Player</td>

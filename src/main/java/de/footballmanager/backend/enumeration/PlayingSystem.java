@@ -3,7 +3,6 @@ package de.footballmanager.backend.enumeration;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import de.footballmanager.backend.enumeration.Position;
 
 import java.util.List;
 import java.util.Objects;
@@ -60,7 +59,7 @@ public final class PlayingSystem {
                 SYSTEM_4_4_2_DIAMOND, SYSTEM_4_2_4, SYSTEM_5_3_2, SYSTEM_3_5_2, SYSTEM_5_4_1));
     }
 
-    
+
     private String name;
     private List<Position> positions = Lists.newArrayListWithCapacity(11);
 

@@ -2,12 +2,10 @@ package de.footballmanager.backend.domain.league;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Lists;
-import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.serializer.CustomDateSerializer;
 import org.joda.time.DateTime;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class MatchDay {
@@ -46,37 +44,6 @@ public class MatchDay {
         this.matches = matches;
     }
 
-    public boolean containsMatch(final Match match) {
-        return matches.contains(match);
-    }
-
-    public boolean containsTeam(final Team team) {
-        for (Match match : matches) {
-            if (match.containsTeam(team)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isHomeTeam(final Team team) {
-        for (Match match : matches) {
-            if (match.getHomeTeam().equals(team)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isGuestTeam(final Team team) {
-        for (Match match : matches) {
-            if (match.getGuestTeam().equals(team)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public int getMatchDayNumber() {
         return matchDayNumber;
     }
@@ -93,11 +60,6 @@ public class MatchDay {
         return matches.stream().allMatch(Match::isFinished);
     }
 
-    public Match getMatchOfTeam(String teamName) {
-        return matches.stream()
-                .filter(m -> m.getHomeTeam().getName().equals(teamName) || m.getGuestTeam().getName().equals(teamName))
-                .collect(Collectors.toList()).get(0);
-    }
 
     @Override
     public String toString() {

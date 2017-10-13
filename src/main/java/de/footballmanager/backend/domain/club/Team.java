@@ -1,7 +1,6 @@
 package de.footballmanager.backend.domain.club;
 
 import com.google.common.collect.Lists;
-import de.footballmanager.backend.domain.persons.Manager;
 import de.footballmanager.backend.domain.persons.Player;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -11,10 +10,10 @@ import java.util.List;
 import java.util.Objects;
 
 @XmlRootElement(name = "team")
-@XmlType(propOrder = {"name", "strength", "players", "manager"})
+@XmlType(propOrder = {"name", "strength", "players"})
 public class Team {
 
-//    private Manager manager;
+    //    private Manager manager;
     private String name;
     private int strength;
     private List<Player> players = Lists.newArrayList();

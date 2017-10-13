@@ -1,9 +1,11 @@
 package de.footballmanager.backend.service;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import de.footballmanager.backend.domain.club.Team;
 import de.footballmanager.backend.domain.league.Match;
-import de.footballmanager.backend.domain.league.MatchDay;
 import de.footballmanager.backend.domain.persons.Player;
 import de.footballmanager.backend.domain.util.Pair;
 import de.footballmanager.backend.enumeration.PlayingSystem;
@@ -12,12 +14,14 @@ import de.footballmanager.backend.util.TestUtil;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static de.footballmanager.backend.enumeration.PlayingSystem.*;
 import static de.footballmanager.backend.enumeration.Position.*;
@@ -256,14 +260,25 @@ public class TeamManagerServiceTest {
 
     @Test
     public void getSubstituteBench() {
-        Match match = createMatch();
-        Team homeTeam = match.getHomeTeam();
+        // given
+        Team homeTeam = createTeam(TEAM_NAME_1, SYSTEM_4_4_2);
+        Team guestTeam = createTeam(TEAM_NAME_2, SYSTEM_4_4_2);
+        Match match = createMatch(homeTeam, guestTeam);
         Pair<PlayingSystem, Map<Position, Player>> pair = teamManagerService.getBestPlayersForBestSystem(homeTeam);
         Map<Position, Player> startEleven = pair.getSecond();
         List<Player> notPlayingPlayers = homeTeam.getPlayers().stream()
                 .filter(player -> !startEleven.containsValue(player))
                 .collect(toList());
+        MatchService matchService = createMock(MatchService.class);
+        ReflectionTestUtils.setField(teamManagerService, "matchService", matchService);
+        expect(matchService.isHomeTeam(match, homeTeam.getName())).andReturn(true).anyTimes();
+        expect(matchService.containsTeam(match, homeTeam.getName())).andReturn(true).once();
+        replay(matchService);
+
+        // when
         List<Player> substituteBench = teamManagerService.getSubstituteBench(match, homeTeam);
+
+        // then
         assertNotNull(substituteBench);
         assertEquals(homeTeam.getPlayers().size(), substituteBench.size() + startEleven.values().size());
         assertTrue(substituteBench.containsAll(notPlayingPlayers));
@@ -273,22 +288,44 @@ public class TeamManagerServiceTest {
     @Test
     public void getPlayingSystem() {
         PlayingSystem expectedHomeSystem = SYSTEM_3_4_3;
-        Match match = createMatch(expectedHomeSystem, SYSTEM_4_2_3_1);
-        PlayingSystem playingSystem = teamManagerService.getPlayingSystem(match, match.getHomeTeam());
+        Team homeTeam = createTeam(TEAM_NAME_1, expectedHomeSystem);
+        Match match = createMatch(expectedHomeSystem, SYSTEM_4_2_3_1, homeTeam, createTeam(TEAM_NAME_2, SYSTEM_4_2_3_1));
+
+        MatchService matchService = mockMatchService(homeTeam, match);
+
+
+        // when
+        PlayingSystem playingSystem = teamManagerService.getPlayingSystem(match, homeTeam);
+
+        // then
         assertEquals(expectedHomeSystem.getName(), playingSystem.getName());
         assertTrue(expectedHomeSystem.equals(playingSystem));
+        verify(matchService);
+    }
+
+    private MatchService mockMatchService(Team homeTeam, Match match) {
+        MatchService matchService = createMock(MatchService.class);
+        ReflectionTestUtils.setField(teamManagerService, "matchService", matchService);
+        expect(matchService.isHomeTeam(match, homeTeam.getName())).andReturn(true).anyTimes();
+        replay(matchService);
+        return matchService;
     }
 
     @Test
     public void changePlayingSystem() {
         // given
-        Match match = createMatch();
-        Team homeTeam = match.getHomeTeam();
+        Team homeTeam = createTeam(TEAM_NAME_1, SYSTEM_4_4_2);
+        Match match = createMatch(homeTeam, createTeam(TEAM_NAME_2, SYSTEM_4_4_2));
 
         StrengthService strengthService = createMock(StrengthService.class);
         expect(strengthService.getPlayerStrengthOnPosition(anyObject(), anyObject())).andReturn(80).anyTimes();
         replay(strengthService);
         setField(teamManagerService, "strengthService", strengthService);
+        MatchService matchService = createMock(MatchService.class);
+        ReflectionTestUtils.setField(teamManagerService, "matchService", matchService);
+        expect(matchService.isHomeTeam(match, homeTeam.getName())).andReturn(true).anyTimes();
+        expect(matchService.containsTeam(match, homeTeam.getName())).andReturn(true).once();
+        replay(matchService);
 
         PlayingSystem startSystem = teamManagerService.getPlayingSystem(match, homeTeam);
 
@@ -300,8 +337,8 @@ public class TeamManagerServiceTest {
         verify(strengthService);
         assertEquals(PlayingSystem.SYSTEM_4_4_2, startSystem);
         assertEquals(expectedSystem, teamManagerService.getPlayingSystem(match, homeTeam));
+        verify(matchService, strengthService);
     }
-
 
 
     @Test
@@ -469,12 +506,12 @@ public class TeamManagerServiceTest {
 
     public Object[][] parametersForHasPlayerForSystem() {
         return new Object[][]{
-            {SYSTEM_3_4_3 , SYSTEM_3_4_3, true},
-                {SYSTEM_4_2_3_1 , SYSTEM_4_2_3_1, true},
+                {SYSTEM_3_4_3, SYSTEM_3_4_3, true},
+                {SYSTEM_4_2_3_1, SYSTEM_4_2_3_1, true},
                 {SYSTEM_4_3_3, SYSTEM_4_3_3, true},
                 {PlayingSystem.SYSTEM_4_4_2, PlayingSystem.SYSTEM_4_4_2, true},
-                {SYSTEM_4_4_2_DIAMOND , SYSTEM_4_4_2_DIAMOND, true},
-                {SYSTEM_4_2_3_1 , SYSTEM_3_4_3, false},
+                {SYSTEM_4_4_2_DIAMOND, SYSTEM_4_4_2_DIAMOND, true},
+                {SYSTEM_4_2_3_1, SYSTEM_3_4_3, false},
                 {PlayingSystem.SYSTEM_4_4_2, SYSTEM_4_4_2_DIAMOND, false},
         };
     }
