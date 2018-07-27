@@ -17,6 +17,10 @@ app.config(['$routeProvider',
                 templateUrl: 'partials/index.html',
                 controller: 'AppCtrl'
             })
+            .when('/settings', {
+                templateUrl: 'partials/settings.html',
+                controller: 'SettingsCtrl'
+            })
             .when('/team', {
                 templateUrl: 'partials/team.html',
                 controller: 'TeamCtrl'
